@@ -8,7 +8,7 @@ android {
     compileSdk = 32
     defaultConfig {
         applicationId = "app.ft.ftapp.android"
-        minSdk = 26
+        minSdk = 25
         targetSdk = 32
         versionCode = 1
         versionName = "1.0"

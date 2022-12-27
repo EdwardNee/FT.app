@@ -1,2 +1,0 @@
-# FT.app
-diploma app
