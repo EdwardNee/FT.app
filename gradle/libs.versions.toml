@@ -1,0 +1,55 @@
+[versions]
+ktorVersionClient = "2.1.2"
+
+ktxJsonSer = "1.6.20"
+ktxJsonCore = "1.3.2"
+
+kotlinVersion = "1.7.10"
+
+composeVersion = "1.3.0"
+composeActivityVersion = "1.6.1"
+
+[libraries]
+# ktor
+ktorClient = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersionClient" }
+ktorClientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersionClient" }
+ktorClientDarwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktorVersionClient" }
+ktorClientOhHttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersionClient" }
+ktorClientCIO = { module = "io.ktor:ktor-client-cio", version.ref = "ktorVersionClient" }
+ktorSerializationJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersionClient" }
+ktorLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorVersionClient" }
+
+# ktx serializer
+ktxJsonSerializer = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "ktxJsonSer" }
+ktxJsonSerializerCore = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm", version.ref = "ktxJsonCore" }
+
+# compose
+cmsUi = { module = "androidx.compose.ui:ui", version.ref = "composeVersion" }
+cmsUiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeVersion" }
+cmsUiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeVersion" }
+cmsFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeVersion" }
+cmsMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
+cmsActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
+
+# plugins
+ktxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
+
+
+[bundles]
+ktorClient = [
+    "ktorClient",
+    "ktorClientContentNegotiation",
+    "ktorSerializationJson",
+    "ktorClientCIO",
+    "ktorLogging"
+]
+
+composeLibs = [
+    "cmsUi",
+    "cmsUiTooling",
+    "cmsUiToolingPreview",
+    "cmsFoundation",
+    "cmsMaterial",
+    "cmsActivity"
+]
+plugins = ["ktxSerialization"]
