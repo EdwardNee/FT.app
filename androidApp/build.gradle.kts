@@ -34,7 +34,6 @@ android {
 dependencies {
     implementation(project(":shared"))
     implementation(libs.bundles.composeLibs)
-    implementation(libs.bundles.ktorClient)
 //    implementation("androidx.compose.ui:ui:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")
