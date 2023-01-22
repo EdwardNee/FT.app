@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.android.presentation.common.HeaderText
 
 @Composable
 @Preview
@@ -18,14 +19,8 @@ fun AnnounceScreen() {
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(horizontal = 8.dp)
-            .padding(top = 24.dp)
     ) {
-        Text(
-            text = "Доступные объявления",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 24.dp),
-            fontSize = 24.sp
-        )
+        HeaderText(text = "Доступные объявления")
 
         LazyColumn {
             items(5) {

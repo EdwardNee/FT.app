@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.ft.ftapp.android.presentation.announcement.AnnounceCard
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
+import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
 import app.ft.ftapp.android.ui.theme.MyApplicationTheme
 import app.ft.ftapp.android.ui.theme.appBackground
 
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = appBackground//MaterialTheme.colors.background
                 ) {
-                    AnnounceScreen()
+                    AnnounceCreationScreen()
 //                    GreetingView(Greeting().greet())
                 }
             }
