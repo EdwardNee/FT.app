@@ -4,24 +4,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.scale
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
+import app.ft.ftapp.android.ui.theme.Montserrat
+import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
 
 @Composable
@@ -31,105 +32,164 @@ fun AnnounceCreationScreen() {
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 12.dp),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        HeaderText(text = "Создать объявление")
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-        ) {
-            FromToComposable()
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 50.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Цена:")
-                BasicTextField(
-                    textStyle = TextStyle.Default.copy(fontSize = 16.sp),
-                    value = "560P",
-                    onValueChange = {},
-                    modifier = Modifier
-                        .width(60.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(color = editTextBackground)
-                        .padding(vertical = 6.dp)
-                )
+        Column(Modifier.fillMaxWidth()) {
+            HeaderText(text = "Создать объявление")
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
+                FromToComposable()
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Количество мест:")
-                BasicTextField(
-                    textStyle = TextStyle.Default.copy(fontSize = 16.sp),
-                    value = "560P",
-                    onValueChange = {},
-                    modifier = Modifier
-                        .width(60.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(color = editTextBackground)
-                        .padding(vertical = 6.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 50.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                TextValues("Цена:", "₽")
+                TextValues("Количество мест:")
+            }
+
+            AdditionalNotes()
+        }
+
+
+        Column(Modifier.fillMaxWidth()) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End)
+                    .clip(RoundedCornerShape(6.dp))
+                    .padding(bottom = 50.dp)
+                ,
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(backgroundColor = buttonColors)
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontFamily = Montserrat,
+                    text = "Опубликовать",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.White
                 )
             }
         }
+
     }
 }
 
+@Composable
+fun AdditionalNotes() {
+    var value by remember { mutableStateOf("") }
+    TextField(
+        textStyle = TextStyle(fontSize = 16.sp),
+        value = value, onValueChange = { value = it },
+        placeholder = { PlaceHolderText("Дополнительные комментарии...") },
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.Black,
+            disabledTextColor = Color.Transparent,
+            backgroundColor = editTextBackground,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+//        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+//            keyboardActions = KeyboardActions(onDone = onDoneOption),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(top = 50.dp)
+            .clip(RoundedCornerShape(10.dp))
+    )
+}
 
-fun Modifier.drawColoredShadow(
-    color: Color = Color.Red,
-    alpha: Float = 1f,
-    borderRadius: Dp = 0.dp,
-    offsetX: Dp = 0.dp,
-    offsetY: Dp = 0.dp,
-    blurRadius: Dp = 6.dp,
-    spread: Dp = 0.dp,
-    enabled: Boolean = true,
-) = if (enabled) {
-    this.drawBehind {
-        val transparentColor = color.copy(alpha = 0.0f).toArgb()
-        val shadowColor = color.copy(alpha = alpha).toArgb()
-        this.drawIntoCanvas {
-            val paint = Paint()
-            val frameworkPaint = paint.asFrameworkPaint()
-            frameworkPaint.color = transparentColor
-            frameworkPaint.setShadowLayer(
-                blurRadius.toPx(),
-                offsetX.toPx(),
-                offsetY.toPx(),
-                shadowColor
+@Composable
+fun TextValues(text: String, currency: String = "") {
+    var value by remember { mutableStateOf("") }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text,fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp))
+        BasicTextField(
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
+            value = value,
+            singleLine = true,
+            onValueChange = { value = it },
+            modifier = Modifier
+                .width(80.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(color = editTextBackground)
+                .padding(vertical = 12.dp)
+                .padding(horizontal = 6.dp)
+        )
+        if (currency.isNotEmpty()) {
+            Text(
+                currency,
+                fontFamily = Montserrat,
+                modifier = Modifier.padding(4.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 17.sp
             )
-            it.save()
-
-            if (spread.value > 0) {
-                fun calcSpreadScale(spread: Float, childSize: Float): Float {
-                    return 1f + ((spread / childSize) * 2f)
-                }
-
-                it.scale(
-                    calcSpreadScale(spread.toPx(), this.size.width),
-                    calcSpreadScale(spread.toPx(), this.size.height),
-                    this.center.x,
-                    this.center.y
-                )
-            }
-
-            it.drawRoundRect(
-                0f,
-                0f,
-                this.size.width - 20,
-                this.size.height,
-                borderRadius.toPx(),
-                borderRadius.toPx(),
-                paint
-            )
-            it.restore()
         }
     }
-} else {
-    this
 }
+//fun Modifier.drawColoredShadow(
+//    color: Color = Color.Red,
+//    alpha: Float = 1f,
+//    borderRadius: Dp = 0.dp,
+//    offsetX: Dp = 0.dp,
+//    offsetY: Dp = 0.dp,
+//    blurRadius: Dp = 6.dp,
+//    spread: Dp = 0.dp,
+//    enabled: Boolean = true,
+//) = if (enabled) {
+//    this.drawBehind {
+//        val transparentColor = color.copy(alpha = 0.0f).toArgb()
+//        val shadowColor = color.copy(alpha = alpha).toArgb()
+//        this.drawIntoCanvas {
+//            val paint = Paint()
+//            val frameworkPaint = paint.asFrameworkPaint()
+//            frameworkPaint.color = transparentColor
+//            frameworkPaint.setShadowLayer(
+//                blurRadius.toPx(),
+//                offsetX.toPx(),
+//                offsetY.toPx(),
+//                shadowColor
+//            )
+//            it.save()
+//
+//            if (spread.value > 0) {
+//                fun calcSpreadScale(spread: Float, childSize: Float): Float {
+//                    return 1f + ((spread / childSize) * 2f)
+//                }
+//
+//                it.scale(
+//                    calcSpreadScale(spread.toPx(), this.size.width),
+//                    calcSpreadScale(spread.toPx(), this.size.height),
+//                    this.center.x,
+//                    this.center.y
+//                )
+//            }
+//
+//            it.drawRoundRect(
+//                0f,
+//                0f,
+//                this.size.width - 20,
+//                this.size.height,
+//                borderRadius.toPx(),
+//                borderRadius.toPx(),
+//                paint
+//            )
+//            it.restore()
+//        }
+//    }
+//} else {
+//    this
+//}
