@@ -1,6 +1,7 @@
 package app.ft.ftapp.android
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = appBackground//MaterialTheme.colors.background
                 ) {
-                    AnnouncementDetails()
+//                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//                    AnnouncementDetails()
                     GroupChat()
 //                    ChatMessageComponent()
 //                    GreetingView(Greeting().greet())
