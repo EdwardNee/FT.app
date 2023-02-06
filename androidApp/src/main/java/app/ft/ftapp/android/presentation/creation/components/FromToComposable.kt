@@ -80,7 +80,7 @@ fun DestinationComponent(
 
     val colorState = remember { Animatable(Color.White) }
 
-    // animate to green/red based on `button click`
+    // animate to green/red based on "button click"
     LaunchedEffect(stateVal.value.isNotEmpty()) {
         colorState.animateTo(
             if (stateVal.value.isNotEmpty()) color else Color.White,

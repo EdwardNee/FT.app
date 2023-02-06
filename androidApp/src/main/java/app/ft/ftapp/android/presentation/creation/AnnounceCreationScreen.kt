@@ -60,7 +60,6 @@ fun AnnounceCreationScreen() {
             AdditionalNotes()
         }
 
-
         Column(Modifier.fillMaxWidth()) {
             Button(
                 modifier = Modifier
@@ -82,7 +81,6 @@ fun AnnounceCreationScreen() {
                 )
             }
         }
-
     }
 }
 
@@ -140,56 +138,3 @@ fun TextValues(text: String, currency: String = "") {
         }
     }
 }
-//fun Modifier.drawColoredShadow(
-//    color: Color = Color.Red,
-//    alpha: Float = 1f,
-//    borderRadius: Dp = 0.dp,
-//    offsetX: Dp = 0.dp,
-//    offsetY: Dp = 0.dp,
-//    blurRadius: Dp = 6.dp,
-//    spread: Dp = 0.dp,
-//    enabled: Boolean = true,
-//) = if (enabled) {
-//    this.drawBehind {
-//        val transparentColor = color.copy(alpha = 0.0f).toArgb()
-//        val shadowColor = color.copy(alpha = alpha).toArgb()
-//        this.drawIntoCanvas {
-//            val paint = Paint()
-//            val frameworkPaint = paint.asFrameworkPaint()
-//            frameworkPaint.color = transparentColor
-//            frameworkPaint.setShadowLayer(
-//                blurRadius.toPx(),
-//                offsetX.toPx(),
-//                offsetY.toPx(),
-//                shadowColor
-//            )
-//            it.save()
-//
-//            if (spread.value > 0) {
-//                fun calcSpreadScale(spread: Float, childSize: Float): Float {
-//                    return 1f + ((spread / childSize) * 2f)
-//                }
-//
-//                it.scale(
-//                    calcSpreadScale(spread.toPx(), this.size.width),
-//                    calcSpreadScale(spread.toPx(), this.size.height),
-//                    this.center.x,
-//                    this.center.y
-//                )
-//            }
-//
-//            it.drawRoundRect(
-//                0f,
-//                0f,
-//                this.size.width - 20,
-//                this.size.height,
-//                borderRadius.toPx(),
-//                borderRadius.toPx(),
-//                paint
-//            )
-//            it.restore()
-//        }
-//    }
-//} else {
-//    this
-//}

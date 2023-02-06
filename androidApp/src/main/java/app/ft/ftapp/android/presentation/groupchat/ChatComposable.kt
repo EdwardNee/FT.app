@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -28,14 +27,15 @@ import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.editTextBackground
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @Preview
 fun GroupChat() {
     val scrollableRemember = rememberCoroutineScope()
+    val lazyState = rememberLazyListState()
     Scaffold(
         topBar = {
             TopAppBar(backgroundColor = Color.White) {
@@ -45,13 +45,12 @@ fun GroupChat() {
                 ) {
                     IconButton(onClick = { }) {
                         Icon(
-
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = ""
                         )
                     }
 
-                    Column() {
+                    Column {
                         Text(
                             text = "Group chat",
                             fontWeight = FontWeight.Bold,
@@ -71,58 +70,21 @@ fun GroupChat() {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            var message = remember { mutableStateOf("") }
             val messages = remember {
                 mutableStateListOf(
                     Mes("public", true),
                     Mes("public void main()adasdsadaa aaadjalll", false),
                     Mes("public vo", false),
                     Mes("public vo", true)
-
                 )
             }
 
-            val lazyState = rememberLazyListState()
-            MessagesList(messages = messages, lazyState = lazyState, modifier = Modifier.align(Alignment.End))
-
-            val interactionSource = remember { MutableInteractionSource() }
-
-            BasicTextField(
-                value = message.value,
-                textStyle = TextStyle.Default.copy(fontSize = 16.sp, fontFamily = Montserrat),
-                onValueChange = { message.value = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = editTextBackground)
-                    .padding(start = 8.dp).padding(vertical = 18.dp),
-            ) { innerTextField ->
-                TextFieldDefaults.TextFieldDecorationBox(
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Send,
-                            contentDescription = "",
-                            modifier = Modifier.clickable {
-                                messages.add(Mes(message.value, true))
-                                scrollableRemember.launch {
-                                    lazyState.animateScrollToItem(messages.size - 1)
-                                }
-                            }
-                        )
-                    },
-                    value = message.value,
-                    visualTransformation = VisualTransformation.None,
-                    innerTextField = innerTextField,
-                    singleLine = true,
-                    enabled = true,
-                    interactionSource = interactionSource,
-                    contentPadding = PaddingValues(0.dp), // this is how you can remove the padding
-                    placeholder = {
-                        if (message.value.trim().isEmpty()) {
-                            PlaceHolderText(helpText = "Введите сообщение")
-                        }
-                    }
-                )
-            }
+            MessagesList(
+                messages = messages,
+                lazyState = lazyState,
+                modifier = Modifier.align(Alignment.End)
+            )
+            CustomEditText(messages, lazyState, scrollableRemember)
         }
     }
 }
@@ -131,10 +93,15 @@ fun GroupChat() {
 data class Mes(val text: String, val myMes: Boolean)
 
 @Composable
-fun MessagesList(modifier: Modifier = Modifier, messages: SnapshotStateList<Mes>, lazyState: LazyListState) {
+fun MessagesList(
+    modifier: Modifier = Modifier,
+    messages: SnapshotStateList<Mes>,
+    lazyState: LazyListState
+) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val modifierMy = modifier.then(Modifier.padding(bottom = 4.dp, start = screenWidth / 4, end = 8.dp))
+    val modifierMy =
+        modifier.then(Modifier.padding(bottom = 4.dp, start = screenWidth / 4, end = 8.dp))
 
     val modifierNo = Modifier
         .padding(bottom = 4.dp, end = screenWidth / 4, start = 8.dp)
@@ -145,12 +112,60 @@ fun MessagesList(modifier: Modifier = Modifier, messages: SnapshotStateList<Mes>
         state = lazyState
     ) {
         item {
-            Column() {
+            Column {
                 for (e in messages) {
                     val mod = if (e.myMes) modifierMy else modifierNo
                     ChatMessageComponent(mod, e.text, e.myMes)
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun CustomEditText(
+    messages: SnapshotStateList<Mes>,
+    lazyState: LazyListState,
+    scrollableRemember: CoroutineScope
+) {
+    var message = remember { mutableStateOf("") }
+    val interactionSource = remember { MutableInteractionSource() }
+    BasicTextField(
+        value = message.value,
+        textStyle = TextStyle.Default.copy(fontSize = 16.sp, fontFamily = Montserrat),
+        onValueChange = { textChange -> message.value = textChange },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = editTextBackground)
+            .padding(start = 8.dp)
+            .padding(vertical = 18.dp),
+    ) { innerTextField ->
+        TextFieldDefaults.TextFieldDecorationBox(
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Send,
+                    contentDescription = "",
+                    modifier = Modifier.clickable {
+                        messages.add(Mes(message.value, true))
+                        scrollableRemember.launch {
+                            lazyState.animateScrollToItem(messages.size - 1)
+                        }
+                    }
+                )
+            },
+            value = message.value,
+            visualTransformation = VisualTransformation.None,
+            innerTextField = innerTextField,
+            singleLine = true,
+            enabled = true,
+            interactionSource = interactionSource,
+            contentPadding = PaddingValues(0.dp), // this is how you can remove the padding
+            placeholder = {
+                if (message.value.trim().isEmpty()) {
+                    PlaceHolderText(helpText = "Введите сообщение")
+                }
+            }
+        )
     }
 }

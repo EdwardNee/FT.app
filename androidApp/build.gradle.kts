@@ -34,10 +34,7 @@ android {
 dependencies {
     implementation(project(":shared"))
     implementation(libs.bundles.composeLibs)
-
-    val coroutines = "1.6.4"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
+    implementation(libs.bundles.coroutines)
 //    implementation("androidx.compose.ui:ui:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")
