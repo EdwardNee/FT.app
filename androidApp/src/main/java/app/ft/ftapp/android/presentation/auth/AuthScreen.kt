@@ -21,7 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
+/**
+ * Composable method to show authentication screen.
+ */
 @Composable
 @Preview
 fun AuthScreen() {
@@ -72,7 +74,9 @@ fun AuthScreen() {
     }
 }
 
-
+/**
+ * TextField to enter user's credentials.
+ */
 @Composable
 fun CredentialsField(params: CredentialsEnterParams, text: String) {
     TextField(
@@ -96,6 +100,9 @@ fun CredentialsField(params: CredentialsEnterParams, text: String) {
     )
 }
 
+/**
+ * Composable to show and process login button.
+ */
 @Composable
 fun LogInButton(onClick: () -> Unit) {
     Button(
@@ -113,6 +120,9 @@ fun LogInButton(onClick: () -> Unit) {
 }
 
 
+/**
+ * Dataclass to fill UI credentials values.
+ */
 data class CredentialsEnterParams(
     val label: String,
     val visualTransformation: VisualTransformation,

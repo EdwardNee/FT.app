@@ -20,4 +20,7 @@ val grayCircle = Color(0xFFBEBEBE)
 
 val buttonColors = Color(0xFF00474F)
 
+val namesColor =
+    listOf(Color.Yellow, Color.Cyan, Color.Magenta, Color.Green, Color.Red, Color.Black)
+
 

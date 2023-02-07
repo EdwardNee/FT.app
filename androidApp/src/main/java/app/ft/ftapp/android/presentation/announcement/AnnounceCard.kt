@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.ui.theme.cardBody
 import app.ft.ftapp.android.ui.theme.textGray
 
+/**
+ * Announcement card composable method to draw.
+ */
 @Composable
 @Preview
 fun AnnounceCard() {
@@ -65,6 +68,9 @@ fun AnnounceCard() {
     }
 }
 
+/**
+ * Depicts params of the announcement.
+ */
 @Composable
 fun AnnounceParams(text: String, paramValue: String) {
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -74,6 +80,9 @@ fun AnnounceParams(text: String, paramValue: String) {
     }
 }
 
+/**
+ * Button to process announcement card.
+ */
 @Composable
 fun AnnounceButton(modifier: Modifier = Modifier) {
     Button(

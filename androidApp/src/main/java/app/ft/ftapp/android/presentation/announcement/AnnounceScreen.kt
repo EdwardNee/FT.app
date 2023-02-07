@@ -11,6 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.presentation.common.HeaderText
 
+/**
+ * Composable method to show all the created announcements.
+ */
 @Composable
 @Preview
 fun AnnounceScreen() {

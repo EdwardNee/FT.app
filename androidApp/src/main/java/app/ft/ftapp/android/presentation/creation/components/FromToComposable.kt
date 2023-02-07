@@ -25,6 +25,9 @@ import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.android.ui.theme.redCircle
 
+/**
+ * Composable component to show from to UI.
+ */
 @Composable
 fun FromToComposable() {
     val animVal = remember { androidx.compose.animation.core.Animatable(1f) }
@@ -68,6 +71,9 @@ fun FromToComposable() {
     }
 }
 
+/**
+ * Destination component. EditText view that animates drawn circle.
+ */
 @Composable
 fun DestinationComponent(
     liter: String,

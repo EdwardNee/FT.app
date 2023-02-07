@@ -24,6 +24,9 @@ import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.ui.theme.redCircle
 
+/**
+ * Composable method draws announcements details of the created announce.
+ */
 @Composable
 fun AnnouncementDetails() {
     Column(
@@ -106,6 +109,9 @@ fun AnnouncementDetails() {
     }
 }
 
+/**
+ * Shows from to details.
+ */
 @Composable
 fun FromToText() {
     val stateA = remember { mutableStateOf("улица Лефортовский вал, д 7") }
@@ -141,6 +147,9 @@ fun FromToText() {
     }
 }
 
+/**
+ * Composable draws circles for source and destination point.
+ */
 @Composable
 fun DestinationComponentDetails(
     liter: String, color: Color, stateVal: MutableState<String>

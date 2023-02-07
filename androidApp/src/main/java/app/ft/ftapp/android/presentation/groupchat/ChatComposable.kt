@@ -30,7 +30,9 @@ import app.ft.ftapp.android.ui.theme.editTextBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
+/**
+ * Composable method for drawing group chat screen.
+ */
 @Composable
 @Preview
 fun GroupChat() {
@@ -92,6 +94,9 @@ fun GroupChat() {
 
 data class Mes(val text: String, val myMes: Boolean)
 
+/**
+ * Composable message list to display list of messages.
+ */
 @Composable
 fun MessagesList(
     modifier: Modifier = Modifier,
@@ -108,7 +113,7 @@ fun MessagesList(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.9f), verticalArrangement = Arrangement.Bottom,
+            .fillMaxHeight(0.92f), verticalArrangement = Arrangement.Bottom,
         state = lazyState
     ) {
         item {
@@ -122,6 +127,9 @@ fun MessagesList(
     }
 }
 
+/**
+ * EditText for composing chat texts.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CustomEditText(
@@ -139,7 +147,9 @@ fun CustomEditText(
             .fillMaxWidth()
             .background(color = editTextBackground)
             .padding(start = 8.dp)
-            .padding(vertical = 18.dp),
+            .navigationBarsPadding()
+            .imePadding()
+//            .padding(vertical = 18.dp),
     ) { innerTextField ->
         TextFieldDefaults.TextFieldDecorationBox(
             trailingIcon = {
@@ -147,9 +157,12 @@ fun CustomEditText(
                     imageVector = Icons.Filled.Send,
                     contentDescription = "",
                     modifier = Modifier.clickable {
-                        messages.add(Mes(message.value, true))
-                        scrollableRemember.launch {
-                            lazyState.animateScrollToItem(messages.size - 1)
+                        if (message.value.trim().isNotEmpty()) {
+                            messages.add(Mes(message.value, false))
+                            message.value = ""
+                            scrollableRemember.launch {
+                                lazyState.animateScrollToItem(messages.size - 1)
+                            }
                         }
                     }
                 )

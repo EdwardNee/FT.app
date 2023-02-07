@@ -25,6 +25,9 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
 
+/**
+ * Composable method to draw announcement creation screen.
+ */
 @Composable
 @Preview
 fun AnnounceCreationScreen() {
@@ -66,8 +69,7 @@ fun AnnounceCreationScreen() {
                     .fillMaxWidth()
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(6.dp))
-                    .padding(bottom = 50.dp)
-                ,
+                    .padding(bottom = 50.dp),
                 onClick = { /*TODO*/ },
                 colors = ButtonDefaults.buttonColors(backgroundColor = buttonColors)
             ) {
@@ -84,6 +86,9 @@ fun AnnounceCreationScreen() {
     }
 }
 
+/**
+ * TextField composable to add notes for an announce.
+ */
 @Composable
 fun AdditionalNotes() {
     var value by remember { mutableStateOf("") }
@@ -109,6 +114,9 @@ fun AdditionalNotes() {
     )
 }
 
+/**
+ * Text values parameters composable.
+ */
 @Composable
 fun TextValues(text: String, currency: String = "") {
     var value by remember { mutableStateOf("") }
