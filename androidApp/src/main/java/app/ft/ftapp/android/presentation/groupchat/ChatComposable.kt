@@ -15,9 +15,11 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +37,7 @@ import app.ft.ftapp.R
 /**
  * Composable method for drawing group chat screen.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun GroupChat() {
@@ -62,7 +65,10 @@ fun GroupChat() {
                             fontSize = 18.sp,
                             color = Color.Black,
                         )
-                        Text(text = "4 участника", fontSize = 12.sp)
+                        Text(
+                            text = pluralStringResource(id = R.plurals.plural_fellows, 4, 4),
+                            fontSize = 12.sp
+                        )
                     }
                 }
             }
