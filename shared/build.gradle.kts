@@ -2,6 +2,8 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
+    id("kotlin-parcelize")
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 kotlin {
@@ -17,7 +19,9 @@ kotlin {
         ios.deploymentTarget = "14.1"
         podfile = project.file("../iosApp/Podfile")
         framework {
-            baseName = "shared"
+            baseName = "MultiPlatformLibrary"
+            isStatic = false
+            export(libs.mokoRes)
         }
     }
     
@@ -25,6 +29,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.bundles.ktorClient)
+                api(libs.mokoRes)
+
             }
         }
         val commonTest by getting {
@@ -32,7 +38,12 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.mokoResAndroid)
+                implementation(libs.mokoResCompose)
+            }
+        }
         val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -56,10 +67,21 @@ kotlin {
 }
 
 android {
+    sourceSets["main"].res.srcDir(File(buildDir, "generated/moko/androidMain/res"))
     namespace = "app.ft.ftapp"
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 33
     }
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "app.ft.ftapp"
+}
+
+dependencies {
+    commonMainApi(libs.mokoRes)
+    commonMainImplementation("dev.icerock.moko:parcelize:0.4.0")
+    commonMainImplementation("dev.icerock.moko:graphics:0.4.0")
 }

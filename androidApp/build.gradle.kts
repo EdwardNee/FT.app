@@ -1,9 +1,12 @@
 plugins {
-    id("com.android.application")
     kotlin("android")
+    id("com.android.application")
+    id("kotlin-parcelize")
+    id("kotlin-kapt")
 }
 
 android {
+    sourceSets.getByName("main").res.srcDir(File(buildDir, "generated/moko/androidMain/res"))
     namespace = "app.ft.ftapp.android"
     compileSdk = 33
     defaultConfig {

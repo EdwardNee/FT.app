@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +24,7 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.ui.theme.redCircle
+import app.ft.ftapp.R
 
 /**
  * Composable method draws announcements details of the created announce.
@@ -59,7 +61,7 @@ fun AnnouncementDetails() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Цена за машину",
+                text = stringResource(id = R.string.car_price),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(vertical = 16.dp)
@@ -80,7 +82,7 @@ fun AnnouncementDetails() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Свободных мест",
+                text = stringResource(id = R.string.free_places),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(vertical = 16.dp)
@@ -133,7 +135,7 @@ fun FromToText() {
             )
         }
 
-        DestinationComponentDetails("A", redCircle, stateA)
+        DestinationComponentDetails(stringResource(id = R.string.pointA), redCircle, stateA)
 
         Divider(
             modifier = Modifier
@@ -143,7 +145,7 @@ fun FromToText() {
             thickness = 0.4.dp
         )
 
-        DestinationComponentDetails("B", blueCircle, stateB)
+        DestinationComponentDetails(stringResource(id = R.string.pointB), blueCircle, stateB)
     }
 }
 

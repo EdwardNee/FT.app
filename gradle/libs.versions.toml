@@ -1,4 +1,12 @@
 [versions]
+
+composeVersion = "1.3.0"
+composeActivityVersion = "1.6.1"
+
+coroutinesVersion = "1.6.4"
+
+composeNavigationVersion = "2.5.3"
+
 ktorVersionClient = "2.1.2"
 
 ktxJsonSer = "1.6.20"
@@ -6,10 +14,7 @@ ktxJsonCore = "1.3.2"
 
 kotlinVersion = "1.7.10"
 
-composeVersion = "1.3.0"
-composeActivityVersion = "1.6.1"
-
-coroutinesVersion = "1.6.4"
+mokoResVersion = "0.20.1"
 
 [libraries]
 # ktor
@@ -32,16 +37,29 @@ cmsUiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", versi
 cmsFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeVersion" }
 cmsMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
 cmsActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
-
+cmsNavigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigationVersion" }
 # coroutines
 coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
+
+# moko resources
+mokoRes = { module = "dev.icerock.moko:resources", version.ref = "mokoResVersion" }
+mokoResGenerator = { module = "dev.icerock.moko:resources-generator", version.ref = "mokoResVersion" }
+mokoResAndroid = { module = "dev.icerock.moko:resources-android", version.ref = "mokoResVersion" }
+mokoResCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResVersion" }
 
 # plugins
 ktxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
 
 
 [bundles]
+mokoResources = [
+    "mokoRes",
+    "mokoResGenerator",
+    "mokoResAndroid",
+    "mokoResCompose"
+]
+
 ktorClient = [
     "ktorClient",
     "ktorClientContentNegotiation",
@@ -61,6 +79,7 @@ composeLibs = [
     "cmsUiToolingPreview",
     "cmsFoundation",
     "cmsMaterial",
-    "cmsActivity"
+    "cmsActivity",
+    "cmsNavigation"
 ]
 plugins = ["ktxSerialization"]

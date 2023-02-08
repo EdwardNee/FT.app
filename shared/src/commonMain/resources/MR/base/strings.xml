@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+<string name="car_price">Цена за машину</string>
+<string name="price">Цена:</string>
+<string name="currency_rub">₽</string>
+<string name="free_places">Свободных мест</string>
+<string name="places_count">Количество мест:</string>
+<string name="pointA">A</string>
+<string name="pointB">B</string>
+<string name="available_announces">Доступные объявления</string>
+<string name="create_announce">Создать объявление</string>
+<string name="publish">Опубликовать</string>
+<string name="onward">Далее</string>
+<string name="from">Откуда едем?</string>
+<string name="to">Куда едем?</string>
+<string name="group_chat">Group chat</string>
+<string name="enter_message">Введите сообщение</string>
+</resources>

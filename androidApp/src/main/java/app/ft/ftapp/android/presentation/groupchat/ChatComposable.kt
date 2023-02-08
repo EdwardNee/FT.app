@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -29,6 +30,7 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import app.ft.ftapp.R
 
 /**
  * Composable method for drawing group chat screen.
@@ -54,7 +56,7 @@ fun GroupChat() {
 
                     Column {
                         Text(
-                            text = "Group chat",
+                            text = stringResource(R.string.group_chat),
                             fontWeight = FontWeight.Bold,
                             fontFamily = Montserrat,
                             fontSize = 18.sp,
@@ -176,7 +178,7 @@ fun CustomEditText(
             contentPadding = PaddingValues(0.dp), // this is how you can remove the padding
             placeholder = {
                 if (message.value.trim().isEmpty()) {
-                    PlaceHolderText(helpText = "Введите сообщение")
+                    PlaceHolderText(helpText = stringResource(R.string.enter_message))
                 }
             }
         )

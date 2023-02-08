@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
@@ -39,7 +41,7 @@ fun AnnounceCreationScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.fillMaxWidth()) {
-            HeaderText(text = "Создать объявление")
+            HeaderText(text = stringResource(id = R.string.onward))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -56,8 +58,11 @@ fun AnnounceCreationScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                TextValues("Цена:", "₽")
-                TextValues("Количество мест:")
+                TextValues(
+                    stringResource(R.string.price),
+                    stringResource(R.string.currency_rub),
+                )
+                TextValues(stringResource(R.string.places_count))
             }
 
             AdditionalNotes()
@@ -76,7 +81,7 @@ fun AnnounceCreationScreen() {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontFamily = Montserrat,
-                    text = "Опубликовать",
+                    text = stringResource(R.string.publish),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color.White
@@ -121,7 +126,7 @@ fun AdditionalNotes() {
 fun TextValues(text: String, currency: String = "") {
     var value by remember { mutableStateOf("") }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text,fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp))
+        Text(text, fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp))
         BasicTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),

@@ -17,9 +17,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.editTextBackground
@@ -59,7 +61,12 @@ fun FromToComposable() {
             )
         }
 
-        DestinationComponent("A", "Откуда едем?", redCircle, stateA)
+        DestinationComponent(
+            stringResource(R.string.pointA),
+            stringResource(R.string.from),
+            redCircle,
+            stateA
+        )
 
         Divider(
             modifier = Modifier
@@ -67,7 +74,12 @@ fun FromToComposable() {
                 .padding(end = 8.dp), color = Color.Black, thickness = 0.4.dp
         )
 
-        DestinationComponent("B", "Куда едем?", blueCircle, stateB)
+        DestinationComponent(
+            stringResource(R.string.pointB),
+            stringResource(R.string.to),
+            blueCircle,
+            stateB
+        )
     }
 }
 

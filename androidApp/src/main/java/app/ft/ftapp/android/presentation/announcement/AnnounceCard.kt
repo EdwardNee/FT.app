@@ -4,20 +4,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.Card
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.ui.theme.cardBody
 import app.ft.ftapp.android.ui.theme.textGray
+import app.ft.ftapp.R
 
 /**
  * Announcement card composable method to draw.
@@ -47,8 +46,8 @@ fun AnnounceCard() {
                 Text(text = "сегодня в 12:17", color = textGray, fontSize = 14.sp)
             }
 
-            AnnounceParams("Цена за машину", "3")
-            AnnounceParams("Свободных машин", "560 ₽")
+            AnnounceParams(stringResource(id = R.string.car_price), "3")
+            AnnounceParams(stringResource(id = R.string.free_places), "560 ₽")
 
             Row(
                 modifier = Modifier
