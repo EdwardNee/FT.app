@@ -1,2 +1,3 @@
 # FT.app
-Coursework app
+Coursework app  
+Поиск попутчиков для студентов и сотрудников университета
