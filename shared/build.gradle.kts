@@ -28,6 +28,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(libs.kodeinDi)
                 implementation(libs.bundles.ktorClient)
                 api(libs.mokoRes)
 
@@ -40,6 +41,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                implementation(libs.kodeinDi)
                 implementation(libs.mokoResAndroid)
                 implementation(libs.mokoResCompose)
             }

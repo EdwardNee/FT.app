@@ -14,6 +14,8 @@ ktxJsonCore = "1.3.2"
 
 kotlinVersion = "1.7.10"
 
+kodeinVersion = "7.12.0"
+
 mokoResVersion = "0.20.1"
 
 [libraries]
@@ -47,6 +49,9 @@ mokoRes = { module = "dev.icerock.moko:resources", version.ref = "mokoResVersion
 mokoResGenerator = { module = "dev.icerock.moko:resources-generator", version.ref = "mokoResVersion" }
 mokoResAndroid = { module = "dev.icerock.moko:resources-android", version.ref = "mokoResVersion" }
 mokoResCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResVersion" }
+
+# kodein
+kodeinDi = { module = "org.kodein.di:kodein-di", version.ref = "kodeinVersion" }
 
 # plugins
 ktxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
