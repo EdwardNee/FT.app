@@ -16,6 +16,7 @@ fun HeaderText(text: String) {
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(vertical = 24.dp),
-        fontSize = 30.sp
+        fontSize = 28.sp,
+        maxLines = 1
     )
 }

@@ -14,8 +14,8 @@ class AnnouncesViewModel: BaseViewModel() {
 
     val announcesList = getAnnounces().flowOn(Dispatchers.Unconfined)
 
-    fun getAnnounces(): Flow<List<Announce>> = flow {
-        getAnnouncements()?.let { result ->
+    private fun getAnnounces(): Flow<List<Announce>> = flow {
+        getAnnouncements().let { result ->
             when(result) {
                 is ServerResult.SuccessfulResult -> emit(result.model)
                 is ServerResult.UnsuccessfulResult -> TODO()

@@ -11,13 +11,18 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
+import app.ft.ftapp.android.presentation.announcement.AnnounceCard
+import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
+import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
+import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
 import app.ft.ftapp.android.presentation.groupchat.GroupChat
 import app.ft.ftapp.android.ui.theme.MyApplicationTheme
 import app.ft.ftapp.android.ui.theme.appBackground
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
@@ -29,6 +34,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = appBackground//MaterialTheme.colors.background
                 ) {
+                    var isLoading by remember {
+                        mutableStateOf(true)
+                    }
+                    LaunchedEffect(key1 = true) {
+                            delay(1500)
+                            isLoading = !isLoading
+                    }
+
+                    AnnounceScreen()
+
+////                    AnnounceCardShimmer()
+//                    ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {
+//                        AnnounceCard()
+//                    }
+
+
 
 //                    Call Window.setDecorFitsSystemWindows(boolean) with false
 //                    and install an View.OnApplyWindowInsetsListener on your root content view
@@ -37,7 +58,7 @@ class MainActivity : ComponentActivity() {
 //                    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 //                    window.setDecorFitsSystemWindows(false)
 //                    AnnouncementDetails()
-                    GroupChat()
+//                    GroupChat()
 //                    ChatMessageComponent()
 //                    GreetingView(Greeting().greet())
                 }
