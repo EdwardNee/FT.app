@@ -1,6 +1,8 @@
 package app.ft.ftapp.android.presentation.creation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -125,8 +127,9 @@ fun AdditionalNotes() {
 @Composable
 fun TextValues(text: String, currency: String = "") {
     var value by remember { mutableStateOf("") }
+    val interactionSource = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text, fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp))
+        Text(text, fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp).focusable(true, interactionSource))
         BasicTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),

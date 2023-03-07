@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -43,6 +44,7 @@ import app.ft.ftapp.R
 fun GroupChat() {
     val scrollableRemember = rememberCoroutineScope()
     val lazyState = rememberLazyListState()
+
     Scaffold(
         topBar = {
             TopAppBar(backgroundColor = Color.White) {

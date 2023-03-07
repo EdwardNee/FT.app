@@ -3,6 +3,7 @@ package app.ft.ftapp.android.presentation.groupchat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -72,15 +73,17 @@ fun ChatMessageComponent(modifier: Modifier = Modifier, text: String, myMessage:
                 color = namesColor[(namesColor.indices).random()]
             )
             Row {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 8.dp)
-                        .weight(1f, false),
-                    text = text,
-                    fontFamily = Montserrat,
-                    color = Color.White,
-                )
+                SelectionContainer { //TODO
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .padding(bottom = 8.dp)
+                            .weight(1f, false),
+                        text = text,
+                        fontFamily = Montserrat,
+                        color = Color.White,
+                    )
+                }
 
                 Box(
                     modifier = Modifier
