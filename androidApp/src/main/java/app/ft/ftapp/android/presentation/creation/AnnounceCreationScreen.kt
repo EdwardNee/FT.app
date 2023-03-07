@@ -43,7 +43,7 @@ fun AnnounceCreationScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.fillMaxWidth()) {
-            HeaderText(text = stringResource(id = R.string.onward))
+            HeaderText(text = stringResource(id = R.string.create_announce))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

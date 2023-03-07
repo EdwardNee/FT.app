@@ -25,7 +25,7 @@ fun AnnounceScreen() {
             .fillMaxHeight()
             .padding(horizontal = 8.dp)
     ) {
-        HeaderText(text = stringResource(id = R.string.create_announce))
+        HeaderText(text = stringResource(id = R.string.available_announces))
 
         var isLoading by remember {
             mutableStateOf(true)
