@@ -10,4 +10,16 @@ class ServerAnnouncementRepository constructor(private val api: Api): IAnnouncem
     override suspend fun getAvailableAnnouncements(): ServerResult<List<Announce>> {
         return api.getAnnouncements().await<List<Announce>>()
     }
+
+    override suspend fun createAnnounce(announce: Announce) {
+        api.createAnnounce(announce)
+    }
+
+    override suspend fun updateAnnounce(announce: Announce) {
+        api.updateAnnounce(announce)
+    }
+
+    override suspend fun deleteAnnounce(announce: Announce) {
+        api.deleteAnnounce(announce)
+    }
 }
