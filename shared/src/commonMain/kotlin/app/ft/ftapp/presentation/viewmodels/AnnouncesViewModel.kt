@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flowOn
 import org.kodein.di.instance
 
 class AnnouncesViewModel: BaseViewModel() {
-    val getAnnouncements : GetAnnouncementsUseCase by kodein.instance()
+    lateinit var getAnnouncements: GetAnnouncementsUseCase//: GetAnnouncementsUseCase by kodein.instance()
 
     val announcesList = getAnnounces().flowOn(Dispatchers.Unconfined)
 

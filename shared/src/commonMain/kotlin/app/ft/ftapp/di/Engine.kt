@@ -26,12 +26,12 @@ class Engine {
         fullDescriptionOnError = true
 
         importAll(
-            ktorModule,
-            useCaseModule,
-            repositoryModule,
+//            ktorModule,
+//            useCaseModule,
+//            repositoryModule,
             viewModelsModule
         )
-        bindConstant(tag = "base_url") { "//TODO" }
+        bindConstant(tag = "base_url") { "url" }
     }
 
     val ktorModule = DI.Module("ktor_module") {

@@ -11,13 +11,14 @@ android {
     compileSdk = 33
     defaultConfig {
         applicationId = "app.ft.ftapp.android"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
     }
     buildFeatures {
         compose = true
+        dataBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.0"
