@@ -21,20 +21,7 @@ import org.kodein.di.*
  * Dependency injection Engine class.
  */
 class Engine {
-
-    val kodein = DI {
-        fullDescriptionOnError = true
-
-        importAll(
-//            ktorModule,
-//            useCaseModule,
-//            repositoryModule,
-            viewModelsModule
-        )
-        bindConstant(tag = "base_url") { "url" }
-    }
-
-    val ktorModule = DI.Module("ktor_module") {
+    private val ktorModule = DI.Module("ktor_module") {
         bindSingleton {
             HttpClient(CIO) {
                 defaultRequest {
@@ -64,19 +51,31 @@ class Engine {
         bindSingleton { Api(instance()) }
     }
 
-    val repositoryModule = DI.Module("repository_module") {
+    private val repositoryModule = DI.Module("repository_module") {
         bindSingleton<IAnnouncementRepository>("serv_ann_r") { ServerAnnouncementRepository(instance()) }
     }
 
-    val useCaseModule = DI.Module("usecases") {
+    private val useCaseModule = DI.Module("usecases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
     }
 
-    val viewModelsModule = DI.Module("viewmodel") {
+    private val viewModelsModule = DI.Module("viewmodel") {
         bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
 //        bindSingleton<ManualMeasurementViewModel>("man_mess") { ManualMeasurementViewModel() }
 //        bindMultiton("details_pole") { driver:DatabaseDriverFactory -> PoleDetailsViewModel(instance(), driver) }
 //        bindMultiton("wlk_lst") { args: VMArgs -> WalkListViewModel(instance(), args.driverFactory!!, args.fileManager!!) }
+    }
+
+    val kodein = DI {
+        fullDescriptionOnError = true
+
+        importAll(
+            ktorModule,
+            useCaseModule,
+            repositoryModule,
+            viewModelsModule
+        )
+        bindConstant(tag = "base_url") { "url" }
     }
 }
 
