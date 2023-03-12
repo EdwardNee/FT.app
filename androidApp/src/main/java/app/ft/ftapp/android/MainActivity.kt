@@ -19,6 +19,7 @@ import app.ft.ftapp.android.presentation.announcement.AnnounceCard
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
+import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
 import app.ft.ftapp.android.presentation.groupchat.GroupChat
 import app.ft.ftapp.android.ui.theme.MyApplicationTheme
 import app.ft.ftapp.android.ui.theme.appBackground
@@ -34,15 +35,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = appBackground//MaterialTheme.colors.background
                 ) {
-                    var isLoading by remember {
-                        mutableStateOf(true)
-                    }
-                    LaunchedEffect(key1 = true) {
-                            delay(1500)
-                            isLoading = !isLoading
-                    }
-
-                    AnnounceScreen()
+//                    var isLoading by remember {
+//                        mutableStateOf(true)
+//                    }
+//                    LaunchedEffect(key1 = true) {
+//                            delay(1500)
+//                            isLoading = !isLoading
+//                    }
+//
+//                    AnnounceScreen()
+                    AnnounceCreationScreen()
 
 ////                    AnnounceCardShimmer()
 //                    ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {

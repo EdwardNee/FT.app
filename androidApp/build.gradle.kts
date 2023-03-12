@@ -11,13 +11,14 @@ android {
     compileSdk = 33
     defaultConfig {
         applicationId = "app.ft.ftapp.android"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
     }
     buildFeatures {
         compose = true
+        dataBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.0"
@@ -38,6 +39,7 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.bundles.composeLibs)
     implementation(libs.bundles.coroutines)
+    implementation(libs.kodeinDi)
 //    implementation("androidx.compose.ui:ui:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")

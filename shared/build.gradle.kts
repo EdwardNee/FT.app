@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     id("kotlin-parcelize")
     id("dev.icerock.mobile.multiplatform-resources")
+//    id("dev.icerock.moko.kswift")
 }
 
 kotlin {
@@ -22,6 +23,8 @@ kotlin {
             baseName = "MultiPlatformLibrary"
             isStatic = false
             export(libs.mokoRes)
+            export(libs.mokoMvvmCore)
+            export(libs.mokoMvvmFlow)
         }
     }
     
@@ -31,6 +34,7 @@ kotlin {
                 implementation(libs.kodeinDi)
                 implementation(libs.bundles.ktorClient)
                 api(libs.mokoRes)
+                api(libs.bundles.mokoMvvmCommon)
 
             }
         }
@@ -44,6 +48,7 @@ kotlin {
                 implementation(libs.kodeinDi)
                 implementation(libs.mokoResAndroid)
                 implementation(libs.mokoResCompose)
+                api(libs.bundles.mokoMvvmAndroidApi)
             }
         }
         val androidTest by getting
@@ -69,11 +74,15 @@ kotlin {
 }
 
 android {
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.3.1"
+    }
+
     sourceSets["main"].res.srcDir(File(buildDir, "generated/moko/androidMain/res"))
     namespace = "app.ft.ftapp"
     compileSdk = 33
     defaultConfig {
-        minSdk = 26
+        minSdk = 29
         targetSdk = 33
     }
 }

@@ -17,6 +17,7 @@ kotlinVersion = "1.7.10"
 kodeinVersion = "7.12.0"
 
 mokoResVersion = "0.20.1"
+mokoMvvmVersion = "0.14.0"
 
 [libraries]
 # ktor
@@ -50,6 +51,17 @@ mokoResGenerator = { module = "dev.icerock.moko:resources-generator", version.re
 mokoResAndroid = { module = "dev.icerock.moko:resources-android", version.ref = "mokoResVersion" }
 mokoResCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResVersion" }
 
+#moko mvvm
+mokoLivedataGlide = { module = "dev.icerock.moko:mvvm-livedata-glide", version.ref = "mokoMvvmVersion" }
+mokoLivedataMaterial = { module = "dev.icerock.moko:mvvm-livedata-material", version.ref = "mokoMvvmVersion" }
+mokoFlowCompose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mokoMvvmVersion" }
+mokoLivedataCompose = { module = "dev.icerock.moko:mvvm-livedata-compose", version.ref = "mokoMvvmVersion" }
+mokoMvvmLivedata = { module = "dev.icerock.moko:mvvm-livedata", version.ref = "mokoMvvmVersion" }
+mokoLivedataResources = { module = "dev.icerock.moko:mvvm-livedata-resources", version.ref = "mokoMvvmVersion" }
+mokoMvvmCore = { module = "dev.icerock.moko:mvvm-core", version.ref = "mokoMvvmVersion" }
+mokoMvvmFlow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "mokoMvvmVersion" }
+
+
 # kodein
 kodeinDi = { module = "org.kodein.di:kodein-di", version.ref = "kodeinVersion" }
 
@@ -64,6 +76,22 @@ mokoResources = [
     "mokoResAndroid",
     "mokoResCompose"
 ]
+
+mokoMvvmAndroidApi = [
+    "mokoLivedataGlide",
+    "mokoLivedataMaterial",
+    "mokoFlowCompose",
+    "mokoLivedataCompose"
+]
+
+mokoMvvmCommon = [
+    "mokoMvvmLivedata",
+    "mokoLivedataResources",
+    "mokoMvvmCore",
+    "mokoMvvmFlow"
+]
+
+
 
 ktorClient = [
     "ktorClient",

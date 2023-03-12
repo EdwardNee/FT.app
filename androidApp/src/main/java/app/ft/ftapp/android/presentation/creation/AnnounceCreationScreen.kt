@@ -28,6 +28,8 @@ import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
+import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Composable method to draw announcement creation screen.
@@ -35,6 +37,9 @@ import app.ft.ftapp.android.ui.theme.editTextBackground
 @Composable
 @Preview
 fun AnnounceCreationScreen() {
+    val viewModel = CreationViewModel()
+//    val progress by viewModel.isShowProgress.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -67,6 +72,11 @@ fun AnnounceCreationScreen() {
                 TextValues(stringResource(R.string.places_count))
             }
 
+
+//            if (progress) {
+//                Text(text = "IN PROGRESS")
+//            }
+
             AdditionalNotes()
         }
 
@@ -77,7 +87,7 @@ fun AnnounceCreationScreen() {
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(6.dp))
                     .padding(bottom = 50.dp),
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.createAnnounce() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = buttonColors)
             ) {
                 Text(
@@ -129,7 +139,9 @@ fun TextValues(text: String, currency: String = "") {
     var value by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text, fontFamily = Montserrat, modifier = Modifier.padding(end = 4.dp).focusable(true, interactionSource))
+        Text(text, fontFamily = Montserrat, modifier = Modifier
+            .padding(end = 4.dp)
+            .focusable(true, interactionSource))
         BasicTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),

@@ -1,3 +1,8 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.NoActionBar"/>
+    <style name="defaultFilledStyle">
+        <item name="filledColor">#FFFFFF</item>
+        <item name="emptyColor">#4CAF50</item>
+        <item name="gridColor">#000000</item>
+    </style>
 </resources>
