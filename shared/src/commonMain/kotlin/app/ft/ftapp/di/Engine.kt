@@ -6,6 +6,7 @@ import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
+import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.utils.KMMContext
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -61,6 +62,7 @@ class Engine {
 
     private val viewModelsModule = DI.Module("viewmodel") {
         bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
+        bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
 //        bindSingleton<ManualMeasurementViewModel>("man_mess") { ManualMeasurementViewModel() }
 //        bindMultiton("details_pole") { driver:DatabaseDriverFactory -> PoleDetailsViewModel(instance(), driver) }
 //        bindMultiton("wlk_lst") { args: VMArgs -> WalkListViewModel(instance(), args.driverFactory!!, args.fileManager!!) }

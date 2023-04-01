@@ -25,11 +25,11 @@ import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
+import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Composable method to draw announcement creation screen.
@@ -37,8 +37,8 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 @Preview
 fun AnnounceCreationScreen() {
-    val viewModel = CreationViewModel()
-//    val progress by viewModel.isShowProgress.collectAsState()
+    val viewModel = setupViewModel<CreationViewModel>()
+    val progress by viewModel.isShowProgress.collectAsState()
 
     Column(
         modifier = Modifier
@@ -72,10 +72,11 @@ fun AnnounceCreationScreen() {
                 TextValues(stringResource(R.string.places_count))
             }
 
+            Text(text = progress.toString())
 
-//            if (progress) {
-//                Text(text = "IN PROGRESS")
-//            }
+            if (progress) {
+                Text(text = "IN PROGRESS")
+            }
 
             AdditionalNotes()
         }

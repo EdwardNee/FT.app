@@ -10,6 +10,8 @@ val appBackground = Color(0xFFF3F3F3)
 
 val infoBottomBackground = Color(0xFFF1EBEB)
 
+val bottomNavColor = Color(0xFFFF6767)
+
 val placeholderColor = Color(0xFF5F5F5F)
 
 val editTextBackground = Color(0xFFDADADA)

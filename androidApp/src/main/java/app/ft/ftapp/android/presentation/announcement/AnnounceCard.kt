@@ -22,8 +22,7 @@ import app.ft.ftapp.R
  * Announcement card composable method to draw.
  */
 @Composable
-@Preview
-fun AnnounceCard() {
+fun AnnounceCard(onClick: () -> Unit) {
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(15.dp),
@@ -60,8 +59,10 @@ fun AnnounceCard() {
                     Modifier
                         .weight(1f)
                         .padding(end = 8.dp)
-                )
-                AnnounceButton(Modifier.weight(1f))
+                ) {
+                    onClick()
+                }
+                AnnounceButton(Modifier.weight(1f)) {}
             }
         }
     }
@@ -83,9 +84,9 @@ fun AnnounceParams(text: String, paramValue: String) {
  * Button to process announcement card.
  */
 @Composable
-fun AnnounceButton(modifier: Modifier = Modifier) {
+fun AnnounceButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
-        onClick = { /*TODO*/ }, modifier = Modifier
+        onClick = { onClick() }, modifier = Modifier
             .clip(
                 RoundedCornerShape(
                     bottomEnd = 10.dp,

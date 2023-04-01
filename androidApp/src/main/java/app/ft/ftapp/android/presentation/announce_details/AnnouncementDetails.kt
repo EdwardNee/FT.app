@@ -18,18 +18,20 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.R
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.ui.theme.redCircle
-import app.ft.ftapp.R
 
 /**
  * Composable method draws announcements details of the created announce.
  */
 @Composable
+@Preview
 fun AnnouncementDetails() {
     Column(
         modifier = Modifier

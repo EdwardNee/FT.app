@@ -22,6 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
+import app.ft.ftapp.android.ui.navigation.AppDestination
+import app.ft.ftapp.android.utils.SingletonHelper
 
 /**
  * Composable method to show authentication screen.
@@ -71,7 +73,7 @@ fun AuthScreen() {
                 )
             )
 
-            LogInButton {}
+            LogInButton { SingletonHelper.appNavigator.tryNavigateTo(AppDestination.ListAnnounces()) }
         }
     }
 }

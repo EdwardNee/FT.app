@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
@@ -17,8 +16,7 @@ import kotlinx.coroutines.delay
  * Composable method to show all the created announcements.
  */
 @Composable
-@Preview
-fun AnnounceScreen() {
+fun AnnounceScreen(onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,7 +36,7 @@ fun AnnounceScreen() {
             items(5) {
                 Box(modifier = Modifier.padding(bottom = if (isLoading) 15.dp else 30.dp)) {
                     ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {
-                        AnnounceCard()
+                        AnnounceCard(onClick)
                     }
 //                    AnnounceCard()
                 }

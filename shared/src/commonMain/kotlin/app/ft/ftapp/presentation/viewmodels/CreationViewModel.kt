@@ -5,8 +5,8 @@ import kotlinx.coroutines.launch
 
 class CreationViewModel : BaseViewModel() {
     fun createAnnounce() {
+        showProgress()
         viewModelScope.launch {
-            showProgress()
             delay(8000L)
             hideProgress()
         }
