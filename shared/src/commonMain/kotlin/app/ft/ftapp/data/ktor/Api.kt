@@ -4,6 +4,7 @@ import app.ft.ftapp.domain.models.Announce
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 class Api(private val client: HttpClient) {
     suspend fun getAnnouncements(): HttpResponse {
@@ -13,6 +14,10 @@ class Api(private val client: HttpClient) {
     suspend fun createAnnounce(announce: Announce) {
         client.post("/create") {
             setBody(announce)
+
+            headers {
+                append(HttpHeaders.Accept, "application/json")
+            }
         }
     }
     suspend fun updateAnnounce(announce: Announce) {
