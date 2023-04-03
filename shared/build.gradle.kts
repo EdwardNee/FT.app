@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    kotlin("plugin.serialization")
     id("com.android.library")
     id("kotlin-parcelize")
     id("dev.icerock.mobile.multiplatform-resources")
