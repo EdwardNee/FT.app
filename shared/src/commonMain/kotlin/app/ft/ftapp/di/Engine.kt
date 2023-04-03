@@ -1,9 +1,13 @@
 package app.ft.ftapp.di
 
 import app.ft.ftapp.data.ktor.Api
+import app.ft.ftapp.data.ktor.TaxiApi
 import app.ft.ftapp.data.repository.IAnnouncementRepository
+import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
+import app.ft.ftapp.domain.repository.TaxiRepository
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
@@ -23,7 +27,7 @@ import org.kodein.di.*
  */
 class Engine {
     private val ktorModule = DI.Module("ktor_module") {
-        bindSingleton {
+        bindSingleton("server_bind") {
             HttpClient(CIO) {
                 defaultRequest {
                     host = instance<String>("base_url").replace("http://", "")
@@ -48,16 +52,40 @@ class Engine {
                 }
             }
         }
+        bindSingleton("taxi_bind") {
+            HttpClient(CIO) {
+                defaultRequest {
+                    host = instance<String>("taxi_url")
+                }
+
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.BODY
+                }
+
+                install(ContentNegotiation) {
+                    json(Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        explicitNulls = true
+                        encodeDefaults = true
+                    })
+                }
+            }
+        }
 
         bindSingleton { Api(instance()) }
+        bindSingleton { TaxiApi(instance("taxi_bind")) }
     }
 
     private val repositoryModule = DI.Module("repository_module") {
         bindSingleton<IAnnouncementRepository>("serv_ann_r") { ServerAnnouncementRepository(instance()) }
+        bindSingleton<ITaxiRepository>("taxi_ya_r") { TaxiRepository(instance()) }
     }
 
     private val useCaseModule = DI.Module("usecases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
     }
 
     private val viewModelsModule = DI.Module("viewmodel") {
@@ -78,6 +106,7 @@ class Engine {
             viewModelsModule
         )
         bindConstant(tag = "base_url") { "url" }
+        bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
     }
 }
 
