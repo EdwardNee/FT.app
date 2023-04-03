@@ -29,6 +29,7 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
+import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 
 /**
@@ -39,6 +40,10 @@ import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 fun AnnounceCreationScreen() {
     val viewModel = setupViewModel<CreationViewModel>()
     val progress by viewModel.isShowProgress.collectAsState()
+
+    val source by viewModel.sourceDestination.collectAsState()
+    val end by viewModel.endDestination.collectAsState()
+    val countOfParticipants by viewModel.countOfParticipants.collectAsState()
 
     Column(
         modifier = Modifier
@@ -54,7 +59,7 @@ fun AnnounceCreationScreen() {
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
             ) {
-                FromToComposable()
+                FromToComposable(source, end, viewModel)
             }
 
             Row(
@@ -66,10 +71,13 @@ fun AnnounceCreationScreen() {
             ) {
 
                 TextValues(
+                    countOfParticipants,
                     stringResource(R.string.price),
                     stringResource(R.string.currency_rub),
-                )
-                TextValues(stringResource(R.string.places_count))
+                ) {
+                    viewModel.onEvent(CreationEvent.FieldEdit.ParticipantsCountEdit(it))
+                }
+                TextValues(5, stringResource(R.string.places_count)) {}
             }
 
             Text(text = progress.toString())
@@ -88,7 +96,7 @@ fun AnnounceCreationScreen() {
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(6.dp))
                     .padding(bottom = 50.dp),
-                onClick = { viewModel.createAnnounce() },
+                onClick = { viewModel.onEvent(CreationEvent.Action.OnPublish) },
                 colors = ButtonDefaults.buttonColors(backgroundColor = buttonColors)
             ) {
                 Text(
@@ -136,8 +144,8 @@ fun AdditionalNotes() {
  * Text values parameters composable.
  */
 @Composable
-fun TextValues(text: String, currency: String = "") {
-    var value by remember { mutableStateOf("") }
+fun TextValues(numeric: Int, text: String, currency: String = "", onEventCall: (Int) -> Unit) {
+//    var value by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text, fontFamily = Montserrat, modifier = Modifier
@@ -146,9 +154,9 @@ fun TextValues(text: String, currency: String = "") {
         BasicTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
-            value = value,
+            value = numeric.toString(),
             singleLine = true,
-            onValueChange = { value = it },
+            onValueChange = { onEventCall(it.toInt()) },
             modifier = Modifier
                 .width(80.dp)
                 .clip(RoundedCornerShape(6.dp))

@@ -26,19 +26,21 @@ import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.android.ui.theme.redCircle
+import app.ft.ftapp.presentation.viewmodels.CreationEvent
+import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 
 /**
  * Composable component to show from to UI.
  */
 @Composable
-fun FromToComposable() {
+fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) {
     val animVal = remember { androidx.compose.animation.core.Animatable(1f) }
-    val stateA = remember { mutableStateOf("") }
-    val stateB = remember { mutableStateOf("") }
+//    val stateA = remember { mutableStateOf("") }
+//    val stateB = remember { mutableStateOf("") }
 
-    LaunchedEffect(stateA.value.isNotEmpty() && stateB.value.isNotEmpty()) {
+    LaunchedEffect(source.isNotEmpty() && end.isNotEmpty()) {
         animVal.animateTo(
-            targetValue = if (stateA.value.isNotEmpty() && stateB.value.isNotEmpty()) 5.36f else 1f,
+            targetValue = if (source.isNotEmpty() && end.isNotEmpty()) 5.36f else 1f,
             animationSpec = tween(durationMillis = 400, easing = LinearEasing)
         )
     }
@@ -65,8 +67,10 @@ fun FromToComposable() {
             stringResource(R.string.pointA),
             stringResource(R.string.from),
             redCircle,
-            stateA
-        )
+            source
+        ) {
+            viewModel.onEvent(CreationEvent.FieldEdit.SourceEdit(it))
+        }
 
         Divider(
             modifier = Modifier
@@ -78,8 +82,10 @@ fun FromToComposable() {
             stringResource(R.string.pointB),
             stringResource(R.string.to),
             blueCircle,
-            stateB
-        )
+            end
+        ) {
+            viewModel.onEvent(CreationEvent.FieldEdit.EndEdit(it))
+        }
     }
 }
 
@@ -91,17 +97,19 @@ fun DestinationComponent(
     liter: String,
     helpText: String,
     color: Color,
-    stateVal: MutableState<String>
+    destination: String,
+    onEventCall: (String) -> Unit
+//    stateVal: MutableState<String>
 ) {
 //    var state by remember { mutableStateOf("") }
-    val setColor = if (stateVal.value.isEmpty()) Color.White else color
+    val setColor = if (destination.isEmpty()) Color.White else color
 
     val colorState = remember { Animatable(Color.White) }
 
     // animate to green/red based on "button click"
-    LaunchedEffect(stateVal.value.isNotEmpty()) {
+    LaunchedEffect(destination.isNotEmpty()) {
         colorState.animateTo(
-            if (stateVal.value.isNotEmpty()) color else Color.White,
+            if (destination.isNotEmpty()) color else Color.White,
             animationSpec = tween(400)
         )
     }
@@ -117,9 +125,9 @@ fun DestinationComponent(
                 .fillMaxWidth()
                 .padding(start = 40.dp)
                 .padding(vertical = 16.dp),
-            value = stateVal.value, onValueChange = { stateVal.value = it }
+            value = destination, onValueChange = { /*stateVal.value = it*/ onEventCall(it) }
         ) {
-            if (stateVal.value.trim().isEmpty()) {
+            if (destination.trim().isEmpty()) {
                 PlaceHolderText(helpText)
             }
             it()

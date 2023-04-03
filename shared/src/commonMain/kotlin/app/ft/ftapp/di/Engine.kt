@@ -6,6 +6,7 @@ import app.ft.ftapp.data.repository.IAnnouncementRepository
 import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
 import app.ft.ftapp.domain.repository.TaxiRepository
+import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
@@ -38,8 +39,13 @@ class Engine {
                 }
 
                 install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.BODY
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            println("Http Server: $message")
+                        }
+
+                    }
+                    level = LogLevel.ALL
                 }
 
                 install(ContentNegotiation) {
@@ -59,8 +65,13 @@ class Engine {
                 }
 
                 install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.BODY
+                    logger = object : Logger {
+                        override fun log(message: String) {
+                            println("HTTP Taxi API: $message")
+                        }
+
+                    }
+                    level = LogLevel.ALL
                 }
 
                 install(ContentNegotiation) {
@@ -85,15 +96,13 @@ class Engine {
 
     private val useCaseModule = DI.Module("usecases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
     }
 
     private val viewModelsModule = DI.Module("viewmodel") {
         bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
         bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
-//        bindSingleton<ManualMeasurementViewModel>("man_mess") { ManualMeasurementViewModel() }
-//        bindMultiton("details_pole") { driver:DatabaseDriverFactory -> PoleDetailsViewModel(instance(), driver) }
-//        bindMultiton("wlk_lst") { args: VMArgs -> WalkListViewModel(instance(), args.driverFactory!!, args.fileManager!!) }
     }
 
     val kodein = DI {
@@ -105,7 +114,7 @@ class Engine {
             repositoryModule,
             viewModelsModule
         )
-        bindConstant(tag = "base_url") { "url" }
+        bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com/" }
         bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
     }
 }
