@@ -31,10 +31,9 @@ class Engine {
         bindSingleton("server_bind") {
             HttpClient(CIO) {
                 defaultRequest {
-                    host = instance<String>("base_url").replace("http://", "")
+                    host = instance<String>("base_url").replace("https://", "")
                     url {
-                        protocol = URLProtocol.HTTP
-                        port = 89
+                        protocol = URLProtocol.HTTPS
                     }
                 }
 
@@ -85,7 +84,7 @@ class Engine {
             }
         }
 
-        bindSingleton { Api(instance()) }
+        bindSingleton { Api(instance("server_bind")) }
         bindSingleton { TaxiApi(instance("taxi_bind")) }
     }
 
@@ -114,7 +113,7 @@ class Engine {
             repositoryModule,
             viewModelsModule
         )
-        bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com/" }
+        bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com" }
         bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
     }
 }

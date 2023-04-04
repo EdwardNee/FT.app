@@ -8,6 +8,8 @@ val cardBody = Color.White
 val textGray = Color(0xFF9B9B9B)
 val appBackground = Color(0xFFF3F3F3)
 
+val greenColor = Color(0xFF489973)
+
 val infoBottomBackground = Color(0xFFF1EBEB)
 
 val bottomNavColor = Color(0xFFFF6767)

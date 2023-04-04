@@ -8,11 +8,12 @@ import io.ktor.http.*
 
 class Api(private val client: HttpClient) {
     suspend fun getAnnouncements(): HttpResponse {
-        return client.get("")
+        return client.get("/api/travel/getAllTravels")
     }
 
-    suspend fun createAnnounce(announce: Announce) {
-        client.post("/create") {
+    suspend fun createAnnounce(announce: Announce): HttpResponse {
+        return client.post("/api/travel/createTravel") {
+            contentType(ContentType.Application.Json)
             setBody(announce)
 
             headers {
@@ -21,13 +22,13 @@ class Api(private val client: HttpClient) {
         }
     }
     suspend fun updateAnnounce(announce: Announce) {
-        client.post("/update") {
+        client.post("/api/travel/updateTravel") {
             setBody(announce)
         }
     }
 
     suspend fun deleteAnnounce(announce: Announce) {
-        client.post("/delete") {
+        client.post("/api/travel/deleteTravel") {
             setBody(announce)
         }
     }

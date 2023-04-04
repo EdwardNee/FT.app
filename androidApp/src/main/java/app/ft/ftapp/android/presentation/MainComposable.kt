@@ -25,6 +25,7 @@ import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.auth.AuthScreen
 import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
+import app.ft.ftapp.android.presentation.creation.SuccessView
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.ui.ScreenValues
@@ -114,6 +115,7 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
             BackHandler(true) {} //при выходе из профиля отключаю кнопку назад
             AuthScreen()
         }
+
         composable(destination = AppDestination.ListAnnounces) {
 //            AnnounceScreen()
             BottomSheetApp(
@@ -121,10 +123,16 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
                 sheetContent = { AnnouncementDetails() },
             )
         }
+
         composable(destination = AppDestination.Announce) {}
+
         composable(destination = AppDestination.Creation) {
-            AnnounceCreationScreen()
+            BottomSheetApp(
+                pageContent = { AnnounceCreationScreen(it) },
+                sheetContent = { SuccessView() }
+            )
         }
+
         composable(destination = AppDestination.Chatting) {}
     }
 }

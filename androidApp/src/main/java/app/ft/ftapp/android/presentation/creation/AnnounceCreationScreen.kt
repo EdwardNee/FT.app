@@ -1,5 +1,6 @@
 package app.ft.ftapp.android.presentation.creation
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
@@ -31,19 +32,36 @@ import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 
 /**
  * Composable method to draw announcement creation screen.
  */
 @Composable
-@Preview
-fun AnnounceCreationScreen() {
+fun AnnounceCreationScreen(onAction: () -> Unit) {
     val viewModel = setupViewModel<CreationViewModel>()
     val progress by viewModel.isShowProgress.collectAsState()
+
+    val loadResult by viewModel.loadResult.collectAsState()
 
     val source by viewModel.sourceDestination.collectAsState()
     val end by viewModel.endDestination.collectAsState()
     val countOfParticipants by viewModel.countOfParticipants.collectAsState()
+
+
+    when (loadResult) {
+        ModelsState.Loading -> {}
+        is ModelsState.Error -> {
+            Toast.makeText(
+                LocalContext.current,
+                (loadResult as ModelsState.Error).message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        ModelsState.Success -> {
+            onAction()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -77,7 +95,7 @@ fun AnnounceCreationScreen() {
                 ) {
                     viewModel.onEvent(CreationEvent.FieldEdit.ParticipantsCountEdit(it))
                 }
-                TextValues(5, stringResource(R.string.places_count)) {}
+                TextValues(3, stringResource(R.string.places_count)) {}
             }
 
             Text(text = progress.toString())
@@ -148,9 +166,11 @@ fun TextValues(numeric: Int, text: String, currency: String = "", onEventCall: (
 //    var value by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text, fontFamily = Montserrat, modifier = Modifier
-            .padding(end = 4.dp)
-            .focusable(true, interactionSource))
+        Text(
+            text, fontFamily = Montserrat, modifier = Modifier
+                .padding(end = 4.dp)
+                .focusable(true, interactionSource)
+        )
         BasicTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),

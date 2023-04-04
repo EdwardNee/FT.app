@@ -10,6 +10,6 @@ internal suspend inline fun <reified T : Any> HttpResponse.await(): ServerResult
         val headers = headers
         ServerResult.SuccessfulResult(body, headers)
     } else {
-        ServerResult.UnsuccessfulResult("") //TODO ResponseToString.getErrorString(this)
+        ServerResult.UnsuccessfulResult(ResponseToString.getErrorString(this))
     }
 }

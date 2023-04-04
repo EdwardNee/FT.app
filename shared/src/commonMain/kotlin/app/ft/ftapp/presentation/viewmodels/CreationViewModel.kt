@@ -2,13 +2,16 @@ package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.Participant
+import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 
+/**
+ * [BaseViewModel] inherited. ViewModel for creating announcements screen.
+ */
 class CreationViewModel : BaseViewModel() {
     //region di
     private val createAnnounce: CreateAnnouncementUseCase by kodein.instance()
@@ -22,6 +25,12 @@ class CreationViewModel : BaseViewModel() {
     //   val price = MutableStateFlow<Double>(0.0).cMutableStateFlow()
     val participants = MutableStateFlow<List<Participant>>(emptyList()).cMutableStateFlow()
     val countOfParticipants = MutableStateFlow<Int>(0).cMutableStateFlow()
+
+    private val _loadResult = MutableStateFlow<ModelsState>(ModelsState.Loading)
+    val loadResult: MutableStateFlow<ModelsState>
+        get() = _loadResult
+
+    val createdAnnounce = MutableStateFlow<Announce?>(null)
 
     fun onEvent(event: CreationEvent) {
         when (event) {
@@ -44,27 +53,48 @@ class CreationViewModel : BaseViewModel() {
                     participants = emptyList(),
                     countOfParticipants = countOfParticipants.value
                 )
-                createAnnounce(announce = announce)
+                createAnnounceCall(announce = announce)
             }
         }
     }
 
-    private fun createAnnounce(announce: Announce) {
+    /**
+     * Method that processes request for creating announcement on the server.
+     */
+    private fun createAnnounceCall(announce: Announce) {
         showProgress()
+
         viewModelScope.launch {
-            println("TAG_CREATED $announce")
-            delay(8000L)
-            createAnnounce(announce)
+            val result = createAnnounce(announce)
+            when (result) {
+                is ServerResult.SuccessfulResult -> {
+                    createdAnnounce.value = result.model
+                    _loadResult.value = ModelsState.Success
+                }
+
+                is ServerResult.UnsuccessfulResult -> {
+                    _loadResult.value = ModelsState.Error(result.error)
+                }
+            }
             hideProgress()
         }
     }
 }
 
+/**
+ * Actions event on the creation screen.
+ */
 sealed class CreationEvent {
+    /**
+     * Some call actions.
+     */
     sealed class Action : CreationEvent() {
         object OnPublish : Action()
     }
 
+    /**
+     * Values in edittext changed.
+     */
     sealed class FieldEdit : CreationEvent() {
         data class SourceEdit(val source: String) : FieldEdit()
         data class EndEdit(val end: String) : FieldEdit()
