@@ -1,12 +1,14 @@
 package app.ft.ftapp.android.presentation.creation
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +44,7 @@ import app.ft.ftapp.presentation.viewmodels.ModelsState
 /**
  * Composable method to draw announcement creation screen.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AnnounceCreationScreen(onAction: () -> Unit) {
     val viewModel = setupViewModel<CreationViewModel>()
@@ -52,6 +56,9 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val end by viewModel.endDestination.collectAsState()
     val countOfParticipants by viewModel.countOfParticipants.collectAsState()
 
+    var coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val bringIntoViewRequester = BringIntoViewRequester()
 
     when (loadResult) {
         ModelsState.Loading -> {}
@@ -98,7 +105,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                     if (searchState != FocusPosition.None) {
                         Box(
                             Modifier
-                                .height(300.dp)
+                                .height(210.dp)
                                 .padding(top = 3.dp),
                             contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
                         ) {

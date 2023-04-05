@@ -24,6 +24,8 @@ import app.ft.ftapp.android.BottomSheetApp
 import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.auth.AuthScreen
+import app.ft.ftapp.android.presentation.common.Keyboard
+import app.ft.ftapp.android.presentation.common.keyboardAsState
 import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
 import app.ft.ftapp.android.presentation.creation.SuccessView
 import app.ft.ftapp.android.presentation.models.BottomNavItems
@@ -76,29 +78,35 @@ fun BottomNavs() {
         BottomNavItems(Icons.Filled.Search, ScreenValues.ANNOUNCE_DETAIL),
     )
 
+    val isKeyboardOpen by keyboardAsState()
+
     val backStackEntry by SingletonHelper.appNavigator.navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    BottomNavigation(backgroundColor = Color.White) {
-        items.forEach { item ->
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        item.imageVector,
-                        item.description,
-                        modifier = Modifier.size(30.dp)
-                    )
-                },
-                selectedContentColor = bottomNavColor,
-                unselectedContentColor = Color.Black.copy(0.4f),
-                alwaysShowLabel = true,
-                selected = currentRoute == item.description,
-                interactionSource = NoRippleInteractionSource(),
-                onClick = {
-                    SingletonHelper.appNavigator.tryNavigateTo(item.description)
-                }
-            )
+
+    if (isKeyboardOpen == Keyboard.Closed) {
+        BottomNavigation(backgroundColor = Color.White) {
+            items.forEach { item ->
+                BottomNavigationItem(
+                    icon = {
+                        Icon(
+                            item.imageVector,
+                            item.description,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    selectedContentColor = bottomNavColor,
+                    unselectedContentColor = Color.Black.copy(0.4f),
+                    alwaysShowLabel = true,
+                    selected = currentRoute == item.description,
+                    interactionSource = NoRippleInteractionSource(),
+                    onClick = {
+                        SingletonHelper.appNavigator.tryNavigateTo(item.description)
+                    }
+                )
+            }
         }
     }
+
 }
 
 /**
