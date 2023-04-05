@@ -1,11 +1,12 @@
 package app.ft.ftapp.presentation.viewmodels
 
-import app.ft.ftapp.domain.models.Announce
-import app.ft.ftapp.domain.models.Participant
-import app.ft.ftapp.domain.models.ServerResult
+import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
+import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
+import clid
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
-import kotlinx.coroutines.flow.MutableStateFlow
+import key_yandex
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 
@@ -15,12 +16,69 @@ import org.kodein.di.instance
 class CreationViewModel : BaseViewModel() {
     //region di
     private val createAnnounce: CreateAnnouncementUseCase by kodein.instance()
+    private val getTripInfo: GetTripInfoUseCase by kodein.instance()
     //endregion
+
+    //Searching
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
+    private val _locations = MutableStateFlow(
+        listOf(
+            AddressesItems(
+                name = "Дубки 1 корпус",
+                address = "ул. Дениса Давыдова, 1",
+                latLng = LatLng(55.660409, 37.228898)
+            ),
+            AddressesItems(
+                name = "Дубки 2 корпус",
+                address = "ул. Дениса Давыдова, 3",
+                latLng = LatLng(55.659668, 37.228386)
+            ),
+            AddressesItems(
+                name = "Дубки 3 корпус",
+                address = "ул. Дениса Давыдова, 9",
+                latLng = LatLng(55.659622, 37.226078)
+            ),
+            AddressesItems(
+                name = "Станция Одинцово",
+                address = "Привокзальная площадь, 1",
+                latLng = LatLng(55.672264, 37.281410)
+            ),
+        )
+    )
 
     val author = MutableStateFlow<String>("").cMutableStateFlow()
     val email = MutableStateFlow<String>("").cMutableStateFlow()
+    private var route = Pair(LatLng(0.0, 0.0), LatLng(0.0, 0.0))
     val sourceDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val endDestination = MutableStateFlow<String>("").cMutableStateFlow()
+
+
+    val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
+
+    val triple = combine(
+        _locations,
+        sourceDestination,
+        endDestination,
+        editTextTap
+    ) { loc, start, end, sTap ->
+        if (start.isBlank() && end.isBlank() && sTap !is FocusPosition.None) {
+            loc
+        } else {
+            loc.filter {
+                val whatToContain = when (sTap) {
+                    is FocusPosition.SourceField -> start
+                    is FocusPosition.EndField -> end
+                    is FocusPosition.None -> NON_EXISTING_WORD
+                }.trim().lowercase()
+                it.name.lowercase().contains(whatToContain) or it.address.lowercase()
+                    .contains(whatToContain)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     //   val price = MutableStateFlow<Double>(0.0).cMutableStateFlow()
     val participants = MutableStateFlow<List<Participant>>(emptyList()).cMutableStateFlow()
@@ -55,6 +113,36 @@ class CreationViewModel : BaseViewModel() {
                 )
                 createAnnounceCall(announce = announce)
             }
+
+            is CreationEvent.Action.OnAddressClicked -> {
+                fillByClickedAddress(event.address, event.coordinates)
+            }
+        }
+    }
+
+    /**
+     * Fills the edit text values by clicked addresses tabs.
+     */
+    private fun fillByClickedAddress(address: String, coordinates: LatLng) {
+        when (editTextTap.value) {
+            is FocusPosition.SourceField -> {
+                sourceDestination.value = address
+                route = route.copy(first = coordinates)
+            }
+
+            is FocusPosition.EndField -> {
+                endDestination.value = address
+                route = route.copy(second = coordinates)
+            }
+
+            is FocusPosition.None -> {
+
+            }
+        }
+        editTextTap.value = FocusPosition.None
+
+        if (route.first.lat != 0.0 && route.second.lat != 0.0) {
+//            getTripInfoCall(route)
         }
     }
 
@@ -79,6 +167,33 @@ class CreationViewModel : BaseViewModel() {
             hideProgress()
         }
     }
+
+    private fun getTripInfoCall(coords: Pair<LatLng, LatLng>) {
+        val params = TaxiParams(
+            clid = clid,
+            apikey = key_yandex,
+            rll = "${coords.first.lon},${coords.first.lat}~${coords.second.lon},${coords.second.lat}",
+            clss = "econom",
+            lang = "ru"
+        )
+
+        viewModelScope.launch {
+            val result = getTripInfo(params)
+            when (result) {
+                is ServerResult.SuccessfulResult -> {
+                    println("Succ ${result.model}")
+                }
+                is ServerResult.UnsuccessfulResult -> {
+                    println("Unsuc ${result.error}")
+                }
+            }
+        }
+
+    }
+
+    companion object {
+        private const val NON_EXISTING_WORD = "NON_EXISTING_WORD"
+    }
 }
 
 /**
@@ -90,6 +205,7 @@ sealed class CreationEvent {
      */
     sealed class Action : CreationEvent() {
         object OnPublish : Action()
+        class OnAddressClicked(val address: String, val coordinates: LatLng) : Action()
     }
 
     /**
@@ -100,5 +216,10 @@ sealed class CreationEvent {
         data class EndEdit(val end: String) : FieldEdit()
         data class ParticipantsCountEdit(val count: Int) : FieldEdit()
     }
+}
 
+sealed class FocusPosition {
+    object SourceField : FocusPosition()
+    object EndField : FocusPosition()
+    object None : FocusPosition()
 }

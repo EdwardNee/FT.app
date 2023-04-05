@@ -7,10 +7,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class TaxiResponse(
+    val options: List<TaxiOptions>,
     val currency: String,
     val distance: Double,
-    val options: TaxiOptions,
-    val price: Double,
     val time: Double,
     val time_text: String
-)
+) {
+    override fun toString(): String {
+        return "$currency, $distance, $options, $time, $time_text"
+    }
+}

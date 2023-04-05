@@ -60,7 +60,10 @@ class Engine {
         bindSingleton("taxi_bind") {
             HttpClient(CIO) {
                 defaultRequest {
-                    host = instance<String>("taxi_url")
+                    host = instance<String>("taxi_url").replace("https://", "")
+                    url {
+                        protocol = URLProtocol.HTTPS
+                    }//
                 }
 
                 install(Logging) {

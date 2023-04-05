@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,10 +30,12 @@ import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
+import app.ft.ftapp.android.ui.theme.backgroundEditTextBG
 import app.ft.ftapp.android.ui.theme.buttonColors
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.FocusPosition
 import app.ft.ftapp.presentation.viewmodels.ModelsState
 
 /**
@@ -63,6 +67,13 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
         }
     }
 
+    val searchText by viewModel.searchText.collectAsState()
+    val locations by viewModel.triple.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
+
+    val searchState by viewModel.editTextTap.collectAsState()
+
+    Spacer(modifier = Modifier.padding(40.dp))
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,9 +86,55 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 5.dp)
             ) {
-                FromToComposable(source, end, viewModel)
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(backgroundEditTextBG)
+                        .padding(horizontal = 3.dp)
+                ) {
+                    FromToComposable(source, end, viewModel)
+                    if (searchState != FocusPosition.None) {
+                        Box(
+                            Modifier
+                                .height(300.dp)
+                                .padding(top = 3.dp),
+                            contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+//                                    .background(editTextBackground)
+                            ) {
+                                if (locations.isNotEmpty()) {
+                                    items(locations) {
+                                        SearchLocationItem(it.name, it.address) {
+                                            viewModel.onEvent(
+                                                CreationEvent.Action.OnAddressClicked(
+                                                    it.address,
+                                                    it.latLng
+                                                )
+                                            )
+                                        }
+                                        Divider(color = Color.Gray, thickness = 1.dp)
+                                    }
+                                } else {
+                                    item {
+                                        Text(
+                                            text = "Адреса не найдены",
+                                            fontSize = 22.sp,
+                                            fontFamily = Montserrat,
+                                            modifier = Modifier.align(Alignment.Center),
+                                            color = Color.Gray
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             Row(

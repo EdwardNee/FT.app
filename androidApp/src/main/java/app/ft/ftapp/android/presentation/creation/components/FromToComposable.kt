@@ -10,11 +10,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -28,6 +31,7 @@ import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.android.ui.theme.redCircle
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.FocusPosition
 
 /**
  * Composable component to show from to UI.
@@ -53,6 +57,7 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             .background(color = editTextBackground)
             .padding(start = 26.dp)
             .padding(vertical = 5.dp)
+
     ) {
         Canvas(modifier = Modifier) {
             drawLine(
@@ -67,7 +72,9 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             stringResource(R.string.pointA),
             stringResource(R.string.from),
             redCircle,
-            source
+            source,
+            dismissFocus = { viewModel.editTextTap.value = FocusPosition.None },
+            onFocusState = { viewModel.editTextTap.value = FocusPosition.SourceField }
         ) {
             viewModel.onEvent(CreationEvent.FieldEdit.SourceEdit(it))
         }
@@ -82,7 +89,9 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             stringResource(R.string.pointB),
             stringResource(R.string.to),
             blueCircle,
-            end
+            end,
+            dismissFocus = { viewModel.editTextTap.value = FocusPosition.None },
+            onFocusState = { viewModel.editTextTap.value = FocusPosition.EndField }
         ) {
             viewModel.onEvent(CreationEvent.FieldEdit.EndEdit(it))
         }
@@ -98,6 +107,8 @@ fun DestinationComponent(
     helpText: String,
     color: Color,
     destination: String,
+    onFocusState: () -> Unit,
+    dismissFocus: () -> Unit,
     onEventCall: (String) -> Unit
 //    stateVal: MutableState<String>
 ) {
@@ -124,6 +135,13 @@ fun DestinationComponent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 40.dp)
+                .onFocusChanged {
+                    if (it.isFocused) {
+                        onFocusState()
+                    } else {
+                        dismissFocus()
+                    }
+                }
                 .padding(vertical = 16.dp),
             value = destination, onValueChange = { /*stateVal.value = it*/ onEventCall(it) }
         ) {

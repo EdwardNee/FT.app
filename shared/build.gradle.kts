@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     kotlin("plugin.serialization")
-    id("com.google.secrets_gradle_plugin") version "0.4"
+
     id("com.android.library")
     id("kotlin-parcelize")
     id("dev.icerock.mobile.multiplatform-resources")
@@ -45,6 +45,7 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+
         val androidMain by getting {
             dependencies {
                 implementation(libs.kodeinDi)

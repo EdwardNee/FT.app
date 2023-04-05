@@ -17,6 +17,7 @@ val bottomNavColor = Color(0xFFFF6767)
 val placeholderColor = Color(0xFF5F5F5F)
 
 val editTextBackground = Color(0xFFDADADA)
+val backgroundEditTextBG = Color(0xFFECECEC)
 
 val redCircle = Color(0xFFFF7F7F)
 val blueCircle = Color(0xFF69D2FF)
