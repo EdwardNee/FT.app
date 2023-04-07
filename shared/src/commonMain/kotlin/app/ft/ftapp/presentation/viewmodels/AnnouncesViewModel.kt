@@ -23,7 +23,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     }
 
     fun onEvent(event: AnnounceListEvent) {
-        when(event) {
+        when (event) {
             AnnounceListEvent.GetAnnounces -> {
                 getAnnounces()
             }
@@ -61,6 +61,6 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
  * Actions event on the announcement list screen.
  */
 sealed class AnnounceListEvent {
-    object GetAnnounces: AnnounceListEvent()
-    class OnDetails(val announceId: String, val onAction: () -> Unit): AnnounceListEvent()
+    object GetAnnounces : AnnounceListEvent()
+    class OnDetails(val announceId: String, val onAction: () -> Unit) : AnnounceListEvent()
 }

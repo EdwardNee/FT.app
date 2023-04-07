@@ -5,14 +5,14 @@ import app.ft.ftapp.utils.PreferencesHelper
 /**
  * ViewModel for AnnouncementDetails screen.
  */
-class DetailsViewModel(private val preferencesHelper: PreferencesHelper): BaseViewModel() {
+class DetailsViewModel(private val preferencesHelper: PreferencesHelper) : BaseViewModel() {
     private var announceId: String? = null
 
     /**
      * Event UI calls.
      */
     fun onEvent(event: DetailsEvent) {
-        when(event) {
+        when (event) {
             DetailsEvent.ClearData -> clearData()
             DetailsEvent.OnGetPref -> getFromPrefs()
         }
@@ -21,7 +21,7 @@ class DetailsViewModel(private val preferencesHelper: PreferencesHelper): BaseVi
     /**
      * Gets announce id from Preferences.
      */
-     private fun getFromPrefs() {
+    private fun getFromPrefs() {
         announceId = preferencesHelper.chosenDetailId
     }
 
@@ -38,6 +38,6 @@ class DetailsViewModel(private val preferencesHelper: PreferencesHelper): BaseVi
  * Event class for AnnouncementDetails screen.
  */
 sealed class DetailsEvent {
-    object OnGetPref: DetailsEvent()
-    object ClearData: DetailsEvent()
+    object OnGetPref : DetailsEvent()
+    object ClearData : DetailsEvent()
 }

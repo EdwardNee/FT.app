@@ -46,7 +46,7 @@ fun AnnounceScreen(onClick: () -> Unit) {
                 Box(modifier = Modifier.padding(bottom = if (isLoading) 15.dp else 30.dp)) {
                     ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {
                         AnnounceCard(announcesList[idx]) {
-                            viewModel.onEvent(AnnounceListEvent.OnDetails(announcesList[idx].id.toString()) {  })
+                            viewModel.onEvent(AnnounceListEvent.OnDetails(announcesList[idx].id.toString()) { })
                             onClick()
                         }
                     }
