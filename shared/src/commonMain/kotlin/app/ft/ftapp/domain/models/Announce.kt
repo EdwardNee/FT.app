@@ -12,5 +12,6 @@ data class Announce(
     val placeFrom: String,
     val placeTo: String,
     val participants: List<Participant>,
-    val countOfParticipants: Int
+    val countOfParticipants: Int,
+    val comment: String
 )

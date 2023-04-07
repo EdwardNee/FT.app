@@ -25,13 +25,13 @@ fun SearchLocationItem(header: String, address: String, onClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             text = header,
             fontFamily = Montserrat,
-            fontSize = 18.sp
+            fontSize = 16.sp
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = address,
             fontFamily = Montserrat,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             color = Color.Gray
         )
     }

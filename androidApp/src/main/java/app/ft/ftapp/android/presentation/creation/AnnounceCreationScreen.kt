@@ -55,8 +55,12 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val source by viewModel.sourceDestination.collectAsState()
     val end by viewModel.endDestination.collectAsState()
     val countOfParticipants by viewModel.countOfParticipants.collectAsState()
+    val price by viewModel.price.collectAsState()
+    val comment by viewModel.comment.collectAsState()
 
-    var coroutineScope = rememberCoroutineScope()
+    val locations by viewModel.triple.collectAsState()
+    val searchState by viewModel.editTextTap.collectAsState()
+
     val focusManager = LocalFocusManager.current
     val bringIntoViewRequester = BringIntoViewRequester()
 
@@ -74,11 +78,6 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
         }
     }
 
-    val searchText by viewModel.searchText.collectAsState()
-    val locations by viewModel.triple.collectAsState()
-    val isSearching by viewModel.isSearching.collectAsState()
-
-    val searchState by viewModel.editTextTap.collectAsState()
 
     Spacer(modifier = Modifier.padding(40.dp))
     Column(
@@ -125,7 +124,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                                                 )
                                             )
                                         }
-                                        Divider(color = Color.Gray, thickness = 1.dp)
+                                        Divider(color = Color.LightGray, thickness = 0.5.dp)
                                     }
                                 } else {
                                     item {
@@ -153,7 +152,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
             ) {
 
                 TextValues(
-                    countOfParticipants,
+                    price,
                     stringResource(R.string.price),
                     stringResource(R.string.currency_rub),
                 ) {
@@ -168,7 +167,9 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                 Text(text = "IN PROGRESS")
             }
 
-            AdditionalNotes()
+            AdditionalNotes(comment) {
+                viewModel.onEvent(CreationEvent.FieldEdit.CommentEdit(it))
+            }
         }
 
         Column(Modifier.fillMaxWidth()) {
@@ -198,11 +199,11 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
  * TextField composable to add notes for an announce.
  */
 @Composable
-fun AdditionalNotes() {
-    var value by remember { mutableStateOf("") }
+fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
+
     TextField(
         textStyle = TextStyle(fontSize = 16.sp),
-        value = value, onValueChange = { value = it },
+        value = comment, onValueChange = onChange,
         placeholder = { PlaceHolderText("Дополнительные комментарии...") },
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
@@ -240,6 +241,7 @@ fun TextValues(numeric: Int, text: String, currency: String = "", onEventCall: (
             textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
             value = numeric.toString(),
             singleLine = true,
+            enabled = currency.isEmpty(),
             onValueChange = { onEventCall(it.toInt()) },
             modifier = Modifier
                 .width(80.dp)

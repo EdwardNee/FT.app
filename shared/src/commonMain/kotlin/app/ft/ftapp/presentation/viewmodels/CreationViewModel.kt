@@ -50,12 +50,15 @@ class CreationViewModel : BaseViewModel() {
         )
     )
 
-    val author = MutableStateFlow<String>("").cMutableStateFlow()
-    val email = MutableStateFlow<String>("").cMutableStateFlow()
     private var route = Pair(LatLng(0.0, 0.0), LatLng(0.0, 0.0))
+
+    val author = MutableStateFlow<String>("metho").cMutableStateFlow()
+    val email = MutableStateFlow<String>("adsa@edu.hse.ru").cMutableStateFlow()
     val sourceDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val endDestination = MutableStateFlow<String>("").cMutableStateFlow()
-
+    val comment = MutableStateFlow<String>("").cMutableStateFlow()
+    val price = MutableStateFlow<Int>(0).cMutableStateFlow()
+    val countOfParticipants = MutableStateFlow<Int>(0).cMutableStateFlow()
 
     val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
 
@@ -80,9 +83,6 @@ class CreationViewModel : BaseViewModel() {
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
-    //   val price = MutableStateFlow<Double>(0.0).cMutableStateFlow()
-    val participants = MutableStateFlow<List<Participant>>(emptyList()).cMutableStateFlow()
-    val countOfParticipants = MutableStateFlow<Int>(0).cMutableStateFlow()
 
     private val _loadResult = MutableStateFlow<ModelsState>(ModelsState.Loading)
     val loadResult: MutableStateFlow<ModelsState>
@@ -109,13 +109,17 @@ class CreationViewModel : BaseViewModel() {
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
                     participants = emptyList(),
-                    countOfParticipants = countOfParticipants.value
+                    countOfParticipants = countOfParticipants.value,
+                    comment = comment.value
                 )
                 createAnnounceCall(announce = announce)
             }
 
             is CreationEvent.Action.OnAddressClicked -> {
                 fillByClickedAddress(event.address, event.coordinates)
+            }
+            is CreationEvent.FieldEdit.CommentEdit -> {
+                comment.value = event.comment.trim()
             }
         }
     }
@@ -143,6 +147,7 @@ class CreationViewModel : BaseViewModel() {
 
         if (route.first.lat != 0.0 && route.second.lat != 0.0) {
 //            getTripInfoCall(route)
+            price.value = 139
         }
     }
 
@@ -215,6 +220,7 @@ sealed class CreationEvent {
         data class SourceEdit(val source: String) : FieldEdit()
         data class EndEdit(val end: String) : FieldEdit()
         data class ParticipantsCountEdit(val count: Int) : FieldEdit()
+        data class CommentEdit(val comment: String) : FieldEdit()
     }
 }
 
