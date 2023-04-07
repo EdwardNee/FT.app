@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetApp(
-    sheetContent: @Composable () -> Unit,
+    sheetContent: @Composable (modalBottomSheetState: ModalBottomSheetState, ) -> Unit,
     pageContent: @Composable (onClick: () -> Unit) -> Unit
 ) {
     val modalBottomSheetState =
@@ -22,7 +22,7 @@ fun BottomSheetApp(
     val scope = rememberCoroutineScope()
     ModalBottomSheetLayout(
         sheetContent = {
-            sheetContent()
+            sheetContent(modalBottomSheetState)
         },
         sheetState = modalBottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),

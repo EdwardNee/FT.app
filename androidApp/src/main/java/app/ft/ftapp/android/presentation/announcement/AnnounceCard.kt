@@ -16,12 +16,13 @@ import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
 import app.ft.ftapp.android.ui.theme.cardBody
 import app.ft.ftapp.android.ui.theme.textGray
+import app.ft.ftapp.domain.models.Announce
 
 /**
  * Announcement card composable method to draw.
  */
 @Composable
-fun AnnounceCard(onClick: () -> Unit) {
+fun AnnounceCard(announce: Announce, onClick: (Announce) -> Unit) {
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(15.dp),
@@ -33,18 +34,25 @@ fun AnnounceCard(onClick: () -> Unit) {
                 .background(cardBody)
                 .padding(horizontal = 12.dp)
                 .padding(top = 18.dp),
-            ) {
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp), horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Объявление №15", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(
+                    text = "${announce.placeFrom}-${announce.placeTo}",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
                 Text(text = "сегодня в 12:17", color = textGray, fontSize = 14.sp)
             }
 
-            AnnounceParams(stringResource(id = R.string.car_price), "3")
-            AnnounceParams(stringResource(id = R.string.free_places), "560 ₽")
+            AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
+            AnnounceParams(
+                stringResource(id = R.string.free_places),
+                announce.countOfParticipants.toString()
+            )
 
             Row(
                 modifier = Modifier
@@ -58,7 +66,7 @@ fun AnnounceCard(onClick: () -> Unit) {
                         .weight(1f)
                         .padding(end = 8.dp)
                 ) {
-                    onClick()
+                    onClick(announce)
                 }
                 AnnounceButton(Modifier.weight(1f)) {}
             }

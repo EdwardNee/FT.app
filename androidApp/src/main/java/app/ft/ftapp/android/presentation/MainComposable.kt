@@ -112,6 +112,7 @@ fun BottomNavs() {
 /**
  * Navigation graph construction.
  */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NavGraph(navController: NavHostController, modifier: Modifier) {
     CustomNavigation(
@@ -127,8 +128,12 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
         composable(destination = AppDestination.ListAnnounces) {
 //            AnnounceScreen()
             BottomSheetApp(
-                pageContent = { AnnounceScreen(it) },
-                sheetContent = { AnnouncementDetails() },
+                pageContent = { listener ->
+                    AnnounceScreen(listener)
+                },
+                sheetContent = { state ->
+                    AnnouncementDetails(state)
+                },
             )
         }
 
@@ -136,7 +141,9 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
 
         composable(destination = AppDestination.Creation) {
             BottomSheetApp(
-                pageContent = { AnnounceCreationScreen(it) },
+                pageContent = { listener ->
+                    AnnounceCreationScreen(listener)
+                },
                 sheetContent = { SuccessView() }
             )
         }

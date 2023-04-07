@@ -7,11 +7,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Announce(
+    val id: Int = 0,
     val author: String,
-    val email: String,
+    val email: String = "",
     val placeFrom: String,
     val placeTo: String,
-    val participants: List<Participant>,
+    val participants: List<Participant> = emptyList(),
     val countOfParticipants: Int,
-    val comment: String
+    val comment: String?
 )

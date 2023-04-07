@@ -8,7 +8,7 @@ import io.ktor.http.*
 
 class Api(private val client: HttpClient) {
     suspend fun getAnnouncements(): HttpResponse {
-        return client.get("/api/travel/getAllTravels")
+        return client.post("/api/travel/getAllTravels")
     }
 
     suspend fun createAnnounce(announce: Announce): HttpResponse {

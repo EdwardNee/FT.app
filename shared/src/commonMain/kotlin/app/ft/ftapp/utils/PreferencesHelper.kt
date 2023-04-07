@@ -8,6 +8,10 @@ class PreferencesHelper(private val context: KMMContext) {
         get() = getExpirationDate()
         set(value) = setExpiration(value)
 
+    var chosenDetailId: String?
+    get() = getChosenDetail()
+    set(value) = setChosenDetail(value)
+
     var cookies: String?
         get() = getCookie()
         set(value) = setCookie(value)
@@ -29,12 +33,19 @@ class PreferencesHelper(private val context: KMMContext) {
         set(value) = setSettingDownloadInBackground(value)
 
     fun eraseUserData() {
+        chosenDetailId = null
         userName = null
         userCity = null
         cookies = null
         tokenExpirationDate = null
     }
 
+    private fun setChosenDetail(value: String?) {
+        context.putString(CHOSEN_DETAIL_ITEM, value)
+    }
+    private fun getChosenDetail(): String? {
+        return context.getString(CHOSEN_DETAIL_ITEM, "")
+    }
     private fun getExpirationDate(): Long {
         return context.getLong(SESSION_EXPIRATION, -1L)
     }
@@ -89,6 +100,7 @@ class PreferencesHelper(private val context: KMMContext) {
     }
 
     companion object {
+        private const val CHOSEN_DETAIL_ITEM = "CHOSEN_DETAIL_ITEM"
         private const val SESSION_EXPIRATION = "SESSION_EXPIRATION"
         private const val KEY_COOKIE = "KEY_COOKIE"
         private const val KEY_USER_NAME = "KEY_USER_NAME"

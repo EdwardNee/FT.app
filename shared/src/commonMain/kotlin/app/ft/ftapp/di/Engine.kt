@@ -9,10 +9,10 @@ import app.ft.ftapp.domain.repository.TaxiRepository
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
-import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.utils.KMMContext
+import app.ft.ftapp.utils.PreferencesHelper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -30,6 +30,13 @@ class Engine {
     private val ktorModule = DI.Module("ktor_module") {
         bindSingleton("server_bind") {
             HttpClient(CIO) {
+                engine {
+                    requestTimeout = 0 // 0 to disable, or a millisecond value to fit your needs
+                }
+//                install(HttpTimeout) {
+//                    requestTimeoutMillis = 0
+//                }
+
                 defaultRequest {
                     host = instance<String>("base_url").replace("https://", "")
                     url {
@@ -57,6 +64,7 @@ class Engine {
                 }
             }
         }
+
         bindSingleton("taxi_bind") {
             HttpClient(CIO) {
                 defaultRequest {
@@ -103,8 +111,12 @@ class Engine {
     }
 
     private val viewModelsModule = DI.Module("viewmodel") {
-        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
+//        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
         bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
+    }
+
+    private val utilsModule = DI.Module("utils") {
+        bindSingleton { PreferencesHelper(DIFactory.initCtx!!) }
     }
 
     val kodein = DI {
@@ -114,7 +126,8 @@ class Engine {
             ktorModule,
             useCaseModule,
             repositoryModule,
-            viewModelsModule
+            viewModelsModule,
+            utilsModule
         )
         bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com" }
         bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
