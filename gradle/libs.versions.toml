@@ -19,6 +19,8 @@ kodeinVersion = "7.12.0"
 mokoResVersion = "0.20.1"
 mokoMvvmVersion = "0.14.0"
 
+sqlDelightVersion = "1.5.3"
+
 [libraries]
 # ktor
 ktorClient = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersionClient" }
@@ -64,6 +66,13 @@ mokoMvvmFlow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "mokoMvvmV
 
 # kodein
 kodeinDi = { module = "org.kodein.di:kodein-di", version.ref = "kodeinVersion" }
+
+
+# sqldelight
+sqldelightRuntime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqlDelightVersion" }
+sqldelightAndroid = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
+sqldelightNative = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqlDelightVersion" }
+
 
 # plugins
 ktxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }

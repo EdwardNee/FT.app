@@ -1,13 +1,13 @@
 package app.ft.ftapp.utils
 
-import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 
 /**
  * Context android class.
  */
-actual typealias KMMContext = Activity
+actual typealias KMMContext = Application
 
 const val SP_NAME = "kmm_app"
 

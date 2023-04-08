@@ -6,6 +6,7 @@ plugins {
     id("com.android.library")
     id("kotlin-parcelize")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("com.squareup.sqldelight")
 //    id("dev.icerock.moko.kswift")
 }
 
@@ -35,6 +36,7 @@ kotlin {
             dependencies {
                 implementation(libs.kodeinDi)
                 implementation(libs.bundles.ktorClient)
+                implementation(libs.sqldelightRuntime)
                 api(libs.mokoRes)
                 api(libs.bundles.mokoMvvmCommon)
 
@@ -49,6 +51,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.kodeinDi)
+                implementation(libs.sqldelightAndroid)
                 implementation(libs.mokoResAndroid)
                 implementation(libs.mokoResCompose)
                 api(libs.bundles.mokoMvvmAndroidApi)
@@ -63,6 +66,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.sqldelightNative)
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -87,6 +93,13 @@ android {
     defaultConfig {
         minSdk = 29
         targetSdk = 33
+    }
+}
+
+sqldelight {
+    database("FTAppDatabase") {
+        packageName = "db"
+        sourceFolders = listOf("sqldelight")
     }
 }
 

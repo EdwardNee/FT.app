@@ -1,5 +1,6 @@
 package app.ft.ftapp.di
 
+import app.ft.ftapp.data.db.DatabaseDriverFactory
 import app.ft.ftapp.data.ktor.Api
 import app.ft.ftapp.data.ktor.TaxiApi
 import app.ft.ftapp.data.repository.IAnnouncementRepository
@@ -141,6 +142,7 @@ object DIFactory {
     val di = Engine().kodein
 
     var initCtx: KMMContext? = null
+    var driverFactory: DatabaseDriverFactory? = null
 
     val direct = di.direct
 

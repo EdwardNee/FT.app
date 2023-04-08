@@ -1,0 +1,34 @@
+CREATE TABLE AnnounceSQ (
+    id INTEGER AS Int NOT NULL,
+    author TEXT NOT NULL,
+    email TEXT NOT NULL,
+    placeFrom TEXT NOT NULL,
+    placeTo TEXT NOT NULL,
+    countOfParticipants INTEGER AS Int DEFAULT 4 NOT NULL,
+    COMMENT TEXT,
+    PRIMARY KEY(id)
+);
+
+insertAnnounce:
+INSERT OR REPLACE INTO AnnounceSQ(
+    id,
+    author,
+    email,
+    placeFrom,
+    placeTo,
+    countOfParticipants,
+    COMMENT
+) VALUES(?,?,?,?,?,?,?);
+
+getAllAnnounces:
+SELECT * FROM AnnounceSQ;
+
+getAnnounceById:
+SELECT * FROM AnnounceSQ WHERE id = :id;
+
+deleteAnnounceById:
+DELETE FROM AnnounceSQ
+WHERE id = :id;
+
+clearAnnounces:
+DELETE FROM AnnounceSQ;
