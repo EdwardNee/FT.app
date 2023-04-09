@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -100,7 +101,12 @@ fun BottomNavs() {
                     selected = currentRoute == item.description,
                     interactionSource = NoRippleInteractionSource(),
                     onClick = {
-                        SingletonHelper.appNavigator.tryNavigateTo(item.description)
+                        if (currentRoute != item.description) {
+                            SingletonHelper.appNavigator.tryNavigateTo(
+                                item.description,
+                                isSingleTop = true
+                            )
+                        }
                     }
                 )
             }
@@ -118,7 +124,7 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
     CustomNavigation(
         modifier = Modifier.then(modifier),
         navController = navController,
-        startDestination = AppDestination.AuthScreen
+        startDestination = AppDestination.ListAnnounces
     ) {
         composable(destination = AppDestination.AuthScreen) {
             BackHandler(true) {} //при выходе из профиля отключаю кнопку назад
@@ -168,6 +174,7 @@ fun NavigationEffects(
             }
 
             when (intent) {
+
                 is NavigationIntent.NavigateBack -> {
                     if (intent.route != null) {
                         navHostController.popBackStack(intent.route, intent.inclusive)
@@ -177,15 +184,16 @@ fun NavigationEffects(
                 }
                 is NavigationIntent.NavigateTo -> {
                     navHostController.navigate(intent.route) {
-                        launchSingleTop = intent.isSingleTop
-                        intent.popUpToRoute?.let { popUpToRoute ->
-                            popUpTo(popUpToRoute) {
-                                inclusive = intent.inclusive
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+//                        launchSingleTop = intent.isSingleTop
+//                        intent.popUpToRoute?.let { popUpToRoute ->
+                        popUpTo(navHostController.graph.findStartDestination().id) {
+
+//                                inclusive = true//intent.inclusive
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
+//                        }
                     }
                 }
             }

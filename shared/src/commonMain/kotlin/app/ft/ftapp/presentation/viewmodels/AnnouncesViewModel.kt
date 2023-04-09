@@ -3,8 +3,12 @@ package app.ft.ftapp.presentation.viewmodels
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
+import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 
@@ -13,15 +17,28 @@ import org.kodein.di.instance
  */
 class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : BaseViewModel() {
     private val getAnnouncements: GetAnnouncementsUseCase by kodein.instance()
+    private val getAnnouncementsDb: GetAllAnnouncesFromDb by kodein.instance()
+    private val insertAnnounceToDb: InsertAnnounceToDbUseCase by kodein.instance()
 
     private val _announcesList = MutableStateFlow(emptyList<Announce>())
     val announcesList: StateFlow<List<Announce>>
         get() = _announcesList.asStateFlow()
 
     init {
-        onEvent(AnnounceListEvent.GetAnnounces)
+        viewModelScope.launch {
+            val result = getAnnouncementsDb()
+
+            if (result.isEmpty()) {
+                onEvent(AnnounceListEvent.GetAnnounces)
+            } else {
+                _announcesList.value = result
+            }
+        }
     }
 
+    /**
+     * AnnounceScreen OnEvent calls.
+     */
     fun onEvent(event: AnnounceListEvent) {
         when (event) {
             AnnounceListEvent.GetAnnounces -> {
@@ -30,6 +47,9 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             is AnnounceListEvent.OnDetails -> {
                 preferencesHelper.chosenDetailId = event.announceId
                 event.onAction()
+            }
+            is AnnounceListEvent.InsertToDb -> {
+                insertAnnouncesToDbCall(event.announces)
             }
         }
     }
@@ -55,6 +75,17 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             hideProgress()
         }
     }
+
+    /**
+     * Inserts to db list of [announces].
+     */
+    private fun insertAnnouncesToDbCall(announces: List<Announce>) {
+        viewModelScope.launch {
+            announces.forEach { announce ->
+                insertAnnounceToDb(announce)
+            }
+        }
+    }
 }
 
 /**
@@ -62,5 +93,6 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
  */
 sealed class AnnounceListEvent {
     object GetAnnounces : AnnounceListEvent()
+    class InsertToDb(val announces: List<Announce>) : AnnounceListEvent()
     class OnDetails(val announceId: String, val onAction: () -> Unit) : AnnounceListEvent()
 }

@@ -43,6 +43,7 @@ cmsFoundation = { module = "androidx.compose.foundation:foundation", version.ref
 cmsMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
 cmsActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
 cmsNavigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigationVersion" }
+
 # coroutines
 coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
 coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }

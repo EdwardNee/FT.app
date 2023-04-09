@@ -26,6 +26,8 @@ fun AnnounceScreen(onClick: () -> Unit) {
     val isLoading by viewModel.isShowProgress.collectAsState()
     val announcesList by viewModel.announcesList.collectAsState()
 
+    println("TAG_OF_LIST ${announcesList.size}")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

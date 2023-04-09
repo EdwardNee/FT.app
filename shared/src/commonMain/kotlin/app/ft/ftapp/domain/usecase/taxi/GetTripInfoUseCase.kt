@@ -1,4 +1,4 @@
-package app.ft.ftapp.domain.usecase
+package app.ft.ftapp.domain.usecase.taxi
 
 import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.models.ServerResult

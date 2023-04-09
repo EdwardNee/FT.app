@@ -2,7 +2,7 @@ package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
-import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
+import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import clid
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
 import key_yandex

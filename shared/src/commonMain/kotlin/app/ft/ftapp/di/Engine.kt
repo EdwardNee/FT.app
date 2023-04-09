@@ -3,13 +3,18 @@ package app.ft.ftapp.di
 import app.ft.ftapp.data.db.DatabaseDriverFactory
 import app.ft.ftapp.data.ktor.Api
 import app.ft.ftapp.data.ktor.TaxiApi
+import app.ft.ftapp.data.repository.IAnnounceSQRepository
 import app.ft.ftapp.data.repository.IAnnouncementRepository
 import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
 import app.ft.ftapp.domain.repository.TaxiRepository
+import app.ft.ftapp.domain.repository.db.AnnounceSQRepository
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
-import app.ft.ftapp.domain.usecase.GetTripInfoUseCase
+import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
+import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
+import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
+import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.utils.KMMContext
@@ -103,12 +108,17 @@ class Engine {
     private val repositoryModule = DI.Module("repository_module") {
         bindSingleton<IAnnouncementRepository>("serv_ann_r") { ServerAnnouncementRepository(instance()) }
         bindSingleton<ITaxiRepository>("taxi_ya_r") { TaxiRepository(instance()) }
+        bindSingleton<IAnnounceSQRepository>("db_ann_r") { AnnounceSQRepository(DIFactory.driverFactory!!) }
     }
 
     private val useCaseModule = DI.Module("usecases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
+        bindSingleton { InsertAnnounceToDbUseCase(instance(tag = "db_ann_r")) }
+        bindSingleton { GetAnnounceFromDbUseCase(instance(tag = "db_ann_r")) }
+        bindSingleton { GetAllAnnouncesFromDb(instance(tag = "db_ann_r")) }
+
     }
 
     private val viewModelsModule = DI.Module("viewmodel") {
@@ -124,11 +134,7 @@ class Engine {
         fullDescriptionOnError = true
 
         importAll(
-            ktorModule,
-            useCaseModule,
-            repositoryModule,
-            viewModelsModule,
-            utilsModule
+            ktorModule, useCaseModule, repositoryModule, viewModelsModule, utilsModule
         )
         bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com" }
         bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
@@ -147,9 +153,7 @@ object DIFactory {
     val direct = di.direct
 
     inline fun <reified T : Any> resolve(tag: String? = null): T {
-        return if (tag == null)
-            direct.instance<T>()
-        else
-            return direct.instance<T>(tag)
+        return if (tag == null) direct.instance<T>()
+        else return direct.instance<T>(tag)
     }
 }

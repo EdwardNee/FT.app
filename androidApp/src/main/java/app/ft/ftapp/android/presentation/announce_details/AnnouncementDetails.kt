@@ -32,6 +32,8 @@ import app.ft.ftapp.presentation.viewmodels.DetailsViewModel
 @Composable
 fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
     val viewModel = setupViewModel<DetailsViewModel>()
+    val announceDb by viewModel.announceDb.collectAsState()
+
     LaunchedEffect(Unit) {
         snapshotFlow { modalBottomSheetState.currentValue }
             .collect {
@@ -101,7 +103,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             )
 
             Text(
-                text = "3",
+                text = announceDb?.countOfParticipants.toString(),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -116,7 +118,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
 
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
-            text = "Хочу уехать на ситимобил и сидеть спереди. Багажа нет, только рюкзак с ноутбуком. Встречаемся около Мака.",
+            text = announceDb?.comment ?: "",//"Хочу уехать на ситимобил и сидеть спереди. Багажа нет, только рюкзак с ноутбуком. Встречаемся около Мака.",
             fontFamily = Montserrat,
             fontSize = 16.sp
         )

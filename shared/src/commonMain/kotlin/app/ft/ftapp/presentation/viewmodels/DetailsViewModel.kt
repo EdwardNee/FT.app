@@ -1,12 +1,25 @@
 package app.ft.ftapp.presentation.viewmodels
 
+import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import org.kodein.di.instance
 
 /**
  * ViewModel for AnnouncementDetails screen.
  */
 class DetailsViewModel(private val preferencesHelper: PreferencesHelper) : BaseViewModel() {
+    private val getAnnounceFromDb: GetAnnounceFromDbUseCase by kodein.instance()
+
     private var announceId: String? = null
+
+    private val _announceDb = MutableStateFlow<Announce?>(null)
+    val announceDb: StateFlow<Announce?>
+        get() = _announceDb.asStateFlow()
 
     /**
      * Event UI calls.
@@ -14,7 +27,12 @@ class DetailsViewModel(private val preferencesHelper: PreferencesHelper) : BaseV
     fun onEvent(event: DetailsEvent) {
         when (event) {
             DetailsEvent.ClearData -> clearData()
-            DetailsEvent.OnGetPref -> getFromPrefs()
+            DetailsEvent.OnGetPref -> {
+                viewModelScope.launch {
+                    getFromPrefs()
+                    _announceDb.value = getAnnounceFromDb(announceId?.toInt() ?: return@launch)
+                }
+            }
         }
     }
 
