@@ -9,4 +9,11 @@ object ScreenValues {
     const val ANNOUNCES_LIST = "announces_list"
     const val CREATION = "creation"
     const val CHATTING = "chatting"
+
+    const val HOME = "home"
+    const val CURRENT = "current"
+    const val HISTORY = "history"
+
+    const val MY_ANNOUNCES = "my_announces"
+    const val GROUP_CHAT = "chat"
 }

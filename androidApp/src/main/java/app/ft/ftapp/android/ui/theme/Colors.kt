@@ -25,6 +25,10 @@ val grayCircle = Color(0xFFBEBEBE)
 
 val buttonColors = Color(0xFF00474F)
 
+val blueTextColor = Color(0xFF0050AE)
+
+val chipTimeColor = Color(0xffeb645e)
+
 val namesColor =
     listOf(Color.Yellow, Color.Cyan, Color.Magenta, Color.Green, Color.Red, Color.Black)
 

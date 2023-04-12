@@ -1,9 +1,7 @@
 package app.ft.ftapp.android.presentation.creation
 
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +12,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,15 +30,18 @@ import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
+import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
-import app.ft.ftapp.android.ui.theme.Montserrat
-import app.ft.ftapp.android.ui.theme.backgroundEditTextBG
-import app.ft.ftapp.android.ui.theme.buttonColors
-import app.ft.ftapp.android.ui.theme.editTextBackground
+import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
 import app.ft.ftapp.presentation.viewmodels.ModelsState
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockConfig
+import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.LocalTime
 
 /**
  * Composable method to draw announcement creation screen.
@@ -61,6 +63,21 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val locations by viewModel.triple.collectAsState()
     val searchState by viewModel.editTextTap.collectAsState()
 
+    val boxTimePickerColor = listOf(Color.Transparent, Color.Black)
+    var borderColor by rememberSaveable { mutableStateOf(0) }
+    val selectedTime = remember { mutableStateOf<LocalTime?>(null) }
+    val clockState = rememberSheetState()
+
+    ClockDialog(state = clockState,
+        config = ClockConfig(is24HourFormat = true),
+        selection = ClockSelection.HoursMinutes { h, m ->
+            selectedTime.value = LocalTime.of(h, m)
+        })
+
+    if (!clockState.visible) {
+        borderColor = 0
+    }
+
     val focusManager = LocalFocusManager.current
     val bringIntoViewRequester = BringIntoViewRequester()
 
@@ -68,16 +85,13 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
         ModelsState.Loading -> {}
         is ModelsState.Error -> {
             Toast.makeText(
-                LocalContext.current,
-                (loadResult as ModelsState.Error).message,
-                Toast.LENGTH_LONG
+                LocalContext.current, (loadResult as ModelsState.Error).message, Toast.LENGTH_LONG
             ).show()
         }
         ModelsState.Success -> {
             onAction()
         }
     }
-
 
     Spacer(modifier = Modifier.padding(40.dp))
     Column(
@@ -109,8 +123,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                             contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
                         ) {
                             LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
 //                                    .background(editTextBackground)
                             ) {
@@ -119,8 +132,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                                         SearchLocationItem(it.name, it.address) {
                                             viewModel.onEvent(
                                                 CreationEvent.Action.OnAddressClicked(
-                                                    it.address,
-                                                    it.latLng
+                                                    it.address, it.latLng
                                                 )
                                             )
                                         }
@@ -161,10 +173,42 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                 TextValues(3, stringResource(R.string.places_count)) {}
             }
 
-            Text(text = progress.toString())
-
-            if (progress) {
-                Text(text = "IN PROGRESS")
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text("Начало поездки", fontFamily = Montserrat)
+                Spacer(Modifier.weight(1f))
+                Card(
+                    Modifier
+//                        .wrapContentSize()
+                        .width(180.dp)
+                        .height(40.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(color = editTextBackground)
+                        .clickable(
+                            interactionSource = NoRippleInteractionSource(), indication = null
+                        ) {
+                            borderColor = 1
+                            clockState.show()
+                        }, border = BorderStroke(1.dp, boxTimePickerColor[borderColor])
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(color = editTextBackground)
+                    ) {
+                        Text(
+                            if (selectedTime.value == null) "Время начала" else selectedTime.value.toString(),
+                            fontFamily = Montserrat,
+                            color = placeholderColor,
+                            fontSize = (if (selectedTime.value == null) 15 else 20).sp,
+                            fontWeight = if (selectedTime.value == null) FontWeight.Normal else FontWeight.SemiBold
+                        )
+                    }
+                }
             }
 
             AdditionalNotes(comment) {
@@ -203,7 +247,8 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
 
     TextField(
         textStyle = TextStyle(fontSize = 16.sp),
-        value = comment, onValueChange = onChange,
+        value = comment,
+        onValueChange = onChange,
         placeholder = { PlaceHolderText("Дополнительные комментарии...") },
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
@@ -232,24 +277,29 @@ fun TextValues(numeric: Int, text: String, currency: String = "", onEventCall: (
     val interactionSource = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text, fontFamily = Montserrat, modifier = Modifier
+            text,
+            fontFamily = Montserrat,
+            modifier = Modifier
                 .padding(end = 4.dp)
                 .focusable(true, interactionSource)
         )
-        BasicTextField(
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
-            value = numeric.toString(),
-            singleLine = true,
-            enabled = currency.isEmpty(),
-            onValueChange = { onEventCall(it.toInt()) },
-            modifier = Modifier
-                .width(80.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(color = editTextBackground)
-                .padding(vertical = 12.dp)
-                .padding(horizontal = 6.dp)
-        )
+        Card(modifier = Modifier.wrapContentSize()) {
+            BasicTextField(
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                textStyle = TextStyle.Default.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
+                value = numeric.toString(),
+                singleLine = true,
+                enabled = currency.isEmpty(),
+                onValueChange = { onEventCall(it.toInt()) },
+                modifier = Modifier
+                    .width(80.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(color = editTextBackground)
+                    .padding(vertical = 12.dp)
+                    .padding(horizontal = 6.dp)
+            )
+        }
+
         if (currency.isNotEmpty()) {
             Text(
                 currency,

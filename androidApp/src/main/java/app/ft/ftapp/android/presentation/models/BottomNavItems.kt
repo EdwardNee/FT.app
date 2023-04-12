@@ -1,8 +1,14 @@
 package app.ft.ftapp.android.presentation.models
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Data class to keep navigation items info.
  */
-data class BottomNavItems(val imageVector: ImageVector, val description: String)
+data class BottomNavItems(
+    val description: String,
+    val imageVector: ImageVector? = null,
+    val tabName: String = "",
+    val content: (@Composable () -> Unit)? = null
+)

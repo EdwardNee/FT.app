@@ -61,7 +61,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             fontFamily = Montserrat
         )
 
-        FromToText()
+        FromToText(announceDb?.placeFrom ?: "", announceDb?.placeTo ?: "")
         Divider(
             modifier = Modifier
                 .padding(start = 40.dp)
@@ -118,7 +118,8 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
 
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
-            text = announceDb?.comment ?: "",//"Хочу уехать на ситимобил и сидеть спереди. Багажа нет, только рюкзак с ноутбуком. Встречаемся около Мака.",
+            text = announceDb?.comment
+                ?: "",//"Хочу уехать на ситимобил и сидеть спереди. Багажа нет, только рюкзак с ноутбуком. Встречаемся около Мака.",
             fontFamily = Montserrat,
             fontSize = 16.sp
         )
@@ -129,9 +130,9 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
  * Shows from to details.
  */
 @Composable
-fun FromToText() {
-    val stateA = remember { mutableStateOf("улица Лефортовский вал, д 7") }
-    val stateB = remember { mutableStateOf("улица Д. Давыдова, д 5") }
+fun FromToText(fromA: String, toB: String) {
+//    val stateA = remember { mutableStateOf("улица Лефортовский вал, д 7") }
+//    val stateB = remember { mutableStateOf("улица Д. Давыдова, д 5") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +150,7 @@ fun FromToText() {
             )
         }
 
-        DestinationComponentDetails(stringResource(id = R.string.pointA), redCircle, stateA)
+        DestinationComponentDetails(stringResource(id = R.string.pointA), redCircle, fromA)
 
         Divider(
             modifier = Modifier
@@ -159,7 +160,7 @@ fun FromToText() {
             thickness = 0.4.dp
         )
 
-        DestinationComponentDetails(stringResource(id = R.string.pointB), blueCircle, stateB)
+        DestinationComponentDetails(stringResource(id = R.string.pointB), blueCircle, toB)
     }
 }
 
@@ -168,7 +169,7 @@ fun FromToText() {
  */
 @Composable
 fun DestinationComponentDetails(
-    liter: String, color: Color, stateVal: MutableState<String>
+    liter: String, color: Color, stateVal: String
 ) {
     Box(contentAlignment = Alignment.CenterStart) {
         Text(text = liter, fontSize = 16.sp, modifier = Modifier.drawBehind {
@@ -177,7 +178,7 @@ fun DestinationComponentDetails(
         })
 
         Text(
-            text = stateVal.value,
+            text = stateVal,
             fontFamily = Montserrat,
             fontSize = 14.sp,
             modifier = Modifier

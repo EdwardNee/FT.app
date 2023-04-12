@@ -25,6 +25,11 @@ sealed class AppDestination(
     /**
      * AuthScreen screen destination.
      */
+    object HomeScreen : NoArgumentDestination(ScreenValues.HOME)
+
+    /**
+     * AuthScreen screen destination.
+     */
     object AuthScreen : NoArgumentDestination(ScreenValues.AUTH)
 
     /**

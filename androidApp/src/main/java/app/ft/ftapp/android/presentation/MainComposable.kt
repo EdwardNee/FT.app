@@ -29,6 +29,8 @@ import app.ft.ftapp.android.presentation.common.Keyboard
 import app.ft.ftapp.android.presentation.common.keyboardAsState
 import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
 import app.ft.ftapp.android.presentation.creation.SuccessView
+import app.ft.ftapp.android.presentation.home.HomeScreen
+//import app.ft.ftapp.android.presentation.home.HomeScreen
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.ui.ScreenValues
@@ -74,9 +76,10 @@ fun MainComposable() {
 @Composable
 fun BottomNavs() {
     val items = listOf(
-        BottomNavItems(Icons.Filled.Home, ScreenValues.ANNOUNCES_LIST),
-        BottomNavItems(Icons.Filled.Add, ScreenValues.CREATION),
-        BottomNavItems(Icons.Filled.Search, ScreenValues.ANNOUNCE_DETAIL),
+        BottomNavItems(description = ScreenValues.ANNOUNCES_LIST, imageVector = Icons.Filled.Home),
+        BottomNavItems(description = ScreenValues.HOME, imageVector = Icons.Filled.Home),
+        BottomNavItems(description = ScreenValues.CREATION, imageVector = Icons.Filled.Add),
+        BottomNavItems(description = ScreenValues.ANNOUNCE_DETAIL, imageVector = Icons.Filled.Search),
     )
 
     val isKeyboardOpen by keyboardAsState()
@@ -90,7 +93,7 @@ fun BottomNavs() {
                 BottomNavigationItem(
                     icon = {
                         Icon(
-                            item.imageVector,
+                            item.imageVector ?: Icons.Filled.Home,
                             item.description,
                             modifier = Modifier.size(30.dp)
                         )
@@ -130,6 +133,11 @@ fun NavGraph(navController: NavHostController, modifier: Modifier) {
             BackHandler(true) {} //при выходе из профиля отключаю кнопку назад
             AuthScreen()
         }
+
+        composable(destination = AppDestination.HomeScreen) {
+            HomeScreen()
+        }
+
 
         composable(destination = AppDestination.ListAnnounces) {
 //            AnnounceScreen()

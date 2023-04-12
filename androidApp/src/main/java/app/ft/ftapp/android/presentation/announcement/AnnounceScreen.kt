@@ -1,5 +1,6 @@
 package app.ft.ftapp.android.presentation.announcement
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimme
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
+import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.presentation.viewmodels.AnnounceListEvent
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 
@@ -32,6 +34,7 @@ fun AnnounceScreen(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .background(appBackground)
             .padding(horizontal = 8.dp)
     ) {
         HeaderText(text = stringResource(id = R.string.available_announces))

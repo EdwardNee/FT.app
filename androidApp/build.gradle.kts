@@ -40,6 +40,11 @@ dependencies {
     implementation(libs.bundles.composeLibs)
     implementation(libs.bundles.coroutines)
     implementation(libs.kodeinDi)
+    // Accompanist
+    implementation("com.google.accompanist:accompanist-pager:0.14.0") // Pager
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.14.0") // Pager Indicators
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
 //    implementation("androidx.compose.ui:ui:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling:1.2.1")
 //    implementation("androidx.compose.ui:ui-tooling-preview:1.2.1")
