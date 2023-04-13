@@ -20,7 +20,7 @@ class AnnounceDbMapper {
                 placeTo = placeTo,
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
-                comment = COMMENT,
+                comment = COMMENT ?: "",
             )
         }
     }
@@ -33,7 +33,7 @@ class AnnounceDbMapper {
             AnnounceSQ(
                 id = id,
                 author = author,
-                email = email,
+                email = email ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
 //                participants = participants,

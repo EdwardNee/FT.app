@@ -58,7 +58,7 @@ class CreationViewModel : BaseViewModel() {
     val endDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val comment = MutableStateFlow<String>("").cMutableStateFlow()
     val price = MutableStateFlow<Int>(0).cMutableStateFlow()
-    val countOfParticipants = MutableStateFlow<Int>(0).cMutableStateFlow()
+    val countOfParticipants = MutableStateFlow<Int>(3).cMutableStateFlow()
 
     val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
 
@@ -104,8 +104,8 @@ class CreationViewModel : BaseViewModel() {
 
             is CreationEvent.Action.OnPublish -> {
                 val announce = Announce(
-                    author = "",
-                    email = "",
+                    author = author.value,
+                    email = email.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
                     participants = emptyList(),
