@@ -6,6 +6,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,9 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.announce_details.FromToText
+import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.ui.theme.bottomNavColor
+import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 
 /**
  * Current screen view.
@@ -28,6 +32,9 @@ import app.ft.ftapp.android.ui.theme.bottomNavColor
 @Preview
 @Composable
 fun CurrentScreen() {
+    val viewModel = setupViewModel<HomeViewModel>()
+    val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +69,7 @@ fun CurrentScreen() {
             )
         }
 
-        FromToText("from adrees", "to address")
+        FromToText(assignedAnnounce?.placeFrom ?: "", assignedAnnounce?.placeTo ?: "")
         Divider(color = Color.Black, thickness = 0.4.dp)
 
         Row(
@@ -93,7 +100,7 @@ fun CurrentScreen() {
                 fontSize = 16.sp
             )
             Text(
-                "4",
+                assignedAnnounce?.countOfParticipants.toString(),
                 fontFamily = Montserrat,
                 modifier = Modifier
                     .padding(end = 8.dp)

@@ -3,27 +3,36 @@ package app.ft.ftapp.android.presentation.home
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
+import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
+import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.presentation.viewmodels.HomeModelState
+import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
@@ -32,6 +41,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun HomeScreen() {
+    val viewModel = setupViewModel<HomeViewModel>()
     val items = listOf(
         BottomNavItems(ScreenValues.CURRENT),
         BottomNavItems(ScreenValues.HISTORY)
@@ -87,7 +97,7 @@ fun HomeScreen() {
                     )
             )
         }
-        TabComposable()
+        TabComposable(viewModel)
     }
 }
 
@@ -96,7 +106,19 @@ fun HomeScreen() {
  */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TabComposable() {
+fun TabComposable(viewModel: HomeViewModel) {
+    val scope = rememberCoroutineScope()
+
+    val uiState = remember { mutableStateOf<HomeModelState>(HomeModelState.Loading) }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            viewModel.uiState.collect {
+                uiState.value = it
+            }
+        }
+    }
+
     val items = listOf(
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
@@ -109,14 +131,56 @@ fun TabComposable() {
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
-    Scaffold(
-        topBar = { },
-    ) {
-        it
-        Column {
-            Tabs(tabs = items, pagerState = pagerState)
-            TabsContent(tabs = items, pagerState = pagerState)
+    Scaffold(topBar = { }) {
+        Column(Modifier.padding(it)) {
+            when (uiState.value) {
+                is HomeModelState.Error -> {
+                    ErrorView()
+                }
+                HomeModelState.Loading -> {
+                    LoadingView()
+                }
+                is HomeModelState.Success<*> -> {
+                    Tabs(tabs = items, pagerState = pagerState)
+                    TabsContent(tabs = items, pagerState = pagerState)
+                }
+            }
+
         }
+    }
+}
+
+/**
+ * Error while loading view.
+ */
+@Composable
+fun ErrorView() {
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Ошибка при загрузке данных", fontFamily = Montserrat, fontSize = 18.sp)
+        Button(
+            border = null,
+            modifier = Modifier.size(72.dp),
+            elevation = null,
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Transparent,
+                contentColor = Color.Transparent,
+                disabledBackgroundColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(30.dp)
+        ) {
+            Image(
+                modifier = Modifier.size(50.dp),
+                imageVector = Icons.Filled.Refresh,
+                contentDescription = "retry",
+                colorFilter = ColorFilter.tint(Color.Green)
+            )
+        }
+
     }
 }
 

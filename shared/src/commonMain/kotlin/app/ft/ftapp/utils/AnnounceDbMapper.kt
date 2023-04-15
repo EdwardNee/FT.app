@@ -14,6 +14,7 @@ class AnnounceDbMapper {
         return with(announceSQ) {
             Announce(
                 id = id,
+                timeRemained = 0L,
                 author = author,
                 email = email,
                 placeFrom = placeFrom,

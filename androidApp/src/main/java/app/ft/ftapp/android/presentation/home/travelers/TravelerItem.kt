@@ -12,14 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.ui.theme.blueTextColor
+import app.ft.ftapp.domain.models.Participant
 
 @Composable
-@Preview
-fun TravelerItem() {
+fun TravelerItem(participant: Participant) {
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(10.dp),
@@ -28,9 +27,9 @@ fun TravelerItem() {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Rounded.Person, "", modifier = Modifier.size(84.dp))
             Column() {
-                Text("Даниил Ефимов", fontSize = 18.sp)
+                Text(participant.username, fontSize = 18.sp)
                 Text(
-                    "daefimov@edu.hse.ru",
+                    participant.email,
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     fontSize = 16.sp

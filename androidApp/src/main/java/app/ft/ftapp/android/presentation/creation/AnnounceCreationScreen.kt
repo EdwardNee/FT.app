@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +32,7 @@ import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
@@ -41,6 +41,7 @@ import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 
 /**
@@ -49,6 +50,7 @@ import java.time.LocalTime
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AnnounceCreationScreen(onAction: () -> Unit) {
+    val scope = rememberCoroutineScope()
     val viewModel = setupViewModel<CreationViewModel>()
     val progress by viewModel.isShowProgress.collectAsState()
 
@@ -81,17 +83,33 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val focusManager = LocalFocusManager.current
     val bringIntoViewRequester = BringIntoViewRequester()
 
-    when (loadResult) {
-        ModelsState.Loading -> {}
-        is ModelsState.Error -> {
-            Toast.makeText(
-                LocalContext.current, (loadResult as ModelsState.Error).message, Toast.LENGTH_LONG
-            ).show()
-        }
-        ModelsState.Success -> {
-            onAction()
+    LaunchedEffect(Unit) {
+        scope.launch {
+            viewModel.loadResult.collect {
+                when (it) {
+                    ModelsState.Loading -> {}
+                    is ModelsState.Error -> {
+                        Toast.makeText(DIFactory.initCtx, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    ModelsState.Success -> {
+                        onAction()
+                    }
+                }
+            }
         }
     }
+
+//    when (loadResult) {
+//        ModelsState.Loading -> {}
+//        is ModelsState.Error -> {
+//            Toast.makeText(
+//                LocalContext.current, (loadResult as ModelsState.Error).message, Toast.LENGTH_LONG
+//            ).show()
+//        }
+//        ModelsState.Success -> {
+//            onAction()
+//        }
+//    }
 
     Spacer(modifier = Modifier.padding(40.dp))
     Column(

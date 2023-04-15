@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val bottom =insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             view.updatePadding(bottom = bottom)
             insets
         }

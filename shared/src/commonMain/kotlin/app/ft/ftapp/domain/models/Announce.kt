@@ -9,6 +9,7 @@ import kotlinx.serialization.Transient
 @Serializable
 data class Announce(
     @Transient val id: Int = 0,
+    @Transient val timeRemained: Long = 0,
     val author: String = "",
     val email: String? = "",
     val placeFrom: String = "",

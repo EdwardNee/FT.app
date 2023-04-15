@@ -2,6 +2,8 @@ package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
+import app.ft.ftapp.domain.models.TravelerUser
+import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
@@ -16,9 +18,12 @@ import org.kodein.di.instance
  * ViewModel for Announces screen list.
  */
 class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : BaseViewModel() {
+    //region DI
     private val getAnnouncements: GetAnnouncementsUseCase by kodein.instance()
     private val getAnnouncementsDb: GetAllAnnouncesFromDb by kodein.instance()
     private val insertAnnounceToDb: InsertAnnounceToDbUseCase by kodein.instance()
+    private val becomeTraveler: BecomeTravelerUseCase by kodein.instance()
+    //endregion
 
     private val _announcesList = MutableStateFlow(emptyList<Announce>())
     val announcesList: StateFlow<List<Announce>>
@@ -36,6 +41,10 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
         }
     }
 
+    fun setList(list: List<Announce>) {
+        _announcesList.value = list
+    }
+
     /**
      * AnnounceScreen OnEvent calls.
      */
@@ -46,10 +55,13 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             }
             is AnnounceListEvent.OnDetails -> {
                 preferencesHelper.chosenDetailId = event.announceId
-                event.onAction()
+//                event.onAction()
             }
             is AnnounceListEvent.InsertToDb -> {
                 insertAnnouncesToDbCall(event.announces)
+            }
+            is AnnounceListEvent.OnBecomeTraveler -> {
+                becomeTravelerCall(event.travelId)
             }
         }
     }
@@ -67,7 +79,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
                         _announcesList.value = it.model
                     }
                     is ServerResult.UnsuccessfulResult -> {
-                        println("TAG_ERROR, ${it.error}")
+                        println("TAG_OF_RES, ${it.error}")
                     }
                 }
             }
@@ -86,6 +98,22 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             }
         }
     }
+
+    private fun becomeTravelerCall(travelId: Long) {
+        viewModelScope.launch {
+            val result = becomeTraveler(TravelerUser(travelId, ""))
+
+            when(result) {
+
+                is ServerResult.SuccessfulResult -> {
+                    println("TAG_OF_RES ${result.model}")
+                }
+                is ServerResult.UnsuccessfulResult -> {
+                    println("TAG_OF_RES ${result.error}")
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -93,6 +121,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
  */
 sealed class AnnounceListEvent {
     object GetAnnounces : AnnounceListEvent()
+    class OnBecomeTraveler(val travelId: Long) : AnnounceListEvent()
     class InsertToDb(val announces: List<Announce>) : AnnounceListEvent()
     class OnDetails(val announceId: String, val onAction: () -> Unit) : AnnounceListEvent()
 }

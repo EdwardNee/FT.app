@@ -22,7 +22,7 @@ import app.ft.ftapp.domain.models.Announce
  * Announcement card composable method to draw.
  */
 @Composable
-fun AnnounceCard(announce: Announce, onClick: (Announce) -> Unit) {
+fun AnnounceCard(announce: Announce, onClickInfo: (Announce) -> Unit, onClickBecome: (Long) -> Unit) {
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(15.dp),
@@ -66,9 +66,11 @@ fun AnnounceCard(announce: Announce, onClick: (Announce) -> Unit) {
                         .weight(1f)
                         .padding(end = 8.dp)
                 ) {
-                    onClick(announce)
+                    onClickInfo(announce)
                 }
-                AnnounceButton(Modifier.weight(1f)) {}
+                AnnounceButton(Modifier.weight(1f)) {
+                    onClickBecome(announce.id.toLong())
+                }
             }
         }
     }

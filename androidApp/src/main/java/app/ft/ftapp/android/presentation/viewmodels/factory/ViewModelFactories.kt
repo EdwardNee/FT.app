@@ -7,6 +7,7 @@ import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.DetailsViewModel
+import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import app.ft.ftapp.utils.PreferencesHelper
 import org.kodein.di.instance
 
@@ -27,6 +28,7 @@ class NoArgsViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
                 val preferences: PreferencesHelper by kodein.instance()
                 DetailsViewModel(preferences)
             }
+            HomeViewModel::class.java -> HomeViewModel()
             else -> throw IllegalArgumentException("$modelClass is not registered ViewModel")
         } as T
 }

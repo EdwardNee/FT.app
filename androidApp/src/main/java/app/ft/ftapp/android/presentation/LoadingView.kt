@@ -26,7 +26,7 @@ fun LoadingView() {
                 interactionSource = MutableInteractionSource()
             )
             .fillMaxSize()
-            .background(Color.Gray.copy(alpha = 0.6f)),
+            .background(Color.LightGray.copy(alpha = 0.6f)),
     ) {
         CircularProgressIndicator(
             color = Color.Magenta,

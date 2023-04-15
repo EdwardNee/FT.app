@@ -6,13 +6,21 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
+import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 
 @Composable
 fun ListTravelers() {
+    val viewModel = setupViewModel<HomeViewModel>()
+    val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -20,9 +28,12 @@ fun ListTravelers() {
             .background(appBackground)
             .padding(horizontal = 8.dp)
     ) {
-        LazyColumn(Modifier.fillMaxHeight().padding(top = 8.dp)) {
-            items(5) {
-                TravelerItem()
+        LazyColumn(
+            Modifier
+                .fillMaxHeight()
+                .padding(top = 8.dp)) {
+            items(assignedAnnounce?.participants ?: emptyList()) {
+                TravelerItem(it)
             }
         }
     }
