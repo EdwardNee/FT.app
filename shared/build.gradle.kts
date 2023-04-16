@@ -34,8 +34,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.kodeinDi)
                 implementation(libs.bundles.ktorClient)
+                implementation(libs.ktxDateTime)
+                implementation(libs.kodeinDi)
                 implementation(libs.sqldelightRuntime)
                 api(libs.mokoRes)
                 api(libs.bundles.mokoMvvmCommon)

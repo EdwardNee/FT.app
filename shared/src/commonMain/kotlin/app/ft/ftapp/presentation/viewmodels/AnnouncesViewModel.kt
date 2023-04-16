@@ -1,5 +1,6 @@
 package app.ft.ftapp.presentation.viewmodels
 
+import app.ft.ftapp.EMAIL
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
@@ -101,7 +102,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
 
     private fun becomeTravelerCall(travelId: Long) {
         viewModelScope.launch {
-            val result = becomeTraveler(TravelerUser(travelId, ""))
+            val result = becomeTraveler(TravelerUser(travelId, EMAIL))
 
             when(result) {
 

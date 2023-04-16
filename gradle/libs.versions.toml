@@ -7,6 +7,10 @@ coroutinesVersion = "1.6.4"
 
 composeNavigationVersion = "2.5.3"
 
+accompanistVersion = "0.14.0"
+
+maxkeppelerVersion = "1.0.2"
+
 ktorVersionClient = "2.1.2"
 
 ktxJsonSer = "1.6.20"
@@ -20,6 +24,8 @@ mokoResVersion = "0.20.1"
 mokoMvvmVersion = "0.14.0"
 
 sqlDelightVersion = "1.5.3"
+
+ktxDateTimeVersion = "0.4.0"
 
 [libraries]
 # ktor
@@ -43,6 +49,15 @@ cmsFoundation = { module = "androidx.compose.foundation:foundation", version.ref
 cmsMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
 cmsActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
 cmsNavigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigationVersion" }
+
+# accompanist
+accompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
+accompanistPagerIndicator = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
+
+# maxkeeper
+maxkeppelerCore = { module = "com.maxkeppeler.sheets-compose-dialogs:core", version.ref = "maxkeppelerVersion" }
+maxkeppelerClock = { module = "com.maxkeppeler.sheets-compose-dialogs:clock", version.ref = "maxkeppelerVersion" }
+
 
 # coroutines
 coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
@@ -73,6 +88,9 @@ kodeinDi = { module = "org.kodein.di:kodein-di", version.ref = "kodeinVersion" }
 sqldelightRuntime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqlDelightVersion" }
 sqldelightAndroid = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
 sqldelightNative = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqlDelightVersion" }
+
+# datetime
+ktxDateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "ktxDateTimeVersion" }
 
 
 # plugins
@@ -123,6 +141,14 @@ composeLibs = [
     "cmsFoundation",
     "cmsMaterial",
     "cmsActivity",
-    "cmsNavigation"
+    "cmsNavigation",
+    "accompanistPager",
+    "accompanistPagerIndicator"
 ]
+
+maxkeeperLibs = [
+    "maxkeppelerCore",
+    "maxkeppelerClock"
+]
+
 plugins = ["ktxSerialization"]

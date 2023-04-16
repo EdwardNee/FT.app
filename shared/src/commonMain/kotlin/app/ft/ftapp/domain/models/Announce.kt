@@ -1,5 +1,6 @@
 package app.ft.ftapp.domain.models
 
+import kotlinx.datetime.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -12,6 +13,8 @@ data class Announce(
     @Transient val timeRemained: Long = 0,
     val author: String = "",
     val email: String? = "",
+    val createTime: String = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
+    val startTime: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     val placeFrom: String = "",
     val placeTo: String = "",
     val participants: List<Participant>? = emptyList(),
