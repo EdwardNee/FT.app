@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.namesColor
-import kotlin.random.Random
 
 /**
  * Composable method to draw a Chat message element.

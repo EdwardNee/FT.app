@@ -3,14 +3,35 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".MyApplication"
+        android:name="app.ft.ftapp.android.MyApplication"
         android:allowBackup="false"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="auth.hse.ru.client_id"
+            android:value="client_id" />
+
+        <meta-data
+            android:name="auth.hse.ru.redirect_uri"
+            android:value="redirect" />
+
         <activity
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
-            android:name=".MainActivity"
+            android:name="app.ft.ftapp.android.MainActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="https://ftapp.herokuapp.com/auth/hse_redirect"
+                    android:scheme="redir" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

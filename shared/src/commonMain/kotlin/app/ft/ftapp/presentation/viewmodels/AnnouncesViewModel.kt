@@ -4,6 +4,7 @@ import app.ft.ftapp.EMAIL
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
+import app.ft.ftapp.domain.models.toAnnounce
 import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
 import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
@@ -12,6 +13,7 @@ import app.ft.ftapp.utils.PreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 
@@ -32,18 +34,25 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
 
     init {
         viewModelScope.launch {
-            val result = getAnnouncementsDb()
+//            val result = getAnnouncementsDb()
+//
+//            if (result.isEmpty()) {
+//                onEvent(AnnounceListEvent.GetAnnounces)
+//            } else {
+//                _announcesList.value = result
+//            }
 
-            if (result.isEmpty()) {
-                onEvent(AnnounceListEvent.GetAnnounces)
-            } else {
-                _announcesList.value = result
+            announcesList.collectLatest {
+                onEvent(AnnounceListEvent.InsertToDb(it))
             }
         }
     }
 
     fun setList(list: List<Announce>) {
-        _announcesList.value = list
+        println("TAG_OF_REF setlist ${list.size}")
+        val lst = mutableListOf<Announce>()
+        lst.addAll(list)
+        _announcesList.value = lst
     }
 
     /**
@@ -56,6 +65,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             }
             is AnnounceListEvent.OnDetails -> {
                 preferencesHelper.chosenDetailId = event.announceId
+                println("TAG_OF_REF ${event.announceId} ad ${preferencesHelper.chosenDetailId}")
 //                event.onAction()
             }
             is AnnounceListEvent.InsertToDb -> {
@@ -73,11 +83,11 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     private fun getAnnounces() {
         showProgress()
         viewModelScope.launch {
-            val result = getAnnouncements()
+            val result = getAnnouncements(0, 10)
             result.let {
                 when (it) {
                     is ServerResult.SuccessfulResult -> {
-                        _announcesList.value = it.model
+                        _announcesList.value = it.model.toAnnounce()
                     }
                     is ServerResult.UnsuccessfulResult -> {
                         println("TAG_OF_RES, ${it.error}")
@@ -94,6 +104,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
      */
     private fun insertAnnouncesToDbCall(announces: List<Announce>) {
         viewModelScope.launch {
+
             announces.forEach { announce ->
                 insertAnnounceToDb(announce)
             }

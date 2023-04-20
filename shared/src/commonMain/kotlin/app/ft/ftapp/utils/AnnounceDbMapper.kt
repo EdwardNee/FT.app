@@ -16,7 +16,6 @@ class AnnounceDbMapper {
                 id = id,
                 timeRemained = 0L,
                 author = author,
-                email = email,
                 placeFrom = placeFrom,
                 placeTo = placeTo,
 //                participants = participants,
@@ -33,8 +32,7 @@ class AnnounceDbMapper {
         return with(announce) {
             AnnounceSQ(
                 id = id,
-                author = author,
-                email = email ?: "",
+                author = author ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
 //                participants = participants,

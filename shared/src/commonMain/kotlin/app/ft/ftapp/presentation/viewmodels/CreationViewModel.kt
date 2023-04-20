@@ -1,11 +1,11 @@
 package app.ft.ftapp.presentation.viewmodels
 
+import app.ft.ftapp.clid
 import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
-import clid
+import app.ft.ftapp.key_yandex
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
-import key_yandex
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
@@ -105,7 +105,6 @@ class CreationViewModel : BaseViewModel() {
             is CreationEvent.Action.OnPublish -> {
                 val announce = Announce(
                     author = author.value,
-                    email = email.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
                     participants = emptyList(),

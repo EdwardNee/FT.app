@@ -5,22 +5,29 @@ import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import androidx.paging.map
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
+import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
+import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.AnnounceListEvent
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
+import app.ft.ftapp.client_ID
+import kotlinx.coroutines.launch
 
 /**
  * Composable timer with [Handler].
@@ -51,10 +58,17 @@ fun counterTimer(items: List<Announce>): List<Announce> {
  */
 @Composable
 fun AnnounceScreen(onClick: () -> Unit) {
+
+    val isLoad = remember { mutableStateOf(true) }
     val viewModel = setupViewModel<AnnouncesViewModel>()
+    val screenViewModel: AnnounceScreenViewModel = setupViewModel<AnnounceScreenViewModel>(
+        ArgsViewModelFactory(FactoryArgs(viewModel))
+    )
+    val announcesList = screenViewModel.pagerAnnounces.collectAsLazyPagingItems()
+    viewModel.setList(announcesList.itemSnapshotList.items)
 
     val isLoading by viewModel.isShowProgress.collectAsState()
-    val announcesList by viewModel.announcesList.collectAsState()
+    val announces by viewModel.announcesList.collectAsState()
 
     Column(
         modifier = Modifier
@@ -65,7 +79,7 @@ fun AnnounceScreen(onClick: () -> Unit) {
     ) {
         HeaderText(text = stringResource(id = R.string.available_announces))
 
-        viewModel.setList(counterTimer(announcesList))
+//        viewModel.setList(counterTimer(announcesList))
 //        var isLoading by remember {
 //            mutableStateOf(true)
 //        }
@@ -73,19 +87,56 @@ fun AnnounceScreen(onClick: () -> Unit) {
 //            delay(1000)
 //            isLoading = !isLoading
 //        }
+
         LazyColumn {
-            items(if (isLoading) 10 else announcesList.size) { idx ->
-                Box(modifier = Modifier.padding(bottom = if (isLoading) 15.dp else 30.dp)) {
-                    ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {
-                        AnnounceCard(announcesList[idx], onClickInfo = {
-                            viewModel.onEvent(AnnounceListEvent.OnDetails(announcesList[idx].id.toString()) { })
-                            onClick()
-                        }) {
-                            viewModel.onEvent(AnnounceListEvent.OnBecomeTraveler(it))
+            items(if (announcesList.itemCount == 0) 3 else announcesList.itemCount) { idx ->
+                when (announcesList.loadState.refresh) {
+                    is LoadState.NotLoading -> {
+                        println("TAG_OF_RERE notl")
+                        isLoad.value = false
+                    }
+                    LoadState.Loading -> {
+                        println("TAG_OF_RERE l")
+                        isLoad.value = true
+                    }
+                    is LoadState.Error -> TODO()
+                    else -> {
+                        println("TAG_OF_RERE a ")
+                        viewModel.showProgress()
+                    }
+                }
+
+                Box(modifier = Modifier.padding(bottom = if (isLoad.value) 15.dp else 30.dp)) {
+                    ShimmerItem(isLoading = isLoad.value, pattern = { AnnounceCardShimmer() }) {
+                        if (announcesList.itemCount > 0) {
+                            val current = announcesList[idx]
+                            current?.let {
+                                AnnounceCard(it, onClickInfo = {
+                                    println("TAG_OF_REF comp ${current} $idx")
+                                    viewModel.onEvent(AnnounceListEvent.OnDetails(current.id.toString()) { })
+                                    onClick()
+                                }) {
+                                    viewModel.onEvent(AnnounceListEvent.OnBecomeTraveler(it))
+                                }
+                            }
                         }
                     }
                 }
             }
+//            items(if (isLoading) 10 else announcesList.itemCount) { idx ->
+//                Box(modifier = Modifier.padding(bottom = if (isLoading) 15.dp else 30.dp)) {
+//                    ShimmerItem(isLoading = isLoading, pattern = { AnnounceCardShimmer() }) {
+//                        val current = announcesList[idx]!!
+//                        AnnounceCard(current, onClickInfo = {
+//                            println("TAG_OF_REF comp ${current} $idx")
+//                            viewModel.onEvent(AnnounceListEvent.OnDetails(current.id.toString()) { })
+//                            onClick()
+//                        }) {
+//                            viewModel.onEvent(AnnounceListEvent.OnBecomeTraveler(it))
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }

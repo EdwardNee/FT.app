@@ -28,14 +28,14 @@ abstract class BaseViewModel : ViewModel() {
     /**
      * Emits value to flow to show progress loading.
      */
-    protected fun showProgress() {
+    fun showProgress() {
         isShowProgressMutable.value = true
     }
 
     /**
      * Emits value to flow to stop showing progress loading.
      */
-    protected fun hideProgress() {
+    fun hideProgress() {
         isShowProgressMutable.value = false
     }
 }

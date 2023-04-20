@@ -109,6 +109,7 @@ multiplatformResources {
 }
 
 dependencies {
+    implementation("androidx.paging:paging-common-ktx:3.1.1")
     commonMainApi(libs.mokoRes)
     commonMainImplementation("dev.icerock.moko:parcelize:0.4.0")
     commonMainImplementation("dev.icerock.moko:graphics:0.4.0")

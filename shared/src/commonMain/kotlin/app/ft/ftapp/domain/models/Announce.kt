@@ -9,12 +9,11 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 data class Announce(
-    @Transient val id: Int = 0,
+    val id: Int = 0,
     @Transient val timeRemained: Long = 0,
-    val author: String = "",
-    val email: String? = "",
-    val createTime: String = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
-    val startTime: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    val author: String? = "",
+    val createTime: String? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
+    val startTime: String? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
     val placeFrom: String = "",
     val placeTo: String = "",
     val participants: List<Participant>? = emptyList(),

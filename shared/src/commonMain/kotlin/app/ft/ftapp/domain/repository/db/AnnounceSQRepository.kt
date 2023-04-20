@@ -15,8 +15,7 @@ class AnnounceSQRepository(databaseDriverFactory: DatabaseDriverFactory) : IAnno
         with(announce) {
             query.insertAnnounce(
                 id = id,
-                author = author,
-                email = email,
+                author = author ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
                 countOfParticipants = countOfParticipants,

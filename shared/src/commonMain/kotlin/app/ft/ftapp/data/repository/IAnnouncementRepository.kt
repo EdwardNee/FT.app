@@ -1,6 +1,7 @@
 package app.ft.ftapp.data.repository
 
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.models.PagingAnnounce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
 
@@ -11,7 +12,7 @@ interface IAnnouncementRepository {
     /**
      * Gets all the announces from the server.
      */
-    suspend fun getAvailableAnnouncements(): ServerResult<List<Announce>>
+    suspend fun getAvailableAnnouncements(offset: Int, limit: Int): ServerResult<PagingAnnounce>
 
     /**
      * POSTs [Announce] to the server.

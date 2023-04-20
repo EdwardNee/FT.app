@@ -8,8 +8,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 
 class Api(private val client: HttpClient) {
-    suspend fun getAnnouncements(): HttpResponse {
-        return client.post("/api/travel/getAllTravels")
+    suspend fun getAnnouncements(offset: Int, limit: Int): HttpResponse {
+        return client.get("/api/travel/getAllTravels") {
+            url {
+                parameters.append("offset", offset.toString())
+                parameters.append("limit", limit.toString())
+            }
+        }
     }
 
     suspend fun createAnnounce(announce: Announce): HttpResponse {
