@@ -1,5 +1,7 @@
 package app.ft.ftapp.presentation.viewmodels
 
+import app.ft.ftapp.EMAIL
+import app.ft.ftapp.NAME
 import app.ft.ftapp.clid
 import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
@@ -52,8 +54,8 @@ class CreationViewModel : BaseViewModel() {
 
     private var route = Pair(LatLng(0.0, 0.0), LatLng(0.0, 0.0))
 
-    val author = MutableStateFlow<String>("metho").cMutableStateFlow()
-    val email = MutableStateFlow<String>("adsa@edu.hse.ru").cMutableStateFlow()
+    val author = MutableStateFlow<String>(EMAIL).cMutableStateFlow()
+    val email = MutableStateFlow<String>(NAME).cMutableStateFlow()
     val sourceDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val endDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val comment = MutableStateFlow<String>("").cMutableStateFlow()
@@ -104,7 +106,7 @@ class CreationViewModel : BaseViewModel() {
 
             is CreationEvent.Action.OnPublish -> {
                 val announce = Announce(
-                    author = author.value,
+                    authorEmail = author.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
                     participants = emptyList(),

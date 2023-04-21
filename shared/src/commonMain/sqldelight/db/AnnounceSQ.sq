@@ -1,22 +1,28 @@
 CREATE TABLE AnnounceSQ (
     id INTEGER AS Int NOT NULL,
-    author TEXT NOT NULL,
+    chatId INTEGER AS Int NOT NULL,
+    authorEmail TEXT NOT NULL,
     placeFrom TEXT NOT NULL,
     placeTo TEXT NOT NULL,
+    createTime TEXT,
+    startTime TEXT,
     countOfParticipants INTEGER AS Int DEFAULT 4 NOT NULL,
-    COMMENT TEXT,
+    comment TEXT,
     PRIMARY KEY(id)
 );
 
 insertAnnounce:
 INSERT OR REPLACE INTO AnnounceSQ(
     id,
-    author,
+    chatId,
+    authorEmail,
     placeFrom,
     placeTo,
+    createTime,
+    startTime,
     countOfParticipants,
-    COMMENT
-) VALUES(?,?,?,?,?,?);
+    comment
+) VALUES(?,?,?,?,?,?,?,?,?);
 
 getAllAnnounces:
 SELECT * FROM AnnounceSQ;

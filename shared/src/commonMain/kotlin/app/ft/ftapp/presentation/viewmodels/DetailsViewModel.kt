@@ -41,9 +41,8 @@ class DetailsViewModel(private val preferencesHelper: PreferencesHelper) : BaseV
     /**
      * Gets announce id from Preferences.
      */
-    private suspend fun getFromPrefs() {
+    private fun getFromPrefs() {
         announceId = preferencesHelper.chosenDetailId
-        println("TAG_OF_REF $announceId;;;; ${getAllFromDb.invoke()}")
     }
 
     /**

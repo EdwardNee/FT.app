@@ -16,15 +16,15 @@ object TimeUtil {
     /**
      * Counts minutes left until [until] event.
      */
-    fun getMinutesLeft(until: Date): Long {
-        return ceil((until.time - Date().time) / 60_000.0).toLong()
+    fun getMinutesLeft(fromDate: Long = Date().time, until: Date): Long {
+        return ceil((until.time - fromDate) / 60_000.0).toLong()
     }
 
     /**
      * Counts minutes left until [until] event.
      */
-    fun getMinutesLeft(until: Long): Long {
-        return ceil((until - Date().time) / 60_000.0).toLong()
+    fun getMinutesLeft(fromDate: Long = Date().time, until: Long): Long {
+        return ceil((until - fromDate) / 60_000.0).toLong()
     }
 }
 

@@ -1,8 +1,10 @@
 package app.ft.ftapp.android
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
@@ -12,32 +14,39 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import app.ft.ftapp.android.presentation.MainComposable
+import com.hse.core.BaseApplication
+import com.hse.core.ui.BaseActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
 
-    val REQUEST_LOGIN = 510
-//    override fun onNewIntent(intent: Intent?) {
-//        AuthHelper.onNewIntent(intent, this, REQUEST_LOGIN)
-//        super.onNewIntent(intent)
-//    }
-//
+    private val REQUEST_LOGIN = 5
+
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
-//        when (requestCode) {
-//            REQUEST_LOGIN -> {
-//                if (resultCode != Activity.RESULT_OK || data == null) return
-//                val accessToken = data.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
-//                val refreshToken = data.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
-////                viewModel.updateLoginState(accessToken, refreshToken)
-//            }
+//        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
+//        if (resultCode == Activity.RESULT_OK) {
+//            Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
 //        }
 //    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (resultCode == Activity.RESULT_OK) {
+        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
+            Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
+        super.onActivityResult(requestCode, resultCode, data)
+//        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
+        BaseApplication.appComponent.inject(this)
+
         super.onCreate(savedInstanceState)
         setContent {
             MainComposable()
+//            Button({AuthHelper.login(this, REQUEST_LOGIN)}) {
+//                Text("Adsadб ")
+//            }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->

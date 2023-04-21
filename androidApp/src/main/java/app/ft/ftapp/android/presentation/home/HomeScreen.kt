@@ -3,23 +3,27 @@ package app.ft.ftapp.android.presentation.home
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
+import app.ft.ftapp.EMAIL
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
@@ -31,6 +35,7 @@ import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeModelState
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import com.google.accompanist.pager.*
@@ -43,8 +48,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen() {
     val viewModel = setupViewModel<HomeViewModel>()
     val items = listOf(
-        BottomNavItems(ScreenValues.CURRENT),
-        BottomNavItems(ScreenValues.HISTORY)
+        BottomNavItems(ScreenValues.CURRENT), BottomNavItems(ScreenValues.HISTORY)
     )
 
     val backStackEntry by SingletonHelper.appNavigator.navController.currentBackStackEntryAsState()
@@ -63,39 +67,31 @@ fun HomeScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            HeaderText(
-                text = "Текущие",
+            HeaderText(text = "Текущие",
                 color = if (isChosen) Color.Black else Color.Gray,
                 fontSize = (if (isChosen) 40 else 28).sp,
                 modifier = Modifier
                     .clickable(
-                        interactionSource = NoRippleInteractionSource(),
-                        indication = null
+                        interactionSource = NoRippleInteractionSource(), indication = null
                     ) { isChosen = true }
                     .animateContentSize(
                         animationSpec = tween(
-                            durationMillis = 200,
-                            easing = FastOutLinearInEasing
+                            durationMillis = 200, easing = FastOutLinearInEasing
                         )
-                    )
-            )
+                    ))
             Spacer(Modifier.padding(10.dp))
-            HeaderText(
-                text = "История",
+            HeaderText(text = "История",
                 color = if (isChosen) Color.Gray else Color.Black,
                 fontSize = (if (isChosen) 28 else 40).sp,
                 modifier = Modifier
                     .clickable(
-                        interactionSource = NoRippleInteractionSource(),
-                        indication = null
+                        interactionSource = NoRippleInteractionSource(), indication = null
                     ) { isChosen = false }
                     .animateContentSize(
                         animationSpec = tween(
-                            durationMillis = 200,
-                            easing = FastOutLinearInEasing
+                            durationMillis = 200, easing = FastOutLinearInEasing
                         )
-                    )
-            )
+                    ))
         }
         TabComposable(viewModel)
     }
@@ -104,11 +100,17 @@ fun HomeScreen() {
 /**
  * TabContent with tabs and tabviews.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun TabComposable(viewModel: HomeViewModel) {
     val scope = rememberCoroutineScope()
 
+    var isLoad by remember { mutableStateOf(true) }
+    val isLoading by viewModel.isShowProgress.collectAsState()
+    val stateRefresh =
+        rememberPullRefreshState(
+            isLoading,
+            { viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL)) })
     val uiState = remember { mutableStateOf<HomeModelState>(HomeModelState.Loading) }
 
     LaunchedEffect(Unit) {
@@ -120,33 +122,46 @@ fun TabComposable(viewModel: HomeViewModel) {
     }
 
     val items = listOf(
-        BottomNavItems(
-            ScreenValues.MY_ANNOUNCES,
+        BottomNavItems(ScreenValues.MY_ANNOUNCES,
             tabName = "Мои поездки",
             content = { CurrentScreen() }),
-        BottomNavItems(
-            ScreenValues.GROUP_CHAT,
+        BottomNavItems(ScreenValues.GROUP_CHAT,
             tabName = "Попутчики",
             content = { ListTravelers() })
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
-    Scaffold(topBar = { }) {
-        Column(Modifier.padding(it)) {
-            when (uiState.value) {
-                is HomeModelState.Error -> {
-                    ErrorView()
-                }
-                HomeModelState.Loading -> {
-                    LoadingView()
-                }
-                is HomeModelState.Success<*> -> {
-                    Tabs(tabs = items, pagerState = pagerState)
-                    TabsContent(tabs = items, pagerState = pagerState)
+    Box(Modifier.pullRefresh(stateRefresh)) {
+        Scaffold(topBar = { }) {
+            Column(
+                Modifier
+                    .padding(it)
+                    .fillMaxWidth()
+            ) {
+
+                when (uiState.value) {
+                    is HomeModelState.Error -> {
+                        isLoad = false
+                        ErrorView(viewModel)
+                    }
+                    HomeModelState.Loading -> {
+                        isLoad = true
+                        LoadingView()
+                    }
+                    is HomeModelState.Success<*> -> {
+                        isLoad = false
+//                    NoDataView(viewModel)
+                        Tabs(tabs = items, pagerState = pagerState)
+                        TabsContent(tabs = items, pagerState = pagerState)
+                    }
+                    HomeModelState.NoData -> {
+                        NoDataView(viewModel)
+                    }
                 }
             }
 
         }
+        PullRefreshIndicator(isLoading, stateRefresh, modifier = Modifier.align(TopCenter))
     }
 }
 
@@ -154,7 +169,7 @@ fun TabComposable(viewModel: HomeViewModel) {
  * Error while loading view.
  */
 @Composable
-fun ErrorView() {
+fun ErrorView(viewModel: HomeViewModel) {
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -165,7 +180,7 @@ fun ErrorView() {
             border = null,
             modifier = Modifier.size(72.dp),
             elevation = null,
-            onClick = {},
+            onClick = { viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
                 contentColor = Color.Transparent,
@@ -180,7 +195,26 @@ fun ErrorView() {
                 colorFilter = ColorFilter.tint(Color.Green)
             )
         }
+    }
+}
 
+@Composable
+fun NoDataView(viewModel: HomeViewModel) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
+            .background(appBackground),
+        contentAlignment = Center
+    ) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Нет активных поездок", fontFamily = Montserrat, fontSize = 18.sp)
+        }
     }
 }
 
@@ -192,8 +226,7 @@ fun ErrorView() {
 fun Tabs(tabs: List<BottomNavItems>, pagerState: PagerState) {
     val scope = rememberCoroutineScope()
 
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
+    TabRow(selectedTabIndex = pagerState.currentPage,
         backgroundColor = Color.White,
         contentColor = Color.Black,
         indicator = { tabPositions ->

@@ -15,11 +15,14 @@ class AnnounceSQRepository(databaseDriverFactory: DatabaseDriverFactory) : IAnno
         with(announce) {
             query.insertAnnounce(
                 id = id,
-                author = author ?: "",
+                chatId = chatId ?: 0,
+                authorEmail = authorEmail ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
+                startTime = startTime ?: "",
+                createTime = createTime ?: "",
                 countOfParticipants = countOfParticipants,
-                COMMENT = comment,
+                comment = comment,
             )
         }
     }

@@ -13,7 +13,7 @@ data class PagingAnnounce(
     val content: List<Announce> = emptyList(),
     val number: Int = 0,
     val sort: Sort = Sort(),
-    val pageable: Pageable = Pageable(),
+    val pageable: String = "",
     val first: Boolean = false,
     val last: Boolean = false,
     val numberOfElements: Int = 0,

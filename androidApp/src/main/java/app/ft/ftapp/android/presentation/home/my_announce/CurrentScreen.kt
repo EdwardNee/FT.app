@@ -2,7 +2,11 @@ package app.ft.ftapp.android.presentation.home.my_announce
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +28,8 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.ui.theme.bottomNavColor
+import app.ft.ftapp.android.ui.theme.chipTimeColor
+import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 
 /**
@@ -35,81 +41,126 @@ fun CurrentScreen() {
     val viewModel = setupViewModel<HomeViewModel>()
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+//    LazyColumn(Modifier.fillMaxWidth()
+//        .fillMaxHeight().background(appBackground)) {
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState())
             .background(appBackground)
-            .padding(horizontal = 8.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxHeight()
+                .background(appBackground)
+                .padding(horizontal = 8.dp)
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(bottomNavColor)
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(bottomNavColor)
+                ) {
+                    Text(
+                        "через 10 мин",
+                        fontFamily = Montserrat,
+                        modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
+                        color = Color.White
+                    )
+                }
+
                 Text(
-                    "через 10 мин",
+                    "сегодня в 12:43",
                     fontFamily = Montserrat,
-                    modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
-                    color = Color.White
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
             }
 
-            Text(
-                "сегодня в 12:43",
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        }
+            FromToText(assignedAnnounce?.placeFrom ?: "", assignedAnnounce?.placeTo ?: "")
+            Divider(color = Color.Black, thickness = 0.4.dp)
 
-        FromToText(assignedAnnounce?.placeFrom ?: "", assignedAnnounce?.placeTo ?: "")
-        Divider(color = Color.Black, thickness = 0.4.dp)
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(id = R.string.car_price), fontFamily = Montserrat, fontSize = 16.sp)
-            Text("560 P", fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        }
-        Divider(color = Color.Black, thickness = 0.4.dp)
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Посмотреть попутчиков",
-                fontFamily = Montserrat,
-                modifier = Modifier.weight(2f),
-                maxLines = 1,
-                textAlign = TextAlign.End,
-                fontSize = 16.sp
-            )
-            Text(
-                assignedAnnounce?.countOfParticipants.toString(),
-                fontFamily = Montserrat,
+            Row(
                 modifier = Modifier
-                    .padding(end = 8.dp)
-                    .weight(1f),
-                textAlign = TextAlign.End,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(id = R.string.car_price),
+                    fontFamily = Montserrat,
+                    fontSize = 16.sp
+                )
+                Text(
+                    "560 P",
+                    fontFamily = Montserrat,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+            Divider(color = Color.Black, thickness = 0.4.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Посмотреть попутчиков",
+                    fontFamily = Montserrat,
+                    modifier = Modifier.weight(2f),
+                    maxLines = 1,
+                    textAlign = TextAlign.End,
+                    fontSize = 16.sp
+                )
+                Text(
+                    assignedAnnounce?.countOfParticipants.toString(),
+                    fontFamily = Montserrat,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .weight(1f),
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+            Divider(color = Color.Black, thickness = 0.4.dp)
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End)
+                    .clip(RoundedCornerShape(6.dp))
+                    .padding(bottom = 50.dp),
+                onClick = {
+                    viewModel.onEvent(
+                        HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
+                    )
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor)
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontFamily = Montserrat,
+                    text = "Удалить поездку",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+            }
+//            }
         }
-        Divider(color = Color.Black, thickness = 0.4.dp)
     }
 }

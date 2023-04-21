@@ -24,5 +24,3 @@ dependencyResolutionManagement {
 rootProject.name = "FTapp"
 include(":androidApp")
 include(":shared")
-include(":auth")
-include(":myapplication")

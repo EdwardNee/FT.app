@@ -14,13 +14,16 @@ class AnnounceDbMapper {
         return with(announceSQ) {
             Announce(
                 id = id,
+                chatId = chatId,
                 timeRemained = 0L,
-                author = author,
+                authorEmail = authorEmail,
                 placeFrom = placeFrom,
                 placeTo = placeTo,
+                startTime = startTime,
+                createTime = createTime,
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
-                comment = COMMENT ?: "",
+                comment = comment ?: "",
             )
         }
     }
@@ -28,16 +31,19 @@ class AnnounceDbMapper {
     /**
      * Maps [Announce] to [AnnounceSQ]
      */
-    fun fromModelToDb(announce: Announce) {
+    fun fromModelToDb(announce: Announce): AnnounceSQ {
         return with(announce) {
             AnnounceSQ(
                 id = id,
-                author = author ?: "",
+                chatId = chatId ?: 0,
+                authorEmail = authorEmail ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
+                startTime = startTime,
+                createTime = createTime,
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
-                COMMENT = comment,
+                comment = comment,
             )
         }
     }

@@ -4,6 +4,7 @@ import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.PagingAnnounce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
+import kotlinx.serialization.json.JsonObject
 
 /**
  * Repository to process data from the server.
@@ -22,12 +23,12 @@ interface IAnnouncementRepository {
     /**
      * UPDATEs existing [Announce].
      */
-    suspend fun updateAnnounce(announce: Announce)
+    suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject>
 
     /**
      * DELETEs given [Announce].
      */
-    suspend fun deleteAnnounce(announce: Announce)
+    suspend fun deleteAnnounce(travelId: Long): ServerResult<Int>
 
     /**
      * POSTs new user to become a traveler.

@@ -21,6 +21,7 @@ allprojects {
         maven("https://jitpack.io")
 //        maven ("https://kotlin.bintray.com/kotlinx/")
         mavenCentral()
+        gradlePluginPortal()
         google()
     }
 }

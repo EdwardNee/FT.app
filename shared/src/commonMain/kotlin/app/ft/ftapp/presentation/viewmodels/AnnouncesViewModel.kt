@@ -49,7 +49,6 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     }
 
     fun setList(list: List<Announce>) {
-        println("TAG_OF_REF setlist ${list.size}")
         val lst = mutableListOf<Announce>()
         lst.addAll(list)
         _announcesList.value = lst
@@ -65,7 +64,6 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
             }
             is AnnounceListEvent.OnDetails -> {
                 preferencesHelper.chosenDetailId = event.announceId
-                println("TAG_OF_REF ${event.announceId} ad ${preferencesHelper.chosenDetailId}")
 //                event.onAction()
             }
             is AnnounceListEvent.InsertToDb -> {

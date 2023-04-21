@@ -9,10 +9,7 @@ import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
 import app.ft.ftapp.domain.repository.TaxiRepository
 import app.ft.ftapp.domain.repository.db.AnnounceSQRepository
-import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
-import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
-import app.ft.ftapp.domain.usecase.GetAnnounceByEmailUseCase
-import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.*
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
@@ -118,6 +115,7 @@ class Engine {
         bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { BecomeTravelerUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetAnnounceByEmailUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { DeleteAnnounceUseCase(instance(tag = "serv_ann_r")) }
 
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
 

@@ -13,7 +13,7 @@ object ResponseToString {
                 CodeResponse.ERROR_500 -> CodeResponse.INTERNAL_SERVER_ERROR
                 CodeResponse.ERROR_400 -> CodeResponse.INTERNAL_SERVER_ERROR
                 CodeResponse.ERROR_405 -> CodeResponse.INTERNAL_SERVER_ERROR
-                CodeResponse.ERROR_404 -> CodeResponse.MODEL_NOT_AVAILABLE
+                CodeResponse.ERROR_404 -> CodeResponse.NOT_FOUND
                 CodeResponse.ERROR_403 -> CodeResponse.SERVER_UNREACHABLE
                 else -> {
                     it.status.description

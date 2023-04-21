@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="app.ft.ftapp.android.MyApplication"
-        android:allowBackup="false"
+        android:allowBackup="true"
+        tools:replace="android:allowBackup"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <meta-data
-            android:name="auth.hse.ru.client_id"
-            android:value="client_id" />
-
-        <meta-data
-            android:name="auth.hse.ru.redirect_uri"
-            android:value="redirect" />
 
         <activity
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:name="app.ft.ftapp.android.MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -28,8 +23,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="https://ftapp.herokuapp.com/auth/hse_redirect"
-                    android:scheme="redir" />
+                    android:host="auth.hse.ru"
+                    android:scheme="ru.hse.pf" />
             </intent-filter>
 
             <intent-filter>
@@ -37,5 +32,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="auth.hse.ru.client_id"
+            android:value="0d46ae05-3bbc-4346-a3a3-1d732b49ea53" />
+
+        <meta-data
+            android:name="auth.hse.ru.redirect_uri"
+            android:value="ru.hse.pf://auth.hse.ru/adfs/oauth2/android/ru.hse.pf/callback" />
     </application>
 </manifest> 

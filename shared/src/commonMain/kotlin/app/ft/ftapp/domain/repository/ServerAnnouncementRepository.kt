@@ -7,6 +7,7 @@ import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.PagingAnnounce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
+import kotlinx.serialization.json.JsonObject
 
 class ServerAnnouncementRepository constructor(private val api: Api): IAnnouncementRepository {
     override suspend fun getAvailableAnnouncements(offset: Int, limit: Int): ServerResult<PagingAnnounce> {
@@ -17,12 +18,12 @@ class ServerAnnouncementRepository constructor(private val api: Api): IAnnouncem
         return api.createAnnounce(announce).await()
     }
 
-    override suspend fun updateAnnounce(announce: Announce) {
-        api.updateAnnounce(announce)
+    override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
+        return api.updateAnnounce(announce).await<JsonObject>()
     }
 
-    override suspend fun deleteAnnounce(announce: Announce) {
-        api.deleteAnnounce(announce)
+    override suspend fun deleteAnnounce(travelId: Long): ServerResult<Int> {
+        return api.deleteAnnounce(travelId).await<Int>()
     }
 
     override suspend fun becomeTraveler(travelerUser: TravelerUser): ServerResult<Announce> {
@@ -30,6 +31,6 @@ class ServerAnnouncementRepository constructor(private val api: Api): IAnnouncem
     }
 
     override suspend fun getAnnounceByEmail(email: String): ServerResult<Announce> {
-        TODO("Not yet implemented")
+        return api.getTravelByUserEmail(email).await()
     }
 }

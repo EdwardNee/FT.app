@@ -11,8 +11,16 @@ class Api(private val client: HttpClient) {
     suspend fun getAnnouncements(offset: Int, limit: Int): HttpResponse {
         return client.get("/api/travel/getAllTravels") {
             url {
-                parameters.append("offset", offset.toString())
-                parameters.append("limit", limit.toString())
+                parameters.append(Api.offset, offset.toString())
+                parameters.append(Api.limit, limit.toString())
+            }
+        }
+    }
+
+    suspend fun getTravelByUserEmail(userMail: String): HttpResponse {
+        return client.get("/api/travel/getTravelByUserEmail") {
+            url {
+                parameters.append(userEmail, userMail)
             }
         }
     }
@@ -27,8 +35,8 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-    suspend fun updateAnnounce(announce: Announce) {
-        client.post("/api/travel/updateTravel") {
+    suspend fun updateAnnounce(announce: Announce): HttpResponse {
+        return client.post("/api/travel/updateTravel") {
             setBody(announce)
         }
     }
@@ -40,9 +48,18 @@ class Api(private val client: HttpClient) {
         }
     }
 
-    suspend fun deleteAnnounce(announce: Announce) {
-        client.post("/api/travel/deleteTravel") {
-            setBody(announce)
+    suspend fun deleteAnnounce(travelId: Long): HttpResponse {
+        return client.post("/api/travel/deleteTravel") {
+            url {
+                parameters.append(Api.travelId, travelId.toString())
+            }
         }
+    }
+
+    companion object {
+        private const val offset = "offset"
+        const val limit = "limit"
+        const val userEmail = "userEmail"
+        const val travelId = "travelId"
     }
 }
