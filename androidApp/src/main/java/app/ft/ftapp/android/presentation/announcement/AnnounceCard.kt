@@ -1,28 +1,72 @@
 package app.ft.ftapp.android.presentation.announcement
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
-import app.ft.ftapp.android.ui.theme.cardBody
-import app.ft.ftapp.android.ui.theme.textGray
+import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.TimeUtil
+import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.domain.models.Announce
+import java.time.ZoneId
+
 
 /**
  * Announcement card composable method to draw.
  */
 @Composable
-fun AnnounceCard(announce: Announce, onClickInfo: (Announce) -> Unit, onClickBecome: (Long) -> Unit) {
+fun AnnounceCard(
+    announce: Announce,
+    onClickInfo: (Announce) -> Unit,
+    onClickBecome: (Long) -> Unit
+) {
+
+    var announceTime by remember {
+        mutableStateOf(
+            TimeUtil.getMinutesLeft(
+                until = announce.startTime?.toDate()?.atZone(
+                    ZoneId.systemDefault()
+                )?.toInstant()?.toEpochMilli() ?: 0
+            )
+        )
+    }
+
+    DisposableEffect(announceTime) {
+        val handler = Handler(Looper.getMainLooper())
+
+        val runnable = object : Runnable {
+            override fun run() {
+                announceTime = TimeUtil.getMinutesLeft(until = announce.startTime)
+
+                handler.postDelayed(this, 1000)
+            }
+        }
+
+        handler.post(runnable)
+
+        if (announceTime <= 0L) {
+            announceTime = 0
+            handler.removeCallbacks(runnable)
+        }
+
+        onDispose {
+            handler.removeCallbacks(runnable)
+        }
+    }
+
     Surface(
         elevation = 8.dp,
         shape = RoundedCornerShape(15.dp),
@@ -40,13 +84,34 @@ fun AnnounceCard(announce: Announce, onClickInfo: (Announce) -> Unit, onClickBec
                     .fillMaxWidth()
                     .padding(bottom = 8.dp), horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(if (announceTime <= 10) bottomNavColor else yellowColor)
+                ) {
+                    Text(
+                        "через ${announceTime} мин",
+                        fontFamily = Montserrat,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
+                        color = if (announceTime <= 10) Color.White else Color.Black
+                    )
+                }
+
                 Text(
-                    text = "${announce.placeFrom}-${announce.placeTo}",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp
-                )
-                Text(text = "сегодня в 12:17", color = textGray, fontSize = 14.sp)
+                    text = TimeUtil.toStringDateParser(announce.startTime),
+                    color = textGray,
+                    fontSize = 14.sp
+                ) //"сегодня в 12:17"
             }
+
+            Text(
+                text = announce.placeTo,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                maxLines = 1
+            )
 
             AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
             AnnounceParams(
@@ -105,6 +170,7 @@ fun AnnounceButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
             )
             .then(modifier)
     ) {
+//        Image(imageVector = ImageVector.vectorResource(R.drawable), contentDescription = )
         Text(text = "INFO")
     }
 }

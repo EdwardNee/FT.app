@@ -1,5 +1,7 @@
 package app.ft.ftapp.android.presentation.home.my_announce
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,9 +11,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,28 +19,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
+import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.announce_details.FromToText
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
-import app.ft.ftapp.android.ui.theme.Montserrat
-import app.ft.ftapp.android.ui.theme.appBackground
-import app.ft.ftapp.android.ui.theme.bottomNavColor
-import app.ft.ftapp.android.ui.theme.chipTimeColor
+import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.TimeUtil
+import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
+import java.time.ZoneId
 
 /**
  * Current screen view.
  */
-@Preview
 @Composable
 fun CurrentScreen() {
     val viewModel = setupViewModel<HomeViewModel>()
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
+    val isLoading by viewModel.isShowProgress.collectAsState()
 
+
+    var announceTime by remember {
+        mutableStateOf(
+            TimeUtil.getMinutesLeft(
+                until = assignedAnnounce?.startTime?.toDate()?.atZone(
+                    ZoneId.systemDefault()
+                )?.toInstant()?.toEpochMilli() ?: 0
+            )
+        )
+    }
+
+    DisposableEffect(announceTime) {
+        val handler = Handler(Looper.getMainLooper())
+
+        val runnable = object : Runnable {
+            override fun run() {
+                announceTime = TimeUtil.getMinutesLeft(until = assignedAnnounce?.startTime)
+                handler.postDelayed(this, 1000)
+            }
+        }
+
+        handler.post(runnable)
+
+        if (announceTime <= 0L) {
+            announceTime = 0
+            handler.removeCallbacks(runnable)
+        }
+
+        onDispose {
+            handler.removeCallbacks(runnable)
+        }
+    }
 //    LazyColumn(Modifier.fillMaxWidth()
 //        .fillMaxHeight().background(appBackground)) {
 
@@ -68,18 +100,18 @@ fun CurrentScreen() {
                     modifier = Modifier
                         .wrapContentSize()
                         .clip(RoundedCornerShape(3.dp))
-                        .background(bottomNavColor)
+                        .background(if (announceTime <= 10) bottomNavColor else yellowColor)
                 ) {
                     Text(
-                        "через 10 мин",
+                        "через ${announceTime} мин",
                         fontFamily = Montserrat,
                         modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
-                        color = Color.White
+                        color = if (announceTime <= 10) Color.White else Color.Black
                     )
                 }
 
                 Text(
-                    "сегодня в 12:43",
+                    TimeUtil.toStringDateParser(assignedAnnounce?.startTime),
                     fontFamily = Montserrat,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -126,7 +158,7 @@ fun CurrentScreen() {
                     fontSize = 16.sp
                 )
                 Text(
-                    assignedAnnounce?.countOfParticipants.toString(),
+                    (4 - (assignedAnnounce?.countOfParticipants ?: 0)).toString(),
                     fontFamily = Montserrat,
                     modifier = Modifier
                         .padding(end = 8.dp)
@@ -149,7 +181,8 @@ fun CurrentScreen() {
                         HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
                     )
                 },
-                colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor)
+                colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
+                enabled = !isLoading
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
@@ -162,5 +195,9 @@ fun CurrentScreen() {
             }
 //            }
         }
+    }
+
+    if (isLoading) {
+        LoadingView()
     }
 }

@@ -24,6 +24,7 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
+import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.AnnounceListEvent
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
@@ -38,7 +39,7 @@ fun counterTimer(items: List<Announce>): List<Announce> {
 
         val runnable = Runnable {
             for (item in items) {
-//                item.timeRemained = TimeUtil.getMinutesLeft(item.timeRemained)
+                item.timeRemained = TimeUtil.getMinutesLeft(until = item.timeRemained)
             }
         }
 
@@ -92,6 +93,8 @@ fun AnnounceScreen(onClick: () -> Unit) {
 //            delay(1000)
 //            isLoading = !isLoading
 //        }
+
+//        announcesList.itemSnapshotList.items = counterTimer(announcesList.itemSnapshotList.items)
 
         Box(Modifier.pullRefresh(stateRefresh)) {
             LazyColumn {

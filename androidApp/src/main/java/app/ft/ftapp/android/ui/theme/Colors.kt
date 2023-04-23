@@ -13,6 +13,7 @@ val greenColor = Color(0xFF489973)
 val infoBottomBackground = Color(0xFFF1EBEB)
 
 val bottomNavColor = Color(0xFFFF6767)
+val yellowColor = Color(0xfff8e080)
 
 val placeholderColor = Color(0xFF5F5F5F)
 

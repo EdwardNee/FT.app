@@ -7,6 +7,7 @@ import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.key_yandex
+import app.ft.ftapp.utils.TimeUtil
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -61,6 +62,7 @@ class CreationViewModel : BaseViewModel() {
     val comment = MutableStateFlow<String>("").cMutableStateFlow()
     val price = MutableStateFlow<Int>(0).cMutableStateFlow()
     val countOfParticipants = MutableStateFlow<Int>(3).cMutableStateFlow()
+    val startTime = MutableStateFlow<String>("").cMutableStateFlow()
 
     val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
 
@@ -92,6 +94,9 @@ class CreationViewModel : BaseViewModel() {
 
     val createdAnnounce = MutableStateFlow<Announce?>(null)
 
+    /**
+     * Event calls on CreationScreen.
+     */
     fun onEvent(event: CreationEvent) {
         when (event) {
             is CreationEvent.FieldEdit.SourceEdit -> {
@@ -111,7 +116,8 @@ class CreationViewModel : BaseViewModel() {
                     placeTo = endDestination.value,
                     participants = emptyList(),
                     countOfParticipants = countOfParticipants.value,
-                    comment = comment.value
+                    comment = comment.value,
+                    startTime = startTime.value
                 )
                 createAnnounceCall(announce = announce)
             }
@@ -121,6 +127,11 @@ class CreationViewModel : BaseViewModel() {
             }
             is CreationEvent.FieldEdit.CommentEdit -> {
                 comment.value = event.comment.trim()
+            }
+            is CreationEvent.FieldEdit.StartTimeEdit -> {
+
+//                startTime.value = LocalTime(event.hour, event.minute).toString()
+                startTime.value = TimeUtil.dateFormatProcess(event.hour, event.minute)
             }
         }
     }
@@ -174,6 +185,9 @@ class CreationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * Gets info about trip with taxi API/
+     */
     private fun getTripInfoCall(coords: Pair<LatLng, LatLng>) {
         val params = TaxiParams(
             clid = clid,
@@ -222,6 +236,7 @@ sealed class CreationEvent {
         data class EndEdit(val end: String) : FieldEdit()
         data class ParticipantsCountEdit(val count: Int) : FieldEdit()
         data class CommentEdit(val comment: String) : FieldEdit()
+        data class StartTimeEdit(val hour: Int, val minute: Int) : FieldEdit()
     }
 }
 

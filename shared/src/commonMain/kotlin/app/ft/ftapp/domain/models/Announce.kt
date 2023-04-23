@@ -11,7 +11,7 @@ import kotlinx.serialization.Transient
 data class Announce(
     val id: Int = 0,
     val chatId: Int? = 0,
-    @Transient val timeRemained: Long = 0,
+    @Transient var timeRemained: Long = 0,
     val authorEmail: String? = "",
     val createTime: String? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
     val startTime: String? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),

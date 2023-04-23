@@ -32,6 +32,7 @@ import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
@@ -61,6 +62,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val countOfParticipants by viewModel.countOfParticipants.collectAsState()
     val price by viewModel.price.collectAsState()
     val comment by viewModel.comment.collectAsState()
+    val startTime by viewModel.startTime.collectAsState()
 
     val locations by viewModel.triple.collectAsState()
     val searchState by viewModel.editTextTap.collectAsState()
@@ -73,6 +75,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     ClockDialog(state = clockState,
         config = ClockConfig(is24HourFormat = true),
         selection = ClockSelection.HoursMinutes { h, m ->
+            viewModel.onEvent(CreationEvent.FieldEdit.StartTimeEdit(h, m))
             selectedTime.value = LocalTime.of(h, m)
         })
 

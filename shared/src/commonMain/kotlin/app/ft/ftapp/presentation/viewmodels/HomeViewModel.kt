@@ -49,7 +49,11 @@ class HomeViewModel : BaseViewModel() {
      */
     private fun getAnnounceByEmailCall(email: String) {
         showProgress()
-//        _uiState.value = HomeModelState.Loading
+
+        if (_uiState.value !is HomeModelState.Success<*>) {
+            _uiState.value = HomeModelState.Loading
+        }
+
         viewModelScope.launch {
 //            delay(500L)
 //            _uiState.value = HomeModelState.Success(Announce())
@@ -61,7 +65,7 @@ class HomeViewModel : BaseViewModel() {
                     _uiState.value = HomeModelState.Success(result.model)
                 }
                 is ServerResult.UnsuccessfulResult -> {
-                    _uiState.value = if(result.error == NOT_FOUND) {
+                    _uiState.value = if (result.error == NOT_FOUND) {
                         HomeModelState.NoData
                     } else {
                         HomeModelState.Error(result.error)
@@ -75,7 +79,8 @@ class HomeViewModel : BaseViewModel() {
 
     private fun deleteAnnounceById(travelId: Long) {
         viewModelScope.launch {
-            println("TAGAG ${deleteTravel(travelId)}")
+            println("TAG_OF_DELETE ${deleteTravel(travelId)}")
+            getAnnounceByEmailCall(EMAIL)
         }
     }
 }
