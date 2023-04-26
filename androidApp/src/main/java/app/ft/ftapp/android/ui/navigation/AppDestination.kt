@@ -51,6 +51,16 @@ sealed class AppDestination(
      * Chatting screen destination.
      */
     object Chatting : NoArgumentDestination(ScreenValues.CHATTING)
+
+    /**
+     * Preview screen destination.
+     */
+    object Preview : NoArgumentDestination(ScreenValues.PREVIEW)
+
+    object PreviewBars : NoArgumentDestination(ScreenValues.FIRST_PREVIEW)
+
+    object AppBars : NoArgumentDestination(ScreenValues.SECOND_APP)
+    object RootDest : NoArgumentDestination(ScreenValues.ROOT)
 }
 
 /**

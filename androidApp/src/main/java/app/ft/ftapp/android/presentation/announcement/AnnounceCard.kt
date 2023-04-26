@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
@@ -91,7 +92,7 @@ fun AnnounceCard(
                         .background(if (announceTime <= 10) bottomNavColor else yellowColor)
                 ) {
                     Text(
-                        "через ${announceTime} мин",
+                        "через $announceTime мин",
                         fontFamily = Montserrat,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
@@ -116,7 +117,7 @@ fun AnnounceCard(
             AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
             AnnounceParams(
                 stringResource(id = R.string.free_places),
-                announce.countOfParticipants.toString()
+                (4 - announce.countOfParticipants).toString()
             )
 
             Row(
@@ -129,11 +130,12 @@ fun AnnounceCard(
                 AnnounceButton(
                     Modifier
                         .weight(1f)
-                        .padding(end = 8.dp)
+                        .padding(end = 8.dp),
+                    text = "Информация"
                 ) {
                     onClickInfo(announce)
                 }
-                AnnounceButton(Modifier.weight(1f)) {
+                AnnounceButton(Modifier.weight(1f), text = "Примкнуть", announce.authorEmail != EMAIL) {
                     onClickBecome(announce.id.toLong())
                 }
             }
@@ -157,7 +159,7 @@ fun AnnounceParams(text: String, paramValue: String) {
  * Button to process announcement card.
  */
 @Composable
-fun AnnounceButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun AnnounceButton(modifier: Modifier = Modifier, text: String, enabled: Boolean = true, onClick: () -> Unit) {
     Button(
         onClick = { onClick() }, modifier = Modifier
             .clip(
@@ -168,9 +170,10 @@ fun AnnounceButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     topEnd = 10.dp
                 )
             )
-            .then(modifier)
+            .then(modifier),
+        enabled = enabled
     ) {
 //        Image(imageVector = ImageVector.vectorResource(R.drawable), contentDescription = )
-        Text(text = "INFO")
+        Text(text = text)
     }
 }

@@ -2,7 +2,7 @@ package app.ft.ftapp.usecase
 
 import app.ft.ftapp.data.repository.AnnouncementFakeRepository
 import app.ft.ftapp.domain.models.ServerResult
-import app.ft.ftapp.domain.usecase.GetAnnounceByEmailUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
 import kotlinx.coroutines.runBlocking
 import kotlin.test.BeforeTest
 import kotlin.test.Test

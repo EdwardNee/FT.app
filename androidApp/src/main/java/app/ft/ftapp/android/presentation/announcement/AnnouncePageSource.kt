@@ -6,7 +6,7 @@ import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.toAnnounce
-import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnouncementsUseCase
 import org.kodein.di.instance
 
 /**
@@ -41,6 +41,9 @@ class AnnouncePageSource : PagingSource<Int, Announce>() {
 
             is ServerResult.UnsuccessfulResult -> {
                 LoadResult.Error(IllegalArgumentException(response.error))
+            }
+            is ServerResult.ResultException -> {
+                LoadResult.Error(response.throwable)
             }
         }
     }

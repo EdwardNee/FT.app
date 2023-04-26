@@ -1,6 +1,7 @@
 package app.ft.ftapp.data.ktor
 
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.models.ChatSenderMessage
 import app.ft.ftapp.domain.models.TravelerUser
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -56,10 +57,37 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    suspend fun getOutOfTravel(data: TravelerUser): HttpResponse {
+        return client.post("/api/travel/reduceTravaller") {
+            contentType(ContentType.Application.Json)
+            setBody(data)
+        }
+    }
+
+    //region chat
+    suspend fun sendChatMessage(data: ChatSenderMessage): HttpResponse {
+        return client.post("/api/chat/sendMessage") {
+            contentType(ContentType.Application.Json)
+            setBody(data)
+        }
+    }
+
+    suspend fun getMessagesByChat(chatId: Long): HttpResponse {
+        return client.get("/api/chat/getMessagesByChat") {
+            contentType(ContentType.Application.Json)
+            url {
+                parameters.append(Api.chatId, chatId.toString())
+            }
+        }
+    }
+
+    //endregion
+
     companion object {
         private const val offset = "offset"
         const val limit = "limit"
         const val userEmail = "userEmail"
         const val travelId = "travelId"
+        const val chatId = "chatId"
     }
 }

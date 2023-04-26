@@ -39,4 +39,5 @@ interface IAnnouncementRepository {
      * GETs announce for user by a given [email].
      */
     suspend fun getAnnounceByEmail(email: String): ServerResult<Announce>
+    suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce>
 }

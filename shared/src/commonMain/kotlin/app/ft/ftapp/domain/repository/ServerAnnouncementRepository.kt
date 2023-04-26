@@ -7,30 +7,186 @@ import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.PagingAnnounce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
+import io.ktor.client.plugins.*
+import io.ktor.util.network.*
+import io.ktor.utils.io.errors.*
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonObject
 
-class ServerAnnouncementRepository constructor(private val api: Api): IAnnouncementRepository {
-    override suspend fun getAvailableAnnouncements(offset: Int, limit: Int): ServerResult<PagingAnnounce> {
-        return api.getAnnouncements(offset, limit).await<PagingAnnounce>()
+class ServerAnnouncementRepository constructor(private val api: Api) : IAnnouncementRepository {
+
+    override suspend fun getAvailableAnnouncements(
+        offset: Int,
+        limit: Int
+    ): ServerResult<PagingAnnounce> {
+        var result: ServerResult<PagingAnnounce>
+        try {
+            val response = api.getAnnouncements(offset, limit)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
     }
 
     override suspend fun createAnnounce(announce: Announce): ServerResult<Announce> {
-        return api.createAnnounce(announce).await()
+        var result: ServerResult<Announce>
+        try {
+            val response = api.createAnnounce(announce)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
     }
 
     override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
-        return api.updateAnnounce(announce).await<JsonObject>()
+        var result: ServerResult<JsonObject>
+        try {
+            val response = api.updateAnnounce(announce)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
     }
 
     override suspend fun deleteAnnounce(travelId: Long): ServerResult<Int> {
-        return api.deleteAnnounce(travelId).await<Int>()
+        var result: ServerResult<Int>
+        try {
+            val response = api.deleteAnnounce(travelId)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
     }
 
     override suspend fun becomeTraveler(travelerUser: TravelerUser): ServerResult<Announce> {
-        return api.becomeTraveler(travelerUser).await<Announce>()
+        var result: ServerResult<Announce>
+        try {
+            val response = api.becomeTraveler(travelerUser)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+        return result
     }
 
     override suspend fun getAnnounceByEmail(email: String): ServerResult<Announce> {
-        return api.getTravelByUserEmail(email).await()
+        var result: ServerResult<Announce>
+        try {
+            val response = api.getTravelByUserEmail(email)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+        return result
+    }
+
+    override suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce> {
+        var result: ServerResult<Announce>
+        try {
+            val response = api.getOutOfTravel(data)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+        return result
     }
 }

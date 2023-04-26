@@ -5,8 +5,9 @@ import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
 import app.ft.ftapp.domain.models.toAnnounce
-import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
-import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.server.BecomeTravelerUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
@@ -24,6 +25,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     //region DI
     private val getAnnouncements: GetAnnouncementsUseCase by kodein.instance()
     private val getAnnouncementsDb: GetAllAnnouncesFromDb by kodein.instance()
+    private val getAnnounceByEmail: GetAnnounceByEmailUseCase by kodein.instance()
     private val insertAnnounceToDb: InsertAnnounceToDbUseCase by kodein.instance()
     private val becomeTraveler: BecomeTravelerUseCase by kodein.instance()
     //endregion
@@ -90,6 +92,9 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
                     is ServerResult.UnsuccessfulResult -> {
                         println("TAG_OF_RES, ${it.error}")
                     }
+                    is ServerResult.ResultException -> {
+
+                    }
                 }
             }
 
@@ -109,21 +114,42 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
         }
     }
 
+    val becameState = MutableStateFlow<BecomingState>(BecomingState.NotHappened)
+    fun changeStateBec() {
+        becameState.value = BecomingState.NotHappened
+    }
     private fun becomeTravelerCall(travelId: Long) {
         viewModelScope.launch {
+
+            val res = getAnnounceByEmail(EMAIL)
+            if (res is ServerResult.SuccessfulResult) {
+                becameState.value = BecomingState.NotAllowed
+                return@launch
+            }
             val result = becomeTraveler(TravelerUser(travelId, EMAIL))
 
-            when(result) {
+            when (result) {
 
                 is ServerResult.SuccessfulResult -> {
                     println("TAG_OF_RES ${result.model}")
+                    becameState.value = BecomingState.Became
                 }
                 is ServerResult.UnsuccessfulResult -> {
                     println("TAG_OF_RES ${result.error}")
+                    becameState.value = BecomingState.NotAllowed
+                }
+                is ServerResult.ResultException -> {
+
                 }
             }
         }
     }
+}
+
+sealed class BecomingState {
+    object NotAllowed : BecomingState()
+    object NotHappened : BecomingState()
+    object Became : BecomingState()
 }
 
 /**

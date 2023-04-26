@@ -31,6 +31,6 @@ val blueTextColor = Color(0xFF0050AE)
 val chipTimeColor = Color(0xffeb645e)
 
 val namesColor =
-    listOf(Color.Yellow, Color.Cyan, Color.Magenta, Color.Green, Color.Red, Color.Black)
+    listOf(Color.Yellow, Color.Magenta, Color.Green, Color.Red)
 
 

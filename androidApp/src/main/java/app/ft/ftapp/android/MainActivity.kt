@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.work.*
 import app.ft.ftapp.android.presentation.MainComposable
 import com.hse.core.BaseApplication
 import com.hse.core.ui.BaseActivity
@@ -32,7 +33,7 @@ class MainActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        if (resultCode == Activity.RESULT_OK) {
         Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
-            Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
         super.onActivityResult(requestCode, resultCode, data)
 //        }
     }
@@ -42,9 +43,24 @@ class MainActivity : BaseActivity() {
         BaseApplication.appComponent.inject(this)
 
         super.onCreate(savedInstanceState)
+
+//        val chatMessageWork = PeriodicWorkRequestBuilder<MessagesWorker>(5, TimeUnit.SECONDS)
+//            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+//            .addTag("TAG_WORK")
+//           // .setInputData(Data.Builder().putLong("CHAT_ID", viewModel.chatId.value).build())
+//            .build()
+//
+//        val workManager = WorkManager.getInstance(applicationContext)
+//            .enqueue(chatMessageWork)
+
+//        val intent = Intent(this, ChatService::class.java)
+//        ContextCompat.startForegroundService(this, intent)
+
+
         setContent {
             MainComposable()
-//            Button({AuthHelper.login(this, REQUEST_LOGIN)}) {
+
+//            Button({ AuthHelper.login(this, REQUEST_LOGIN)}) {
 //                Text("Adsadб ")
 //            }
         }

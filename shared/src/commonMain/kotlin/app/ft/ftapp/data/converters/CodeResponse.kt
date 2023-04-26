@@ -13,4 +13,5 @@ object CodeResponse {
     internal const val SERVER_UNREACHABLE = "Server Unreachable"
     internal const val NOT_FOUND = "Not Found"
     internal const val INTERNAL_SERVER_ERROR = "Internal server error"
+    internal const val BAD_REQUEST = "Bad Request"
 }

@@ -1,5 +1,6 @@
 package app.ft.ftapp.android.presentation.groupchat
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -7,42 +8,84 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.work.*
+import app.ft.ftapp.EMAIL
+import app.ft.ftapp.R
+import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
+import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
+import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
+import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.editTextBackground
+import app.ft.ftapp.domain.models.ChatSenderMessage
+import app.ft.ftapp.presentation.viewmodels.ChatEvent
+import app.ft.ftapp.presentation.viewmodels.ChatViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import app.ft.ftapp.R
 
 /**
  * Composable method for drawing group chat screen.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-@Preview
 fun GroupChat() {
     val scrollableRemember = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
+    val viewModel = setupViewModel<ChatViewModel>()
+
+    val screenViewModel: ChatScreenViewModel = setupViewModel<ChatScreenViewModel>(
+        ArgsViewModelFactory(FactoryArgs(viewModel))
+    )
     val lazyState = rememberLazyListState()
+
+    val isLoading by viewModel.isShowProgress.collectAsState()
+    val chatMessages by viewModel.chatMessages.collectAsState()
+
+    LaunchedEffect(Unit) {
+        scrollableRemember.launch {
+            viewModel.chatMessages.collectLatest {
+                lazyState.animateScrollToItem(it.size)
+            }
+
+        }
+    }
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            viewModel.chatId.collectLatest {
+                screenViewModel.startListening(it)
+            }
+        }
+
+        onDispose {
+            screenViewModel.stopListening()
+            job.cancel()
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -74,44 +117,52 @@ fun GroupChat() {
                 }
             }
         }
-    ) {
-        Column(
+    )
+    {
+        ConstraintLayout(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom
+                .fillMaxWidth()
         ) {
-            val messages = remember {
-                mutableStateListOf(
-                    Mes("public", true),
-                    Mes("public void main()adasdsadaa aaadjalll", false),
-                    Mes("public vo", false),
-                    Mes("public vo", true)
-                )
-            }
+            val (icon, text) = createRefs()
 
             MessagesList(
-                messages = messages,
+                columnModifier = Modifier.fillMaxWidth().constrainAs(icon) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(text.top)
+                    end.linkTo(parent.end)
+                },
+                messages = chatMessages,
                 lazyState = lazyState,
-                modifier = Modifier.align(Alignment.End)
+                //modifier = Modifier.align(Alignment.End)
             )
-            CustomEditText(messages, lazyState, scrollableRemember)
+            CustomEditText(Modifier.constrainAs(text) {
+                start.linkTo(parent.start)
+                top.linkTo(icon.bottom)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            }, chatMessages, lazyState, scrollableRemember)
+        }
+
+        if (isLoading) {
+            LoadingView()
         }
     }
 }
 
-
-data class Mes(val text: String, val myMes: Boolean)
-
 /**
  * Composable message list to display list of messages.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessagesList(
+    columnModifier: Modifier = Modifier,
     modifier: Modifier = Modifier,
-    messages: SnapshotStateList<Mes>,
+    messages: List<ChatSenderMessage>,
     lazyState: LazyListState
 ) {
+    val bringIntoViewRequester = BringIntoViewRequester()
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val modifierMy =
@@ -120,16 +171,15 @@ fun MessagesList(
     val modifierNo = Modifier
         .padding(bottom = 4.dp, end = screenWidth / 4, start = 8.dp)
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.92f), verticalArrangement = Arrangement.Bottom,
+        modifier = columnModifier.then(Modifier.fillMaxHeight(0.92f).bringIntoViewRequester(bringIntoViewRequester))
+            , verticalArrangement = Arrangement.Bottom,
         state = lazyState
     ) {
         item {
-            Column {
+            Column(Modifier.fillMaxWidth()) {
                 for (e in messages) {
-                    val mod = if (e.myMes) modifierMy else modifierNo
-                    ChatMessageComponent(mod, e.text, e.myMes)
+                    val mod = if (e.sender == EMAIL) modifierMy.align(Alignment.End) else modifierNo
+                    ChatMessageComponent(mod, e, e.sender == EMAIL)
                 }
             }
         }
@@ -139,25 +189,45 @@ fun MessagesList(
 /**
  * EditText for composing chat texts.
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CustomEditText(
-    messages: SnapshotStateList<Mes>,
+    modifier: Modifier = Modifier,
+    messages: List<ChatSenderMessage>,
     lazyState: LazyListState,
     scrollableRemember: CoroutineScope
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val bringIntoViewRequester = BringIntoViewRequester()
+
     var message = remember { mutableStateOf("") }
+    val viewModel = setupViewModel<ChatViewModel>()
     val interactionSource = remember { MutableInteractionSource() }
     BasicTextField(
         value = message.value,
         textStyle = TextStyle.Default.copy(fontSize = 16.sp, fontFamily = Montserrat),
         onValueChange = { textChange -> message.value = textChange },
-        modifier = Modifier
+        modifier = modifier.then(Modifier
             .fillMaxWidth()
             .background(color = editTextBackground)
             .padding(start = 8.dp)
             .navigationBarsPadding()
+//            .navigationBarsWithImePadding()
             .imePadding()
+            .onFocusChanged {
+                coroutineScope.launch {
+                    println("TAG_OF_S change ${messages.size}")
+                    lazyState.animateScrollToItem(messages.size)
+                }
+            }
+            .onFocusEvent {
+                if (it.isFocused) {
+                    coroutineScope.launch {
+                        bringIntoViewRequester.bringIntoView()
+                    }
+                }
+            })
 //            .padding(vertical = 18.dp),
     ) { innerTextField ->
         TextFieldDefaults.TextFieldDecorationBox(
@@ -167,11 +237,8 @@ fun CustomEditText(
                     contentDescription = "",
                     modifier = Modifier.clickable {
                         if (message.value.trim().isNotEmpty()) {
-                            messages.add(Mes(message.value, false))
+                            viewModel.onEvent(ChatEvent.SendMessage(message.value))
                             message.value = ""
-                            scrollableRemember.launch {
-                                lazyState.animateScrollToItem(messages.size - 1)
-                            }
                         }
                     }
                 )

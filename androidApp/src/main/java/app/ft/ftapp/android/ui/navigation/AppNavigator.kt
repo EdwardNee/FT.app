@@ -9,9 +9,14 @@ import kotlinx.coroutines.channels.Channel
  */
 interface AppNavigator {
     /**
-     * Navigation flow.
+     * Root Navigation flow.
      */
-    val navigationChannel: Channel<NavigationIntent>
+    val rootNavigationChannel: Channel<NavigationIntent>
+
+    /**
+     * Main app navigation channel.
+     */
+    val appNavigationChannel: Channel<NavigationIntent>
 
     /**
      * Navigate back to screen.
@@ -47,7 +52,8 @@ interface AppNavigator {
         route: String,
         popUpToRoute: String? = null,
         inclusive: Boolean = false,
-        isSingleTop: Boolean = false,
+        isSingleTop: Boolean = true,
+        saveState: Boolean = false,
     )
 }
 
@@ -71,6 +77,7 @@ sealed class NavigationIntent {
         val route: String,
         val popUpToRoute: String? = null,
         val inclusive: Boolean = false,
-        val isSingleTop: Boolean = false
+        val isSingleTop: Boolean = true,
+        val saveState: Boolean = false,
     ) : NavigationIntent()
 }

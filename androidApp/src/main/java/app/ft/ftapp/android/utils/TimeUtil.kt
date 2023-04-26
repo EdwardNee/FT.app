@@ -14,7 +14,7 @@ import kotlin.math.ceil
  */
 object TimeUtil {
 
-    const val ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm"
+    const val ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     var formatter: DateFormat = SimpleDateFormat(ISO_8601_24H_FULL_FORMAT)
     val dateTimeFormatter = DateTimeFormatter.ofPattern(ISO_8601_24H_FULL_FORMAT)
 
@@ -56,7 +56,7 @@ object TimeUtil {
         val month = date.format(DateTimeFormatter.ofPattern("MMMM"))
 
         //next day
-        return if (date.dayOfMonth > current.dayOfMonth) {
+        return if (date.dayOfMonth != current.dayOfMonth) {
             val resTime = date.format(DateTimeFormatter.ofPattern("HH:mm"))
             "${date.dayOfMonth} $month в $resTime"
         } else {
@@ -70,6 +70,14 @@ object TimeUtil {
  * Extention method to convert string to date of [TimeUtil] formatter with [ISO_8601_24H_FULL_FORMAT] pattern.
  */
 fun String.toDate(): LocalDateTime {
-    val date = LocalDateTime.parse(this, TimeUtil.dateTimeFormatter)//TimeUtil.formatter.parse(this)
+    val newStr =
+        if (this.length <= 16) {
+            "$this:00"
+        } else {
+            this
+        }
+
+    val date =
+        LocalDateTime.parse(newStr, TimeUtil.dateTimeFormatter)//TimeUtil.formatter.parse(this)
     return date
 }

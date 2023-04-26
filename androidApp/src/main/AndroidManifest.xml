@@ -6,13 +6,16 @@
     <application
         android:name="app.ft.ftapp.android.MyApplication"
         android:allowBackup="true"
-        tools:replace="android:allowBackup"
+        tools:replace="android:allowBackup,android:label"
         android:supportsRtl="true"
+        android:label="Попутчики ВШЭ"
         android:theme="@style/AppTheme">
 
+        <service android:name=".presentation.groupchat.ChatService" />
         <activity
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize"
+
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:name="app.ft.ftapp.android.MainActivity"
             android:exported="true">
 
@@ -35,10 +38,10 @@
 
         <meta-data
             android:name="auth.hse.ru.client_id"
-            android:value="0d46ae05-3bbc-4346-a3a3-1d732b49ea53" />
+            android:value="fe0df921-754d-45e8-8d48-1fcef2d91df8" />
 
         <meta-data
             android:name="auth.hse.ru.redirect_uri"
-            android:value="ru.hse.pf://auth.hse.ru/adfs/oauth2/android/ru.hse.pf/callback" />
+            android:value="app.ft.ftapp.android://auth.hse.ru/adfs/oauth2/callback" />
     </application>
 </manifest> 

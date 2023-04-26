@@ -3,8 +3,11 @@ package app.ft.ftapp.presentation.viewmodels
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.NAME
 import app.ft.ftapp.clid
+import app.ft.ftapp.data.converters.CodeResponse.BAD_REQUEST
+import app.ft.ftapp.data.converters.CodeResponse.NOT_FOUND
 import app.ft.ftapp.domain.models.*
-import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
+import app.ft.ftapp.domain.usecase.server.CreateAnnouncementUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.key_yandex
 import app.ft.ftapp.utils.TimeUtil
@@ -19,6 +22,7 @@ import org.kodein.di.instance
 class CreationViewModel : BaseViewModel() {
     //region di
     private val createAnnounce: CreateAnnouncementUseCase by kodein.instance()
+    private val getTripByEmail: GetAnnounceByEmailUseCase by kodein.instance()
     private val getTripInfo: GetTripInfoUseCase by kodein.instance()
     //endregion
 
@@ -61,7 +65,7 @@ class CreationViewModel : BaseViewModel() {
     val endDestination = MutableStateFlow<String>("").cMutableStateFlow()
     val comment = MutableStateFlow<String>("").cMutableStateFlow()
     val price = MutableStateFlow<Int>(0).cMutableStateFlow()
-    val countOfParticipants = MutableStateFlow<Int>(3).cMutableStateFlow()
+    val countOfParticipants = MutableStateFlow<String>("0").cMutableStateFlow()
     val startTime = MutableStateFlow<String>("").cMutableStateFlow()
 
     val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
@@ -115,7 +119,11 @@ class CreationViewModel : BaseViewModel() {
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
                     participants = emptyList(),
-                    countOfParticipants = countOfParticipants.value,
+                    countOfParticipants =
+                    if (countOfParticipants.value.isNotEmpty())
+                        countOfParticipants.value.toInt()
+                    else
+                        0,
                     comment = comment.value,
                     startTime = startTime.value
                 )
@@ -126,7 +134,7 @@ class CreationViewModel : BaseViewModel() {
                 fillByClickedAddress(event.address, event.coordinates)
             }
             is CreationEvent.FieldEdit.CommentEdit -> {
-                comment.value = event.comment.trim()
+                comment.value = event.comment
             }
             is CreationEvent.FieldEdit.StartTimeEdit -> {
 
@@ -159,9 +167,12 @@ class CreationViewModel : BaseViewModel() {
 
         if (route.first.lat != 0.0 && route.second.lat != 0.0) {
 //            getTripInfoCall(route)
-            price.value = 139
+            price.value = 560
         }
     }
+
+
+    val isInTravel = MutableStateFlow(false)
 
     /**
      * Method that processes request for creating announcement on the server.
@@ -170,15 +181,33 @@ class CreationViewModel : BaseViewModel() {
         showProgress()
 
         viewModelScope.launch {
+            val res = getTripByEmail(EMAIL)
+            if (res is ServerResult.UnsuccessfulResult) {
+                println("TAG_OFRE ${res.error}")
+                if (res.error != NOT_FOUND) {
+                    isInTravel.value = true
+                    return@launch
+                }
+            }
+
+            isInTravel.value = false
             val result = createAnnounce(announce)
             when (result) {
                 is ServerResult.SuccessfulResult -> {
                     createdAnnounce.value = result.model
-                    _loadResult.value = ModelsState.Success
+                    _loadResult.value = ModelsState.Success(result.model)
                 }
 
                 is ServerResult.UnsuccessfulResult -> {
-                    _loadResult.value = ModelsState.Error(result.error)
+                    _loadResult.value = if (result.error == BAD_REQUEST) {
+                        ModelsState.Error("Неправильно введены параметры значения.")
+                    } else {
+                        ModelsState.Error(result.error)
+                    }
+
+                }
+                is ServerResult.ResultException -> {
+                    _loadResult.value = ModelsState.Error(result.error ?: "Ошибка")
                 }
             }
             hideProgress()
@@ -205,6 +234,9 @@ class CreationViewModel : BaseViewModel() {
                 }
                 is ServerResult.UnsuccessfulResult -> {
                     println("Unsuc ${result.error}")
+                }
+                is ServerResult.ResultException -> {
+
                 }
             }
         }
@@ -234,7 +266,7 @@ sealed class CreationEvent {
     sealed class FieldEdit : CreationEvent() {
         data class SourceEdit(val source: String) : FieldEdit()
         data class EndEdit(val end: String) : FieldEdit()
-        data class ParticipantsCountEdit(val count: Int) : FieldEdit()
+        data class ParticipantsCountEdit(val count: String) : FieldEdit()
         data class CommentEdit(val comment: String) : FieldEdit()
         data class StartTimeEdit(val hour: Int, val minute: Int) : FieldEdit()
     }

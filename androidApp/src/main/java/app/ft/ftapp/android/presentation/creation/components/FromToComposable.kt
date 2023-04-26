@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
+import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.android.ui.theme.redCircle
@@ -131,7 +132,7 @@ fun DestinationComponent(
         })
 
         BasicTextField(
-            textStyle = TextStyle.Default.copy(fontSize = 16.sp),
+            textStyle = TextStyle.Default.copy(fontSize = 16.sp, fontFamily = Montserrat),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 40.dp)

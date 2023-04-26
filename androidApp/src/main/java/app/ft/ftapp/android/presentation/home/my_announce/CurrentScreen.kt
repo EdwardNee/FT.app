@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.announce_details.FromToText
@@ -103,7 +104,7 @@ fun CurrentScreen() {
                         .background(if (announceTime <= 10) bottomNavColor else yellowColor)
                 ) {
                     Text(
-                        "через ${announceTime} мин",
+                        "через $announceTime мин",
                         fontFamily = Montserrat,
                         modifier = Modifier.padding(vertical = 1.dp, horizontal = 3.dp),
                         color = if (announceTime <= 10) Color.White else Color.Black
@@ -177,21 +178,41 @@ fun CurrentScreen() {
                     .clip(RoundedCornerShape(6.dp))
                     .padding(bottom = 50.dp),
                 onClick = {
-                    viewModel.onEvent(
-                        HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
-                    )
+                    if (assignedAnnounce?.authorEmail != EMAIL) {
+                        viewModel.onEvent(
+                            HomeEvent.LeaveAnnounce((assignedAnnounce?.id ?: 0).toLong())
+                        )
+                    } else {
+                        viewModel.onEvent(
+                            HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
+                        )
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
-                enabled = !isLoading
+                enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
             ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    fontFamily = Montserrat,
-                    text = "Удалить поездку",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = Color.White
-                )
+
+                if (assignedAnnounce?.authorEmail != EMAIL) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        fontFamily = Montserrat,
+                        text = "Покинуть поездку",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        fontFamily = Montserrat,
+                        text = "Удалить поездку",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+
+
             }
 //            }
         }

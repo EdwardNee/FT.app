@@ -36,7 +36,7 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
-import app.ft.ftapp.presentation.viewmodels.HomeModelState
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
@@ -51,7 +51,7 @@ fun HomeScreen() {
         BottomNavItems(ScreenValues.CURRENT), BottomNavItems(ScreenValues.HISTORY)
     )
 
-    val backStackEntry by SingletonHelper.appNavigator.navController.currentBackStackEntryAsState()
+    val backStackEntry by SingletonHelper.appNavigator.navControllerApp.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
     var isChosen by rememberSaveable { mutableStateOf(true) }
@@ -111,7 +111,7 @@ fun TabComposable(viewModel: HomeViewModel) {
         rememberPullRefreshState(
             isLoading,
             { viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL)) })
-    val uiState = remember { mutableStateOf<HomeModelState>(HomeModelState.Loading) }
+    val uiState = remember { mutableStateOf<ModelsState>(ModelsState.Loading) }
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -122,12 +122,14 @@ fun TabComposable(viewModel: HomeViewModel) {
     }
 
     val items = listOf(
-        BottomNavItems(ScreenValues.MY_ANNOUNCES,
-            tabName = "Мои поездки",
-            content = { CurrentScreen() }),
-        BottomNavItems(ScreenValues.GROUP_CHAT,
-            tabName = "Попутчики",
-            content = { ListTravelers() })
+        BottomNavItems(
+            ScreenValues.MY_ANNOUNCES,
+            tabName = "Мои поездки"
+        ) { CurrentScreen() },
+        BottomNavItems(
+            ScreenValues.GROUP_CHAT,
+            tabName = "Попутчики"
+        ) { ListTravelers() }
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
@@ -140,22 +142,24 @@ fun TabComposable(viewModel: HomeViewModel) {
             ) {
 
                 when (uiState.value) {
-                    is HomeModelState.Error -> {
+                    is ModelsState.Error -> {
                         isLoad = false
-                        ErrorView(viewModel)
+                        ErrorView {
+                            viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL))
+                        }
                     }
-                    HomeModelState.Loading -> {
+                    ModelsState.Loading -> {
                         isLoad = true
                         LoadingView()
                     }
-                    is HomeModelState.Success<*> -> {
+                    is ModelsState.Success<*> -> {
                         isLoad = false
 //                    NoDataView(viewModel)
                         Tabs(tabs = items, pagerState = pagerState)
                         TabsContent(tabs = items, pagerState = pagerState)
                     }
-                    HomeModelState.NoData -> {
-                        NoDataView(viewModel)
+                    ModelsState.NoData -> {
+                        NoDataView()
                     }
                 }
             }
@@ -169,7 +173,7 @@ fun TabComposable(viewModel: HomeViewModel) {
  * Error while loading view.
  */
 @Composable
-fun ErrorView(viewModel: HomeViewModel) {
+fun ErrorView(onClick: () -> Unit) {
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -180,7 +184,7 @@ fun ErrorView(viewModel: HomeViewModel) {
             border = null,
             modifier = Modifier.size(72.dp),
             elevation = null,
-            onClick = { viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL)) },
+            onClick = { onClick() },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
                 contentColor = Color.Transparent,
@@ -199,7 +203,7 @@ fun ErrorView(viewModel: HomeViewModel) {
 }
 
 @Composable
-fun NoDataView(viewModel: HomeViewModel) {
+fun NoDataView() {
     Box(
         Modifier
             .fillMaxWidth()

@@ -22,6 +22,7 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.ui.theme.redCircle
+import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.presentation.viewmodels.DetailsEvent
 import app.ft.ftapp.presentation.viewmodels.DetailsViewModel
 
@@ -55,7 +56,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
     ) {
         Text(
             modifier = Modifier.padding(top = 28.dp),
-            text = "Сегодня в 12:17",
+            text = TimeUtil.toStringDateParser(announceDb?.startTime),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             fontFamily = Montserrat
@@ -103,7 +104,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             )
 
             Text(
-                text = announceDb?.countOfParticipants.toString(),
+                text =  (4 - (announceDb?.countOfParticipants ?: 0)).toString(),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
