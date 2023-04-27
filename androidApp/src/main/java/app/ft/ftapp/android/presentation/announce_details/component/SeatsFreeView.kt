@@ -3,7 +3,6 @@ package app.ft.ftapp.android.presentation.announce_details.component
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.compose.ui.graphics.Color
 import app.ft.ftapp.android.R
 import kotlin.properties.Delegates
 

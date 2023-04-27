@@ -4,14 +4,17 @@ import app.ft.ftapp.EMAIL
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
-import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
-import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.models.toAnnounce
+import app.ft.ftapp.domain.usecase.server.BecomeTravelerUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
+import app.ft.ftapp.domain.usecase.server.GetAnnouncementsUseCase
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 
@@ -22,6 +25,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     //region DI
     private val getAnnouncements: GetAnnouncementsUseCase by kodein.instance()
     private val getAnnouncementsDb: GetAllAnnouncesFromDb by kodein.instance()
+    private val getAnnounceByEmail: GetAnnounceByEmailUseCase by kodein.instance()
     private val insertAnnounceToDb: InsertAnnounceToDbUseCase by kodein.instance()
     private val becomeTraveler: BecomeTravelerUseCase by kodein.instance()
     //endregion
@@ -32,18 +36,24 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
 
     init {
         viewModelScope.launch {
-            val result = getAnnouncementsDb()
+//            val result = getAnnouncementsDb()
+//
+//            if (result.isEmpty()) {
+//                onEvent(AnnounceListEvent.GetAnnounces)
+//            } else {
+//                _announcesList.value = result
+//            }
 
-            if (result.isEmpty()) {
-                onEvent(AnnounceListEvent.GetAnnounces)
-            } else {
-                _announcesList.value = result
+            announcesList.collectLatest {
+                onEvent(AnnounceListEvent.InsertToDb(it))
             }
         }
     }
 
     fun setList(list: List<Announce>) {
-        _announcesList.value = list
+        val lst = mutableListOf<Announce>()
+        lst.addAll(list)
+        _announcesList.value = lst
     }
 
     /**
@@ -73,14 +83,17 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     private fun getAnnounces() {
         showProgress()
         viewModelScope.launch {
-            val result = getAnnouncements()
+            val result = getAnnouncements(0, 10)
             result.let {
                 when (it) {
                     is ServerResult.SuccessfulResult -> {
-                        _announcesList.value = it.model
+                        _announcesList.value = it.model.toAnnounce()
                     }
                     is ServerResult.UnsuccessfulResult -> {
                         println("TAG_OF_RES, ${it.error}")
+                    }
+                    is ServerResult.ResultException -> {
+
                     }
                 }
             }
@@ -94,27 +107,49 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
      */
     private fun insertAnnouncesToDbCall(announces: List<Announce>) {
         viewModelScope.launch {
+
             announces.forEach { announce ->
                 insertAnnounceToDb(announce)
             }
         }
     }
 
+    val becameState = MutableStateFlow<BecomingState>(BecomingState.NotHappened)
+    fun changeStateBec() {
+        becameState.value = BecomingState.NotHappened
+    }
     private fun becomeTravelerCall(travelId: Long) {
         viewModelScope.launch {
+
+            val res = getAnnounceByEmail(EMAIL)
+            if (res is ServerResult.SuccessfulResult) {
+                becameState.value = BecomingState.NotAllowed
+                return@launch
+            }
             val result = becomeTraveler(TravelerUser(travelId, EMAIL))
 
-            when(result) {
+            when (result) {
 
                 is ServerResult.SuccessfulResult -> {
                     println("TAG_OF_RES ${result.model}")
+                    becameState.value = BecomingState.Became
                 }
                 is ServerResult.UnsuccessfulResult -> {
                     println("TAG_OF_RES ${result.error}")
+                    becameState.value = BecomingState.NotAllowed
+                }
+                is ServerResult.ResultException -> {
+
                 }
             }
         }
     }
+}
+
+sealed class BecomingState {
+    object NotAllowed : BecomingState()
+    object NotHappened : BecomingState()
+    object Became : BecomingState()
 }
 
 /**

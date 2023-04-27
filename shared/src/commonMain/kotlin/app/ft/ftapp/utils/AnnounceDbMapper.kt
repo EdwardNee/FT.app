@@ -1,6 +1,7 @@
 package app.ft.ftapp.utils
 
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.models.Participant
 import db.AnnounceSQ
 
 /**
@@ -11,17 +12,20 @@ class AnnounceDbMapper {
      * Maps [AnnounceSQ] to [Announce]
      */
     fun fromDbToModel(announceSQ: AnnounceSQ): Announce {
+        println("TAG_OF_PART $announceSQ , ${MutableList(announceSQ.nowParticipants ?: 0) { Participant() }.size}")
         return with(announceSQ) {
             Announce(
                 id = id,
+                chatId = chatId,
                 timeRemained = 0L,
-                author = author,
-                email = email,
+                authorEmail = authorEmail,
                 placeFrom = placeFrom,
                 placeTo = placeTo,
-//                participants = participants,
+                startTime = startTime,
+                createTime = createTime,
+                participants = MutableList(nowParticipants ?: 0) { Participant() },
                 countOfParticipants = countOfParticipants,
-                comment = COMMENT ?: "",
+                comment = comment ?: "",
             )
         }
     }
@@ -29,17 +33,21 @@ class AnnounceDbMapper {
     /**
      * Maps [Announce] to [AnnounceSQ]
      */
-    fun fromModelToDb(announce: Announce) {
+    fun fromModelToDb(announce: Announce): AnnounceSQ {
+        println("TAG_OF_PART $announce")
         return with(announce) {
             AnnounceSQ(
                 id = id,
-                author = author,
-                email = email ?: "",
+                chatId = chatId ?: 0,
+                authorEmail = authorEmail ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
+                startTime = startTime,
+                createTime = createTime,
+                nowParticipants = participants?.size ?: 0,
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
-                COMMENT = comment,
+                comment = comment,
             )
         }
     }

@@ -3,16 +3,25 @@ buildscript {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven("https://jitpack.io")
+        maven ("https://kotlin.bintray.com/kotlinx/")
+
+        jcenter()
     }
     dependencies {
-        classpath(libs.mokoResGenerator)
+        classpath ("com.google.gms:google-services:3.0.0")
         classpath(libs.bundles.plugins)
+        classpath(libs.mokoResGenerator)
+        classpath("com.android.tools.build:gradle")
     }
 }
 
 allprojects {
     repositories {
+        maven("https://jitpack.io")
+//        maven ("https://kotlin.bintray.com/kotlinx/")
         mavenCentral()
+        gradlePluginPortal()
         google()
     }
 }

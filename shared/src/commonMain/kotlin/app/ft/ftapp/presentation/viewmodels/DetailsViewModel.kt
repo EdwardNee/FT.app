@@ -1,6 +1,7 @@
 package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import org.kodein.di.instance
  */
 class DetailsViewModel(private val preferencesHelper: PreferencesHelper) : BaseViewModel() {
     private val getAnnounceFromDb: GetAnnounceFromDbUseCase by kodein.instance()
+    private val getAllFromDb: GetAllAnnouncesFromDb by kodein.instance()
 
     private var announceId: String? = null
 

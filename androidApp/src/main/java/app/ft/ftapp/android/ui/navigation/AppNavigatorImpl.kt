@@ -8,19 +8,24 @@ import kotlinx.coroutines.channels.Channel
  * [AppNavigator] implementation. Wrapper of Compose navigation.
  */
 class AppNavigatorImpl : AppNavigator {
-    lateinit var navController: NavHostController
+    lateinit var mainNavController: NavHostController
+    lateinit var navControllerApp: NavHostController
 
-    override val navigationChannel = Channel<NavigationIntent>(
+    override val rootNavigationChannel = Channel<NavigationIntent>(
+        capacity = Int.MAX_VALUE,
+        onBufferOverflow = BufferOverflow.DROP_LATEST,
+    )
+    override val appNavigationChannel: Channel<NavigationIntent> = Channel<NavigationIntent>(
         capacity = Int.MAX_VALUE,
         onBufferOverflow = BufferOverflow.DROP_LATEST,
     )
 
     override suspend fun navigateBack(route: String?, inclusive: Boolean) {
-        navigationChannel.send(NavigationIntent.NavigateBack(route, inclusive))
+        rootNavigationChannel.send(NavigationIntent.NavigateBack(route, inclusive))
     }
 
     override fun tryNavigateBack(route: String?, inclusive: Boolean) {
-        navigationChannel.trySend(NavigationIntent.NavigateBack(route, inclusive))
+        appNavigationChannel.trySend(NavigationIntent.NavigateBack(route, inclusive))
     }
 
     override suspend fun navigateTo(
@@ -29,7 +34,7 @@ class AppNavigatorImpl : AppNavigator {
         inclusive: Boolean,
         isSingleTop: Boolean
     ) {
-        navigationChannel.send(
+        rootNavigationChannel.send(
             NavigationIntent.NavigateTo(
                 route,
                 popUpToRoute,
@@ -43,9 +48,10 @@ class AppNavigatorImpl : AppNavigator {
         route: String,
         popUpToRoute: String?,
         inclusive: Boolean,
-        isSingleTop: Boolean
+        isSingleTop: Boolean,
+        saveState: Boolean
     ) {
-        navigationChannel.trySend(
+        appNavigationChannel.trySend(
             NavigationIntent.NavigateTo(
                 route,
                 popUpToRoute,

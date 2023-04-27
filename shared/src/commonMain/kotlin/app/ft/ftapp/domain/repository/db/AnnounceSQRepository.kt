@@ -15,12 +15,15 @@ class AnnounceSQRepository(databaseDriverFactory: DatabaseDriverFactory) : IAnno
         with(announce) {
             query.insertAnnounce(
                 id = id,
-                author = author,
-                email = email,
+                chatId = chatId ?: 0,
+                authorEmail = authorEmail ?: "",
                 placeFrom = placeFrom,
                 placeTo = placeTo,
+                startTime = startTime ?: "",
+                createTime = createTime ?: "",
                 countOfParticipants = countOfParticipants,
-                COMMENT = comment,
+                nowParticipants = participants?.size ?: 0,
+                comment = comment,
             )
         }
     }
@@ -34,7 +37,9 @@ class AnnounceSQRepository(databaseDriverFactory: DatabaseDriverFactory) : IAnno
     }
 
     override suspend fun getAnnounceByIdFromDb(id: Int): Announce {
-        return announceDbMapper.fromDbToModel(query.getAnnounceById(id).executeAsOne())
+        val result = query.getAnnounceById(id).executeAsOne()
+        println("tag_of_part $result")
+        return announceDbMapper.fromDbToModel(result)
     }
 
     override suspend fun deleteAnnounceById(id: Int) {

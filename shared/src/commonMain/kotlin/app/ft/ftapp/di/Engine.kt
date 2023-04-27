@@ -5,19 +5,21 @@ import app.ft.ftapp.data.ktor.Api
 import app.ft.ftapp.data.ktor.TaxiApi
 import app.ft.ftapp.data.repository.IAnnounceSQRepository
 import app.ft.ftapp.data.repository.IAnnouncementRepository
+import app.ft.ftapp.data.repository.IServerChatRepository
 import app.ft.ftapp.data.repository.ITaxiRepository
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
+import app.ft.ftapp.domain.repository.ServerChatRepository
 import app.ft.ftapp.domain.repository.TaxiRepository
 import app.ft.ftapp.domain.repository.db.AnnounceSQRepository
-import app.ft.ftapp.domain.usecase.BecomeTravelerUseCase
-import app.ft.ftapp.domain.usecase.CreateAnnouncementUseCase
-import app.ft.ftapp.domain.usecase.GetAnnounceByEmailUseCase
-import app.ft.ftapp.domain.usecase.GetAnnouncementsUseCase
+import app.ft.ftapp.domain.usecase.chat.GetChatMessagesUseCase
+import app.ft.ftapp.domain.usecase.chat.SendChatMessageUseCase
 import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
 import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
+import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
+import app.ft.ftapp.presentation.viewmodels.ChatViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.utils.KMMContext
 import app.ft.ftapp.utils.PreferencesHelper
@@ -109,6 +111,7 @@ class Engine {
 
     private val repositoryModule = DI.Module("repository_module") {
         bindSingleton<IAnnouncementRepository>("serv_ann_r") { ServerAnnouncementRepository(instance()) }
+        bindSingleton<IServerChatRepository>("serv_ann_ch_r") { ServerChatRepository(instance()) }
         bindSingleton<ITaxiRepository>("taxi_ya_r") { TaxiRepository(instance()) }
         bindSingleton<IAnnounceSQRepository>("db_ann_r") { AnnounceSQRepository(DIFactory.driverFactory!!) }
     }
@@ -118,6 +121,8 @@ class Engine {
         bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { BecomeTravelerUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetAnnounceByEmailUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { DeleteAnnounceUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { GetOutOfTravelUseCase(instance(tag = "serv_ann_r")) }
 
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
 
@@ -125,11 +130,15 @@ class Engine {
         bindSingleton { GetAnnounceFromDbUseCase(instance(tag = "db_ann_r")) }
         bindSingleton { GetAllAnnouncesFromDb(instance(tag = "db_ann_r")) }
 
+        bindSingleton { GetChatMessagesUseCase(instance(tag = "serv_ann_ch_r")) }
+        bindSingleton { SendChatMessageUseCase(instance(tag = "serv_ann_ch_r")) }
+
     }
 
     private val viewModelsModule = DI.Module("viewmodel") {
 //        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
         bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
+        bindSingleton<ChatViewModel>("chat_vm") { ChatViewModel() }
     }
 
     private val utilsModule = DI.Module("utils") {

@@ -18,14 +18,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.android.ui.theme.Montserrat
+import app.ft.ftapp.android.ui.theme.blueMessageCardColor
+import app.ft.ftapp.android.ui.theme.myMessageCardColor
 import app.ft.ftapp.android.ui.theme.namesColor
-import kotlin.random.Random
+import app.ft.ftapp.domain.models.ChatSenderMessage
 
 /**
  * Composable method to draw a Chat message element.
  */
 @Composable
-fun ChatMessageComponent(modifier: Modifier = Modifier, text: String, myMessage: Boolean) {
+fun ChatMessageComponent(
+    modifier: Modifier = Modifier,
+    msg: ChatSenderMessage,
+    myMessage: Boolean
+) {
     val dpFormat = 8.dp
     val previousIsMine = true
 
@@ -62,44 +68,44 @@ fun ChatMessageComponent(modifier: Modifier = Modifier, text: String, myMessage:
             modifier = Modifier
                 .wrapContentSize()
                 .clip(shape)
-                .background(Color.Blue)
+                .background(if (myMessage) myMessageCardColor else blueMessageCardColor)
         ) {
             Text(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
                 fontWeight = FontWeight.SemiBold,
-                text = "Егор Дмитриев",
+                text = msg.sender,
                 fontFamily = Montserrat,
                 fontSize = 12.sp,
-                color = namesColor[(namesColor.indices).random()]
+                color = namesColor[if (myMessage) 3 else 2]
             )
             Row {
                 SelectionContainer { //TODO
                     Text(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .padding(bottom = 8.dp)
+                            .padding(bottom = 0.dp)
                             .weight(1f, false),
-                        text = text,
+                        text = msg.message,
                         fontFamily = Montserrat,
                         color = Color.White,
                     )
                 }
+            }
 
-                Box(
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.End)
+            ) {
+                Text(
                     modifier = Modifier
-                        .wrapContentSize()
-                        .align(Alignment.Bottom)
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(end = 4.dp, bottom = 2.dp),
-                        text = "12:22",
-                        fontFamily = Montserrat,
-                        color = Color.Gray,
-                        fontSize = 10.sp,
-                        maxLines = 1
-                    )
-                }
+                        .padding(start = 4.dp, end = 4.dp, bottom = 2.dp).align(Alignment.BottomEnd),
+                    text = "28.04 в 12:22",
+                    fontFamily = Montserrat,
+                    color = Color.Gray,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
             }
         }
     }

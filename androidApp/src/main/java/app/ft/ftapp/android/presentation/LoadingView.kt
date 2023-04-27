@@ -31,7 +31,7 @@ fun LoadingView() {
         CircularProgressIndicator(
             color = Color.Magenta,
             modifier = Modifier
-                .size(60.dp)
+                .size(45.dp)
                 .align(Alignment.Center)
         )
     }

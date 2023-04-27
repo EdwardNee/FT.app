@@ -11,6 +11,7 @@ object CodeResponse {
     internal const val ERROR_403 = 403
     internal const val SUCCESS_200 = 200
     internal const val SERVER_UNREACHABLE = "Server Unreachable"
-    internal const val MODEL_NOT_AVAILABLE = "Model not available"
+    internal const val NOT_FOUND = "Not Found"
     internal const val INTERNAL_SERVER_ERROR = "Internal server error"
+    internal const val BAD_REQUEST = "Bad Request"
 }
