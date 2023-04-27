@@ -1,4 +1,17 @@
 [versions]
+
+composeVersion = "1.3.0"
+composeActivityVersion = "1.6.1"
+
+coroutinesVersion = "1.6.4"
+
+composeNavigationVersion = "2.5.3"
+constraintComposeVersion = "1.1.0-alpha03"
+
+accompanistVersion = "0.14.0"
+
+maxkeppelerVersion = "1.0.2"
+
 ktorVersionClient = "2.1.2"
 
 ktxJsonSer = "1.6.20"
@@ -6,8 +19,14 @@ ktxJsonCore = "1.3.2"
 
 kotlinVersion = "1.7.10"
 
-composeVersion = "1.3.0"
-composeActivityVersion = "1.6.1"
+kodeinVersion = "7.12.0"
+
+mokoResVersion = "0.20.1"
+mokoMvvmVersion = "0.14.0"
+
+sqlDelightVersion = "1.5.3"
+
+ktxDateTimeVersion = "0.4.0"
 
 [libraries]
 # ktor
@@ -30,12 +49,80 @@ cmsUiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", versi
 cmsFoundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeVersion" }
 cmsMaterial = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
 cmsActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivityVersion" }
+cmsNavigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigationVersion" }
+constraintCompose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintComposeVersion" }
+
+# accompanist
+accompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
+accompanistPagerIndicator = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
+
+# maxkeeper
+maxkeppelerCore = { module = "com.maxkeppeler.sheets-compose-dialogs:core", version.ref = "maxkeppelerVersion" }
+maxkeppelerClock = { module = "com.maxkeppeler.sheets-compose-dialogs:clock", version.ref = "maxkeppelerVersion" }
+
+
+# coroutines
+coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
+coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
+
+# moko resources
+mokoRes = { module = "dev.icerock.moko:resources", version.ref = "mokoResVersion" }
+mokoResGenerator = { module = "dev.icerock.moko:resources-generator", version.ref = "mokoResVersion" }
+mokoResAndroid = { module = "dev.icerock.moko:resources-android", version.ref = "mokoResVersion" }
+mokoResCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResVersion" }
+
+#moko mvvm
+mokoLivedataGlide = { module = "dev.icerock.moko:mvvm-livedata-glide", version.ref = "mokoMvvmVersion" }
+mokoLivedataMaterial = { module = "dev.icerock.moko:mvvm-livedata-material", version.ref = "mokoMvvmVersion" }
+mokoFlowCompose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mokoMvvmVersion" }
+mokoLivedataCompose = { module = "dev.icerock.moko:mvvm-livedata-compose", version.ref = "mokoMvvmVersion" }
+mokoMvvmLivedata = { module = "dev.icerock.moko:mvvm-livedata", version.ref = "mokoMvvmVersion" }
+mokoLivedataResources = { module = "dev.icerock.moko:mvvm-livedata-resources", version.ref = "mokoMvvmVersion" }
+mokoMvvmCore = { module = "dev.icerock.moko:mvvm-core", version.ref = "mokoMvvmVersion" }
+mokoMvvmFlow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "mokoMvvmVersion" }
+
+
+# kodein
+kodeinDi = { module = "org.kodein.di:kodein-di", version.ref = "kodeinVersion" }
+
+
+# sqldelight
+sqldelightRuntime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqlDelightVersion" }
+sqldelightAndroid = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
+sqldelightNative = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqlDelightVersion" }
+
+# datetime
+ktxDateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "ktxDateTimeVersion" }
+
 
 # plugins
 ktxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinVersion" }
 
 
 [bundles]
+mokoResources = [
+    "mokoRes",
+    "mokoResGenerator",
+    "mokoResAndroid",
+    "mokoResCompose"
+]
+
+mokoMvvmAndroidApi = [
+    "mokoLivedataGlide",
+    "mokoLivedataMaterial",
+    "mokoFlowCompose",
+    "mokoLivedataCompose"
+]
+
+mokoMvvmCommon = [
+    "mokoMvvmLivedata",
+    "mokoLivedataResources",
+    "mokoMvvmCore",
+    "mokoMvvmFlow"
+]
+
+
+
 ktorClient = [
     "ktorClient",
     "ktorClientContentNegotiation",
@@ -44,12 +131,27 @@ ktorClient = [
     "ktorLogging"
 ]
 
+coroutines = [
+    "coroutinesCore",
+    "coroutinesAndroid"
+]
+
 composeLibs = [
     "cmsUi",
     "cmsUiTooling",
     "cmsUiToolingPreview",
     "cmsFoundation",
     "cmsMaterial",
-    "cmsActivity"
+    "cmsActivity",
+    "cmsNavigation",
+    "accompanistPager",
+    "accompanistPagerIndicator",
+    "constraintCompose"
 ]
+
+maxkeeperLibs = [
+    "maxkeppelerCore",
+    "maxkeppelerClock"
+]
+
 plugins = ["ktxSerialization"]

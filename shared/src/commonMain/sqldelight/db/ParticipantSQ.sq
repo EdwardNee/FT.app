@@ -1,0 +1,25 @@
+CREATE TABLE ParticipantSQ (
+    announce_id INTEGER AS Int NOT NULL,
+    name TEXT,
+    email TEXT
+);
+
+insertParticipant:
+INSERT INTO ParticipantSQ(
+    announce_id,
+    name,
+    email
+) VALUES(?,?,?);
+
+deleteParticipant:
+DELETE FROM ParticipantSQ
+WHERE announce_id = :id AND email = :email;
+
+getAllParticipants:
+SELECT * FROM ParticipantSQ;
+
+getParticipantsToAnnounce:
+SELECT * FROM ParticipantSQ
+WHERE announce_id = :id;
+
+

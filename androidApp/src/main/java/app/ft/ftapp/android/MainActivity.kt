@@ -1,44 +1,74 @@
 package app.ft.ftapp.android
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import app.ft.ftapp.android.presentation.announcement.AnnounceCard
-import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
-import app.ft.ftapp.android.ui.theme.MyApplicationTheme
-import app.ft.ftapp.android.ui.theme.appBackground
+import androidx.compose.runtime.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.work.*
+import app.ft.ftapp.android.presentation.MainComposable
+import com.hse.core.BaseApplication
+import com.hse.core.ui.BaseActivity
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = appBackground//MaterialTheme.colors.background
-                ) {
-                    AnnounceScreen()
-//                    GreetingView(Greeting().greet())
-                }
-            }
-        }
+class MainActivity : BaseActivity() {
+
+    private val REQUEST_LOGIN = 5
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
+//        if (resultCode == Activity.RESULT_OK) {
+//            Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (resultCode == Activity.RESULT_OK) {
+        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
+        Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
+        super.onActivityResult(requestCode, resultCode, data)
+//        }
     }
-}
 
-@Composable
-fun GreetingView(text: String) {
-    Text(text = text)
-}
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        BaseApplication.appComponent.inject(this)
 
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
+        super.onCreate(savedInstanceState)
+
+//        val chatMessageWork = PeriodicWorkRequestBuilder<MessagesWorker>(5, TimeUnit.SECONDS)
+//            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+//            .addTag("TAG_WORK")
+//           // .setInputData(Data.Builder().putLong("CHAT_ID", viewModel.chatId.value).build())
+//            .build()
+//
+//        val workManager = WorkManager.getInstance(applicationContext)
+//            .enqueue(chatMessageWork)
+
+//        val intent = Intent(this, ChatService::class.java)
+//        ContextCompat.startForegroundService(this, intent)
+
+
+        setContent {
+            MainComposable()
+
+//            Button({ AuthHelper.login(this, REQUEST_LOGIN)}) {
+//                Text("Adsadб ")
+//            }
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            view.updatePadding(bottom = bottom)
+            insets
+        }
     }
 }

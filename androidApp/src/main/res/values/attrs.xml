@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SeatsFreeView">
+        <attr name="filledColor" format="color"/>
+        <attr name="emptyColor" format="color"/>
+        <attr name="gridColor" format="color"/>
+    </declare-styleable>
+
+    <attr name="filledStyle" format="reference"/>
+
+</resources>
