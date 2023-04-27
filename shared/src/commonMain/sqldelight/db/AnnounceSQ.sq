@@ -7,6 +7,7 @@ CREATE TABLE AnnounceSQ (
     createTime TEXT,
     startTime TEXT,
     countOfParticipants INTEGER AS Int DEFAULT 4 NOT NULL,
+    nowParticipants INTEGER AS Int,
     comment TEXT,
     PRIMARY KEY(id)
 );
@@ -21,8 +22,9 @@ INSERT OR REPLACE INTO AnnounceSQ(
     createTime,
     startTime,
     countOfParticipants,
+    nowParticipants,
     comment
-) VALUES(?,?,?,?,?,?,?,?,?);
+) VALUES(?,?,?,?,?,?,?,?,?,?);
 
 getAllAnnounces:
 SELECT * FROM AnnounceSQ;

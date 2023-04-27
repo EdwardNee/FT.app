@@ -9,6 +9,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -117,7 +118,8 @@ fun AnnounceCard(
             AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
             AnnounceParams(
                 stringResource(id = R.string.free_places),
-                (4 - announce.countOfParticipants).toString()
+                (announce.countOfParticipants - (announce.participants?.size
+                    ?: 0)).toString()
             )
 
             Row(
@@ -135,7 +137,7 @@ fun AnnounceCard(
                 ) {
                     onClickInfo(announce)
                 }
-                AnnounceButton(Modifier.weight(1f), text = "Примкнуть", announce.authorEmail != EMAIL) {
+                AnnounceButton(Modifier.weight(1f), text = "Примкнуть", shouldEnable(announce)) {
                     onClickBecome(announce.id.toLong())
                 }
             }
@@ -143,12 +145,16 @@ fun AnnounceCard(
     }
 }
 
+fun shouldEnable(announce: Announce): Boolean {
+    return announce.authorEmail != EMAIL && announce.participants?.firstOrNull { it.email == EMAIL } == null
+}
+
 /**
  * Depicts params of the announcement.
  */
 @Composable
 fun AnnounceParams(text: String, paramValue: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text, color = textGray, fontSize = 16.sp)
         Spacer(modifier = Modifier.padding(4.dp))
         Text(paramValue, fontSize = 14.sp)
@@ -159,7 +165,12 @@ fun AnnounceParams(text: String, paramValue: String) {
  * Button to process announcement card.
  */
 @Composable
-fun AnnounceButton(modifier: Modifier = Modifier, text: String, enabled: Boolean = true, onClick: () -> Unit) {
+fun AnnounceButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     Button(
         onClick = { onClick() }, modifier = Modifier
             .clip(

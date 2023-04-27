@@ -104,7 +104,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             )
 
             Text(
-                text =  (4 - (announceDb?.countOfParticipants ?: 0)).toString(),
+                text =  ((announceDb?.countOfParticipants ?: 1) - (announceDb?.participants?.size ?: 0)).toString(),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold

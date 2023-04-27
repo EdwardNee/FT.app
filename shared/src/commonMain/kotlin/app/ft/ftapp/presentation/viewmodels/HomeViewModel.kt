@@ -76,7 +76,6 @@ class HomeViewModel : BaseViewModel() {
                     } else {
                         ModelsState.Error(result.error)
                     }
-
                 }
                 is ServerResult.ResultException -> {
                     _uiState.value = ModelsState.Error(result.error ?: "Ошибка")

@@ -1,7 +1,7 @@
 package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.EMAIL
-import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.data.converters.CodeResponse
 import app.ft.ftapp.domain.models.ChatSenderMessage
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.usecase.chat.GetChatMessagesUseCase
@@ -23,7 +23,10 @@ class ChatViewModel : BaseViewModel() {
     //endregion
 
     val chatId = MutableStateFlow(0L)
+    val participants = MutableStateFlow(0)
     val chatMessages = MutableStateFlow(emptyList<ChatSenderMessage>())
+
+    val chatLoadState = MutableStateFlow<ModelsState>(ModelsState.Loading)
 
     init {
         onEvent(ChatEvent.GetAnnounce)
@@ -61,12 +64,21 @@ class ChatViewModel : BaseViewModel() {
 
             when (result) {
                 is ServerResult.ResultException -> {
-
+                    chatLoadState.value = ModelsState.Error(result.error ?: "Возникла ошибка загрузки чата.")
+                    hideProgress()
                 }
                 is ServerResult.SuccessfulResult -> {
                     chatId.value = result.model.chatId?.toLong() ?: 0
+                    participants.value = result.model.participants?.size ?: 1
                 }
-                is ServerResult.UnsuccessfulResult -> {}
+                is ServerResult.UnsuccessfulResult -> {
+                    chatLoadState.value = if (result.error == CodeResponse.NOT_FOUND) {
+                        ModelsState.NoData
+                    } else {
+                        ModelsState.Error(result.error)
+                    }
+                    hideProgress()
+                }
             }
         }
     }
@@ -85,7 +97,9 @@ class ChatViewModel : BaseViewModel() {
                     chatMessages.value = result.model
                     hideProgress()
                 }
-                is ServerResult.UnsuccessfulResult -> {}
+                is ServerResult.UnsuccessfulResult -> {
+
+                }
             }
 
         }

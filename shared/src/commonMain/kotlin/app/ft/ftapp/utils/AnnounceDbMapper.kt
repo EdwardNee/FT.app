@@ -1,6 +1,7 @@
 package app.ft.ftapp.utils
 
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.domain.models.Participant
 import db.AnnounceSQ
 
 /**
@@ -11,6 +12,7 @@ class AnnounceDbMapper {
      * Maps [AnnounceSQ] to [Announce]
      */
     fun fromDbToModel(announceSQ: AnnounceSQ): Announce {
+        println("TAG_OF_PART $announceSQ , ${MutableList(announceSQ.nowParticipants ?: 0) { Participant() }.size}")
         return with(announceSQ) {
             Announce(
                 id = id,
@@ -21,7 +23,7 @@ class AnnounceDbMapper {
                 placeTo = placeTo,
                 startTime = startTime,
                 createTime = createTime,
-//                participants = participants,
+                participants = MutableList(nowParticipants ?: 0) { Participant() },
                 countOfParticipants = countOfParticipants,
                 comment = comment ?: "",
             )
@@ -32,6 +34,7 @@ class AnnounceDbMapper {
      * Maps [Announce] to [AnnounceSQ]
      */
     fun fromModelToDb(announce: Announce): AnnounceSQ {
+        println("TAG_OF_PART $announce")
         return with(announce) {
             AnnounceSQ(
                 id = id,
@@ -41,6 +44,7 @@ class AnnounceDbMapper {
                 placeTo = placeTo,
                 startTime = startTime,
                 createTime = createTime,
+                nowParticipants = participants?.size ?: 0,
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
                 comment = comment,

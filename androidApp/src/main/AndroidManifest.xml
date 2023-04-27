@@ -6,8 +6,9 @@
     <application
         android:name="app.ft.ftapp.android.MyApplication"
         android:allowBackup="true"
-        tools:replace="android:allowBackup,android:label"
+        tools:replace="android:allowBackup,android:label,android:icon"
         android:supportsRtl="true"
+        android:icon="@drawable/become_travel"
         android:label="Попутчики ВШЭ"
         android:theme="@style/AppTheme">
 

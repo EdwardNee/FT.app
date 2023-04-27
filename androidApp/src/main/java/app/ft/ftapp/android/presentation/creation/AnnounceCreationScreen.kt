@@ -93,10 +93,16 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
         borderColor = 0
     }
 
-    if (isInTravel) {
-        Toast.makeText(LocalContext.current, "У вас уже есть поездка", Toast.LENGTH_LONG).show()
+
+            if (isInTravel) {
+                LaunchedEffect(Unit) {
+                    scope.launch {
+                println(" her $isInTravel")
+                snackbarState.showSnackbar("У вас уже есть поездка")
+//                Toast.makeText(LocalContext.current, "У вас уже есть поездка", Toast.LENGTH_LONG).show()
+            }
+        }
     }
-    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -346,8 +352,9 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
             .fillMaxWidth()
             .height(200.dp)
             .padding(top = 50.dp)
-            .clip(RoundedCornerShape(10.dp),
-                ),
+            .clip(
+                RoundedCornerShape(10.dp),
+            ),
     )
 }
 
@@ -355,7 +362,12 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
  * Text values parameters composable.
  */
 @Composable
-fun TextValues(numeric: String, text: String, currency: String = "", onEventCall: (String) -> Unit) {
+fun TextValues(
+    numeric: String,
+    text: String,
+    currency: String = "",
+    onEventCall: (String) -> Unit
+) {
 //    var value by remember { mutableStateOf("") }
     val intPattern = remember { Regex("^\\d+\$") }
     val interactionSource = remember { MutableInteractionSource() }

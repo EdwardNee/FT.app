@@ -10,14 +10,16 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
@@ -36,14 +38,17 @@ import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
+import app.ft.ftapp.android.presentation.home.ErrorView
+import app.ft.ftapp.android.presentation.home.NoDataView
+import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
-import app.ft.ftapp.android.ui.theme.Montserrat
-import app.ft.ftapp.android.ui.theme.editTextBackground
+import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.domain.models.ChatSenderMessage
 import app.ft.ftapp.presentation.viewmodels.ChatEvent
 import app.ft.ftapp.presentation.viewmodels.ChatViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -64,6 +69,9 @@ fun GroupChat() {
 
     val isLoading by viewModel.isShowProgress.collectAsState()
     val chatMessages by viewModel.chatMessages.collectAsState()
+    val participantsCount by viewModel.participants.collectAsState()
+
+    val chatLoad by viewModel.chatLoadState.collectAsState()
 
     LaunchedEffect(Unit) {
         scrollableRemember.launch {
@@ -76,7 +84,11 @@ fun GroupChat() {
     DisposableEffect(Unit) {
         val job = scope.launch {
             viewModel.chatId.collectLatest {
-                screenViewModel.startListening(it)
+                if (it > 0) {
+                    screenViewModel.startListening(it)
+                } else {
+                    screenViewModel.stopListening()
+                }
             }
         }
 
@@ -94,12 +106,14 @@ fun GroupChat() {
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = ""
-                        )
-                    }
+                    Icon(
+                        modifier = Modifier
+                            .size(45.dp)
+                            .padding(end = 8.dp),
+                        tint = Color.LightGray,
+                        imageVector = Icons.Filled.Email,
+                        contentDescription = ""
+                    )
 
                     Column {
                         Text(
@@ -110,7 +124,11 @@ fun GroupChat() {
                             color = Color.Black,
                         )
                         Text(
-                            text = pluralStringResource(id = R.plurals.plural_fellows, 4, 4),
+                            text = pluralStringResource(
+                                id = R.plurals.plural_fellows,
+                                participantsCount,
+                                participantsCount
+                            ),
                             fontSize = 12.sp
                         )
                     }
@@ -121,18 +139,21 @@ fun GroupChat() {
     {
         ConstraintLayout(
             modifier = Modifier
+                .background(appBackground)
                 .padding(it)
                 .fillMaxWidth()
         ) {
-            val (icon, text) = createRefs()
+            val (icon, text, pad) = createRefs()
 
             MessagesList(
-                columnModifier = Modifier.fillMaxWidth().constrainAs(icon) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(text.top)
-                    end.linkTo(parent.end)
-                },
+                columnModifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(icon) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(text.top)
+                        end.linkTo(parent.end)
+                    },
                 messages = chatMessages,
                 lazyState = lazyState,
                 //modifier = Modifier.align(Alignment.End)
@@ -143,6 +164,19 @@ fun GroupChat() {
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
             }, chatMessages, lazyState, scrollableRemember)
+        }
+
+        when(chatLoad) {
+            is ModelsState.Error -> {
+                ErrorView {
+
+                }
+            }
+            ModelsState.Loading -> {}
+            ModelsState.NoData -> {
+                NoDataView()
+            }
+            is ModelsState.Success<*> -> {}
         }
 
         if (isLoading) {
@@ -171,8 +205,11 @@ fun MessagesList(
     val modifierNo = Modifier
         .padding(bottom = 4.dp, end = screenWidth / 4, start = 8.dp)
     LazyColumn(
-        modifier = columnModifier.then(Modifier.fillMaxHeight(0.92f).bringIntoViewRequester(bringIntoViewRequester))
-            , verticalArrangement = Arrangement.Bottom,
+        modifier = columnModifier.then(
+            Modifier
+                .fillMaxHeight(0.92f)
+                .bringIntoViewRequester(bringIntoViewRequester)
+        ), verticalArrangement = Arrangement.Bottom,
         state = lazyState
     ) {
         item {
@@ -209,6 +246,8 @@ fun CustomEditText(
         textStyle = TextStyle.Default.copy(fontSize = 16.sp, fontFamily = Montserrat),
         onValueChange = { textChange -> message.value = textChange },
         modifier = modifier.then(Modifier
+            .clip(RoundedCornerShape(15.dp))
+            .padding(bottom = 20.dp)
             .fillMaxWidth()
             .background(color = editTextBackground)
             .padding(start = 8.dp)
@@ -233,14 +272,21 @@ fun CustomEditText(
         TextFieldDefaults.TextFieldDecorationBox(
             trailingIcon = {
                 Icon(
+                    tint = if(message.value.trim().isNotEmpty()) cursorColor else Color.Gray,
                     imageVector = Icons.Filled.Send,
                     contentDescription = "",
-                    modifier = Modifier.clickable {
-                        if (message.value.trim().isNotEmpty()) {
-                            viewModel.onEvent(ChatEvent.SendMessage(message.value))
-                            message.value = ""
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(end = 3.dp)
+                        .clickable {
+                            if (message.value
+                                    .trim()
+                                    .isNotEmpty()
+                            ) {
+                                viewModel.onEvent(ChatEvent.SendMessage(message.value))
+                                message.value = ""
+                            }
                         }
-                    }
                 )
             },
             value = message.value,

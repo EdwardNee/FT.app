@@ -28,6 +28,13 @@ val buttonColors = Color(0xFF00474F)
 
 val blueTextColor = Color(0xFF0050AE)
 
+val cursorColor = Color(0xFF1DB5B5)
+
+val blueMessageCardColor = Color(0xFF215C7D)
+val myMessageCardColor = Color(0xFF35434A)
+
+val chatBackground = Color(0xFF56849D)
+
 val chipTimeColor = Color(0xffeb645e)
 
 val namesColor =

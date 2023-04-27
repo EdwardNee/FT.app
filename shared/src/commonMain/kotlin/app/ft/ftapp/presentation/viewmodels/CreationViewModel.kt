@@ -118,7 +118,7 @@ class CreationViewModel : BaseViewModel() {
                     authorEmail = author.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
-                    participants = emptyList(),
+                    participants = listOf(Participant(NAME, EMAIL)),
                     countOfParticipants =
                     if (countOfParticipants.value.isNotEmpty())
                         countOfParticipants.value.toInt()
@@ -174,6 +174,10 @@ class CreationViewModel : BaseViewModel() {
 
     val isInTravel = MutableStateFlow(false)
 
+    fun disableInTravel() {
+        isInTravel.value = false
+    }
+
     /**
      * Method that processes request for creating announcement on the server.
      */
@@ -182,13 +186,14 @@ class CreationViewModel : BaseViewModel() {
 
         viewModelScope.launch {
             val res = getTripByEmail(EMAIL)
-            if (res is ServerResult.UnsuccessfulResult) {
-                println("TAG_OFRE ${res.error}")
-                if (res.error != NOT_FOUND) {
-                    isInTravel.value = true
-                    return@launch
-                }
+                println("TAG_OF_ISIN $res")
+            if (res is ServerResult.SuccessfulResult) {
+                isInTravel.value = true
+                println("TAG_OF_ISIN")
+                hideProgress()
+                return@launch
             }
+                println("TAG_OF_ISIN out")
 
             isInTravel.value = false
             val result = createAnnounce(announce)
@@ -200,7 +205,7 @@ class CreationViewModel : BaseViewModel() {
 
                 is ServerResult.UnsuccessfulResult -> {
                     _loadResult.value = if (result.error == BAD_REQUEST) {
-                        ModelsState.Error("Неправильно введены параметры значения.")
+                        ModelsState.Error("Неправильно введены значения.")
                     } else {
                         ModelsState.Error(result.error)
                     }

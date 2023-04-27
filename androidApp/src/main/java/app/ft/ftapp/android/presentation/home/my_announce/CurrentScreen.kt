@@ -159,7 +159,7 @@ fun CurrentScreen() {
                     fontSize = 16.sp
                 )
                 Text(
-                    (4 - (assignedAnnounce?.countOfParticipants ?: 0)).toString(),
+                    (assignedAnnounce?.participants?.size ?: 1).toString(),
                     fontFamily = Montserrat,
                     modifier = Modifier
                         .padding(end = 8.dp)

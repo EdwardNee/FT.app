@@ -3,11 +3,11 @@ package app.ft.ftapp.android.presentation.groupchat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.ft.ftapp.di.DIFactory
-import app.ft.ftapp.domain.usecase.chat.GetChatMessagesUseCase
 import app.ft.ftapp.presentation.viewmodels.ChatEvent
 import app.ft.ftapp.presentation.viewmodels.ChatViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.kodein.di.instance
 import java.util.*
 
 class ChatScreenViewModel(private val viewModel: ChatViewModel): ViewModel() {
@@ -16,6 +16,21 @@ class ChatScreenViewModel(private val viewModel: ChatViewModel): ViewModel() {
 
     private val kodein = DIFactory.di
 //    private val getChatMessagesUseCase: GetChatMessagesUseCase by kodein.instance()
+
+    init {
+        viewModelScope.launch {
+            viewModel.chatLoadState.collectLatest {
+                when(it) {
+                    is ModelsState.Error -> {
+                        stopListening()
+                    }
+                    ModelsState.Loading -> {}
+                    ModelsState.NoData -> {}
+                    is ModelsState.Success<*> -> {}
+                }
+            }
+        }
+    }
 
     fun startListening(chatId : Long) {
         if (!scheduled) {
@@ -35,12 +50,13 @@ class ChatScreenViewModel(private val viewModel: ChatViewModel): ViewModel() {
     }
 
     fun stopListening() {
-        timer.cancel()
-        scheduled = false
+        if (this::timer.isInitialized) {
+            timer.cancel()
+            scheduled = false
+        }
     }
 
     override fun onCleared() {
-        println("TAG_OF_CHAT onCleared vm")
         super.onCleared()
         stopListening()
     }
