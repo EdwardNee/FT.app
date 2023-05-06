@@ -56,6 +56,7 @@ kotlin {
                 implementation(libs.mokoResAndroid)
                 implementation(libs.mokoResCompose)
                 api(libs.bundles.mokoMvvmAndroidApi)
+                implementation("com.yandex.android:maps.mobile:4.3.1-full")
             }
         }
         val androidTest by getting
