@@ -1,5 +1,6 @@
 package app.ft.ftapp.android.presentation
 
+//import app.ft.ftapp.android.presentation.home.HomeScreen
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,18 +28,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import app.ft.ftapp.android.BottomSheetApp
+import app.ft.ftapp.android.R
 import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.auth.AuthScreen
 import app.ft.ftapp.android.presentation.common.Keyboard
 import app.ft.ftapp.android.presentation.common.keyboardAsState
-import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
+import app.ft.ftapp.android.presentation.creation.CreationWithMap
 import app.ft.ftapp.android.presentation.creation.SuccessView
 import app.ft.ftapp.android.presentation.groupchat.GroupChat
 import app.ft.ftapp.android.presentation.home.HomeScreen
-//import app.ft.ftapp.android.presentation.home.HomeScreen
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
+import app.ft.ftapp.android.presentation.preview.PreviewComposable
 import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.navigation.AppDestination
 import app.ft.ftapp.android.ui.navigation.CustomNavigation
@@ -50,8 +52,6 @@ import app.ft.ftapp.android.ui.theme.bottomNavColor
 import app.ft.ftapp.android.utils.SingletonHelper
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import app.ft.ftapp.android.R
-import app.ft.ftapp.android.presentation.preview.PreviewComposable
 
 /**
  * Main composable entry.
@@ -195,7 +195,8 @@ fun NavGraphBuilder.appGraph(navController: NavController) {
         composable(destination = AppDestination.Creation) {
             BottomSheetApp(
                 pageContent = { listener ->
-                    AnnounceCreationScreen(listener)
+//                    AnnounceCreationScreen(listener)
+                    CreationWithMap()
                 },
                 sheetContent = { SuccessView() }
             )
@@ -264,7 +265,8 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
         composable(destination = AppDestination.Creation) {
             BottomSheetApp(
                 pageContent = { listener ->
-                    AnnounceCreationScreen(listener)
+//                    AnnounceCreationScreen(listener)
+                    CreationWithMap()
                 },
                 sheetContent = { SuccessView() }
             )
@@ -288,70 +290,35 @@ fun NavigationEffects(
 ) {
     val activity = (LocalContext.current as? Activity)
     LaunchedEffect(activity, navHostController, navigationChannel) {
-
-        if (graph == ScreenValues.SECOND_APP) {
-            navigationChannel.receiveAsFlow().collect() { intent ->
-                if (activity?.isFinishing == true) {
-                    return@collect
-                }
-
-                when (intent) {
-
-                    is NavigationIntent.NavigateBack -> {
-                        if (intent.route != null) {
-                            navHostController.popBackStack(intent.route, intent.inclusive)
-                        } else {
-                            navHostController.popBackStack()
-                        }
-                    }
-                    is NavigationIntent.NavigateTo -> {
-                        navHostController.navigate(intent.route) {
-//                        launchSingleTop = intent.isSingleTop
-//                        intent.popUpToRoute?.let { popUpToRoute ->
-                            popUpTo(navHostController.graph.findStartDestination().id) {
-
-                                inclusive = intent.inclusive
-                                saveState = intent.saveState
-                            }
-                            launchSingleTop = intent.isSingleTop
-                            restoreState = true
-//                        }
-                        }
-                    }
-                }
+        navigationChannel.receiveAsFlow().collect() { intent ->
+            if (activity?.isFinishing == true) {
+                return@collect
             }
-        } else {
-            navigationChannel.receiveAsFlow().collect() { intent ->
-                if (activity?.isFinishing == true) {
-                    return@collect
-                }
 
-                when (intent) {
+            when (intent) {
 
-                    is NavigationIntent.NavigateBack -> {
-                        if (intent.route != null) {
-                            navHostController.popBackStack(intent.route, intent.inclusive)
-                        } else {
-                            navHostController.popBackStack()
-                        }
+                is NavigationIntent.NavigateBack -> {
+                    if (intent.route != null) {
+                        navHostController.popBackStack(intent.route, intent.inclusive)
+                    } else {
+                        navHostController.popBackStack()
                     }
-                    is NavigationIntent.NavigateTo -> {
-                        navHostController.navigate(intent.route) {
+                }
+                is NavigationIntent.NavigateTo -> {
+                    navHostController.navigate(intent.route) {
 //                        launchSingleTop = intent.isSingleTop
 //                        intent.popUpToRoute?.let { popUpToRoute ->
-                            popUpTo(navHostController.graph.findStartDestination().id) {
+                        popUpTo(navHostController.graph.findStartDestination().id) {
 
-                                inclusive = intent.inclusive
-                                saveState = intent.saveState
-                            }
-                            launchSingleTop = intent.isSingleTop
-                            restoreState = true
-//                        }
+                            inclusive = intent.inclusive
+                            saveState = intent.saveState
                         }
+                        launchSingleTop = intent.isSingleTop
+                        restoreState = true
+//                        }
                     }
                 }
             }
         }
-
     }
 }

@@ -4,7 +4,6 @@ import app.ft.ftapp.EMAIL
 import app.ft.ftapp.NAME
 import app.ft.ftapp.clid
 import app.ft.ftapp.data.converters.CodeResponse.BAD_REQUEST
-import app.ft.ftapp.data.converters.CodeResponse.NOT_FOUND
 import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.server.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
@@ -12,6 +11,7 @@ import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.key_yandex
 import app.ft.ftapp.utils.TimeUtil
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
@@ -70,7 +70,7 @@ class CreationViewModel : BaseViewModel() {
 
     val editTextTap = MutableStateFlow<FocusPosition>(FocusPosition.None)
 
-    val triple = combine(
+    val triples = combine(
         _locations,
         sourceDestination,
         endDestination,
@@ -80,6 +80,7 @@ class CreationViewModel : BaseViewModel() {
             loc
         } else {
             loc.filter {
+                println("TAG_OF_RES FILTER")
                 val whatToContain = when (sTap) {
                     is FocusPosition.SourceField -> start
                     is FocusPosition.EndField -> end
@@ -90,6 +91,34 @@ class CreationViewModel : BaseViewModel() {
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+
+    val triple = sourceDestination
+        .debounce(1000L)
+        .onEach { println("TAG_OF_RES on each") }
+        .combine(
+            editTextTap
+        ) { start, sTap ->
+            val end = "a"
+            if (start.isBlank() && end.isBlank() && sTap !is FocusPosition.None) {
+                _locations.value
+            } else {
+                val result = _locations.value.filter {
+                    println("TAG_OF_RES FILTER")
+                    val whatToContain = when (sTap) {
+                        is FocusPosition.SourceField -> start
+                        is FocusPosition.EndField -> end
+                        is FocusPosition.None -> NON_EXISTING_WORD
+                    }.trim().lowercase()
+                    it.name.lowercase().contains(whatToContain) or it.address.lowercase()
+                        .contains(whatToContain)
+                }
+
+                if (result.isEmpty()) {
+
+                }
+                result
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
 
     private val _loadResult = MutableStateFlow<ModelsState>(ModelsState.Loading)
@@ -141,6 +170,9 @@ class CreationViewModel : BaseViewModel() {
 //                startTime.value = LocalTime(event.hour, event.minute).toString()
                 startTime.value = TimeUtil.dateFormatProcess(event.hour, event.minute)
             }
+            is CreationEvent.FieldEdit.ChangeFocus -> {
+                editTextTap.value = event.focus
+            }
         }
     }
 
@@ -163,7 +195,6 @@ class CreationViewModel : BaseViewModel() {
 
             }
         }
-        editTextTap.value = FocusPosition.None
 
         if (route.first.lat != 0.0 && route.second.lat != 0.0) {
 //            getTripInfoCall(route)
@@ -185,15 +216,18 @@ class CreationViewModel : BaseViewModel() {
         showProgress()
 
         viewModelScope.launch {
+            delay(2000L)
+            _loadResult.value = ModelsState.Success(announce)
+            return@launch
             val res = getTripByEmail(EMAIL)
-                println("TAG_OF_ISIN $res")
+            println("TAG_OF_ISIN $res")
             if (res is ServerResult.SuccessfulResult) {
                 isInTravel.value = true
                 println("TAG_OF_ISIN")
                 hideProgress()
                 return@launch
             }
-                println("TAG_OF_ISIN out")
+            println("TAG_OF_ISIN out")
 
             isInTravel.value = false
             val result = createAnnounce(announce)
@@ -270,6 +304,7 @@ sealed class CreationEvent {
      */
     sealed class FieldEdit : CreationEvent() {
         data class SourceEdit(val source: String) : FieldEdit()
+        data class ChangeFocus(val focus: FocusPosition) : FieldEdit()
         data class EndEdit(val end: String) : FieldEdit()
         data class ParticipantsCountEdit(val count: String) : FieldEdit()
         data class CommentEdit(val comment: String) : FieldEdit()

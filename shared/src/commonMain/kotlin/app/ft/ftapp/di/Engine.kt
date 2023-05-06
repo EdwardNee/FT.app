@@ -19,9 +19,10 @@ import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.BaseViewModel
-import app.ft.ftapp.presentation.viewmodels.ChatViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.KMMContext
+import app.ft.ftapp.utils.OnGetUserLocation
 import app.ft.ftapp.utils.PreferencesHelper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -138,7 +139,7 @@ class Engine {
     private val viewModelsModule = DI.Module("viewmodel") {
 //        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
         bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
-        bindSingleton<ChatViewModel>("chat_vm") { ChatViewModel() }
+        bindSingleton<MainActivityViewModel>("mainact_vm") { MainActivityViewModel() }
     }
 
     private val utilsModule = DI.Module("utils") {
@@ -164,6 +165,7 @@ object DIFactory {
 
     var initCtx: KMMContext? = null
     var driverFactory: DatabaseDriverFactory? = null
+    var locationListener: OnGetUserLocation? = null
 
     val direct = di.direct
 
