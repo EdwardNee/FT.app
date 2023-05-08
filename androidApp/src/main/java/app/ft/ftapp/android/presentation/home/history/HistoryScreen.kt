@@ -9,13 +9,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import app.ft.ftapp.android.presentation.common.ErrorView
+import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
@@ -29,9 +36,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HistoryScreen() {
-
-    val viewModelScreen = setupViewModel<HistoryScreenViewModel>()
-    val historyList = viewModelScreen.pagerHistory.collectAsLazyPagingItems()
 
     var isChosen = rememberSaveable { mutableStateOf(true) }
 
@@ -100,18 +104,82 @@ fun ListOfTravelers(announce: Announce, isChosen: MutableState<Boolean>) {
  */
 @Composable
 fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
+    val viewModelScreen = setupViewModel<HistoryScreenViewModel>()
+    val historyList = viewModelScreen.pagerHistory.collectAsLazyPagingItems()
+
     val scope = rememberCoroutineScope()
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .padding()
+    var isLoad by remember { mutableStateOf(true) }
+    var isError: Boolean? by remember { mutableStateOf(null) }
+    val stateRefresh = rememberPullRefreshState(isLoad, { historyList.refresh() })
+
+    Column(
+        modifier = Modifier
+//            .pullRefresh(stateRefresh)
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(appBackground)
+            .padding(horizontal = 8.dp)
     ) {
-        items(/*historyList*/ 5) {
-            HistoryAnnounceItem(Announce()) {
-                scope.launch {
-                    modalBottomSheetState.show()
+        Box(
+            Modifier
+                .pullRefresh(stateRefresh)
+                .align(Alignment.CenterHorizontally),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            LazyColumn(
+                Modifier
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                when (historyList.loadState.refresh) {
+                    is LoadState.NotLoading -> {
+                        isLoad = false
+                        isError = null
+                    }
+                    LoadState.Loading -> {
+                        isLoad = true
+                        isError = null
+                    }
+                    is LoadState.Error -> {
+                        isLoad = false
+                        if (isError == null) {
+                            isError = true
+
+                            scope.launch {
+//                            snackbarState.showSnackbar("")
+                            }
+                        }
+                    }
+                    else -> {
+//                        viewModel.showProgress()
+                    }
+                }
+                items(historyList.itemCount) { item ->
+                    HistoryAnnounceItem(historyList[item] ?: Announce()) {
+                        scope.launch {
+                            modalBottomSheetState.show()
+                        }
+                    }
                 }
             }
+
+            if (!isLoad && isError == null) {
+                NoDataView(text = "История поездок пуста.")
+            }
+
+            if (isError == true) {
+                ErrorView {
+                    isLoad = true
+                    historyList.refresh()
+                }
+            }
+
+            PullRefreshIndicator(
+                isLoad,
+                stateRefresh,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

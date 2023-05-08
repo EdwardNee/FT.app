@@ -5,27 +5,24 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.android.presentation.LoadingView
+import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.home.history.HistoryScreen
 import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
@@ -37,8 +34,8 @@ import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
-import app.ft.ftapp.presentation.viewmodels.ModelsState
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
@@ -173,59 +170,6 @@ fun TabComposable(viewModel: HomeViewModel) {
 
         }
         PullRefreshIndicator(isLoading, stateRefresh, modifier = Modifier.align(TopCenter))
-    }
-}
-
-/**
- * Error while loading view.
- */
-@Composable
-fun ErrorView(onClick: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Ошибка при загрузке данных", fontFamily = Montserrat, fontSize = 18.sp)
-        Button(
-            border = null,
-            modifier = Modifier.size(72.dp),
-            elevation = null,
-            onClick = { onClick() },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Transparent,
-                contentColor = Color.Transparent,
-                disabledBackgroundColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(30.dp)
-        ) {
-            Image(
-                modifier = Modifier.size(50.dp),
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = "retry",
-                colorFilter = ColorFilter.tint(Color.Green)
-            )
-        }
-    }
-}
-
-@Composable
-fun NoDataView() {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-            .background(appBackground),
-        contentAlignment = Center
-    ) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Нет активных поездок", fontFamily = Montserrat, fontSize = 18.sp)
-        }
     }
 }
 
