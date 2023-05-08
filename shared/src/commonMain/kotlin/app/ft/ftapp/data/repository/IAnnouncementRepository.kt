@@ -16,6 +16,15 @@ interface IAnnouncementRepository {
     suspend fun getAvailableAnnouncements(offset: Int, limit: Int): ServerResult<PagingAnnounce>
 
     /**
+     * Gets history announces from the server for current [authorMail].
+     */
+    suspend fun getHistoryAnnouncements(
+        offset: Int,
+        limit: Int,
+        authorMail: String
+    ): ServerResult<PagingAnnounce>
+
+    /**
      * POSTs [Announce] to the server.
      */
     suspend fun createAnnounce(announce: Announce): ServerResult<Announce>

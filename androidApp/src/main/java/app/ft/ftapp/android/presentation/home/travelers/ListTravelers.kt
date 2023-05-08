@@ -14,24 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
+import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 
 @Composable
-fun ListTravelers() {
-    val viewModel = setupViewModel<HomeViewModel>()
-    val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
+fun ListTravelers(assignedAnnounce: Announce?) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxHeight(0.65f)
             .background(appBackground)
             .padding(horizontal = 8.dp)
     ) {
         LazyColumn(
             Modifier
                 .fillMaxHeight()
-                .padding(top = 8.dp)) {
+                .padding(top = 8.dp)
+        ) {
             items(assignedAnnounce?.participants ?: emptyList()) {
                 TravelerItem(it)
             }

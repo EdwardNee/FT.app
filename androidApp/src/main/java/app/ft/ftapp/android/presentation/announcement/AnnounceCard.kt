@@ -157,8 +157,59 @@ fun AnnounceParams(text: String, paramValue: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text, color = textGray, fontSize = 16.sp)
         Spacer(modifier = Modifier.padding(4.dp))
-        Text(paramValue, fontSize = 14.sp)
+        paramValue.ToStateText()
+//        Text(paramValue, fontSize = 14.sp)
     }
+}
+
+/**
+ * Edits Text composable depending on value.
+ */
+@Composable
+fun String.ToStateText() {
+    when (this) {
+        "Создана" -> {
+            Text(
+                this,
+                fontSize = 18.sp,
+                color = waitingStatusColor,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat
+            )
+        }
+        "Ожидание" -> {
+            Text(
+                this,
+                fontSize = 18.sp,
+                color = waitingStatusColor,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat
+            )
+        }
+        "В процессе" -> {
+            Text(
+                this,
+                fontSize = 18.sp,
+                color = waitingStatusColor,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat
+            )
+        }
+        "Завершена" -> {
+            Text(
+                this,
+                fontSize = 18.sp,
+                color = greenColor,
+                fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat
+            )
+        }
+
+        else -> {
+            Text(this, fontSize = 14.sp, fontFamily = Montserrat)
+        }
+    }
+//
 }
 
 /**

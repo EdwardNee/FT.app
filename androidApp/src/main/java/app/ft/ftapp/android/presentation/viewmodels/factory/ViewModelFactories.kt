@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreenViewModel
 import app.ft.ftapp.android.presentation.creation.CreationScreenViewModel
 import app.ft.ftapp.android.presentation.groupchat.ChatScreenViewModel
+import app.ft.ftapp.android.presentation.home.history.HistoryScreenViewModel
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.*
@@ -32,6 +33,7 @@ class NoArgsViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
             HomeViewModel::class.java -> HomeViewModel()
             ChatViewModel::class.java -> ChatViewModel()
             MainActivityViewModel::class.java -> MainActivityViewModel()
+            HistoryScreenViewModel::class.java -> HistoryScreenViewModel()
             else -> throw IllegalArgumentException("$modelClass is not registered ViewModel")
         } as T
 }

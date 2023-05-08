@@ -52,7 +52,7 @@ interface AppNavigator {
         route: String,
         popUpToRoute: String? = null,
         inclusive: Boolean = false,
-        isSingleTop: Boolean = true,
+        isSingleTop: Boolean = false,
         saveState: Boolean = false,
     )
 }

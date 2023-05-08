@@ -26,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.home.history.HistoryScreen
 import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.models.BottomNavItems
@@ -93,7 +94,12 @@ fun HomeScreen() {
                         )
                     ))
         }
-        TabComposable(viewModel)
+        if (isChosen) {
+            TabComposable(viewModel)
+        } else {
+            HistoryScreen()
+        }
+
     }
 }
 
@@ -103,6 +109,7 @@ fun HomeScreen() {
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun TabComposable(viewModel: HomeViewModel) {
+    val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val scope = rememberCoroutineScope()
 
     var isLoad by remember { mutableStateOf(true) }
@@ -129,7 +136,7 @@ fun TabComposable(viewModel: HomeViewModel) {
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
             tabName = "Попутчики"
-        ) { ListTravelers() }
+        ) { ListTravelers(assignedAnnounce) }
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
@@ -259,7 +266,13 @@ fun Tabs(tabs: List<BottomNavItems>, pagerState: PagerState) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TabsContent(tabs: List<BottomNavItems>, pagerState: PagerState) {
-    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(appBackground),
+        verticalAlignment = Alignment.Top
+    ) { page ->
         tabs[page].content?.invoke()
     }
 }

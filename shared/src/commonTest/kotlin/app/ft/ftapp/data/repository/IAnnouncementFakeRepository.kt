@@ -48,6 +48,14 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         return ServerResult.SuccessfulResult(PagingAnnounce(content = announces))
     }
 
+    override suspend fun getHistoryAnnouncements(
+        offset: Int,
+        limit: Int,
+        authorMail: String
+    ): ServerResult<PagingAnnounce> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun createAnnounce(announce: Announce): ServerResult<Announce> {
         if (announces.add(announce)) {
             return ServerResult.SuccessfulResult(announce)
@@ -83,5 +91,9 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         } else {
             ServerResult.SuccessfulResult(announce.first())
         }
+    }
+
+    override suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce> {
+        TODO("Not yet implemented")
     }
 }

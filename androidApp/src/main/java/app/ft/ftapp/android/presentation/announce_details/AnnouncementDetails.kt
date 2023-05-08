@@ -49,7 +49,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxHeight(0.55f)
             .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
             .background(infoBottomBackground)
             .padding(horizontal = 12.dp)
@@ -104,7 +104,8 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             )
 
             Text(
-                text =  ((announceDb?.countOfParticipants ?: 1) - (announceDb?.participants?.size ?: 0)).toString(),
+                text = ((announceDb?.countOfParticipants ?: 1) - (announceDb?.participants?.size
+                    ?: 0)).toString(),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold

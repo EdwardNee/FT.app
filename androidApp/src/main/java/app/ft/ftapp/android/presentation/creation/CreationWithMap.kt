@@ -2,6 +2,7 @@ package app.ft.ftapp.android.presentation.creation
 
 import android.Manifest
 import android.content.res.Resources
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -14,17 +15,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,8 +40,11 @@ import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
+import app.ft.ftapp.android.ui.navigation.AppDestination
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
+import app.ft.ftapp.android.ui.theme.blueCircle
+import app.ft.ftapp.android.utils.SingletonHelper
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.MapBoundingBoxes.MOSCOW_CAMERA
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
@@ -47,8 +53,6 @@ import app.ft.ftapp.presentation.viewmodels.FocusPosition
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.toLatLng
 import app.ft.ftapp.utils.toPoint
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -70,7 +74,8 @@ val Int.toDp get() = (this / Resources.getSystem().displayMetrics.density).toInt
 fun CreationWithMap() {
     val kodein = DIFactory.di
     val mainViewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
-    val viewModel = setupViewModel<CreationViewModel>()
+    val viewModel: CreationViewModel by kodein.instance(tag = "announce_cr")
+//    val viewModel = setupViewModel<CreationViewModel>()
     val viewModelScreen: CreationScreenViewModel = setupViewModel<CreationScreenViewModel>(
         ArgsViewModelFactory(FactoryArgs(viewModel))
     )
@@ -92,6 +97,13 @@ fun CreationWithMap() {
     val editTextTaps by viewModel.editTextTap.collectAsState()
 
     val mapView = remember { mutableStateOf<MapView?>(null) }
+
+    BackHandler(enabled = true) {
+        println("TAG_OF_BACK")
+        scope.launch {
+            scaffoldState.bottomSheetState.collapse()
+        }
+    }
 
     scope.launch {
         mainViewModel.userLocation.onEach {
@@ -124,14 +136,15 @@ fun CreationWithMap() {
                 border = BorderStroke(0.dp, Color.Transparent),
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.Blue,
+                    contentColor = blueCircle,
                     backgroundColor = Color.Transparent
                 ),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.my_location),
                     contentDescription = "",
-                    Modifier.size(50.dp)
+                    Modifier.size(50.dp),
+                    tint = blueCircle
                 )
             }
 
@@ -145,7 +158,6 @@ fun CreationWithMap() {
             ) {}
             BottomSheetCreate(size, viewModelScreen) {
 
-                println("TAG_OF_MAPPINg ${it.toLatLng()}")
                 mapView.value?.map?.move(
                     CameraPosition(it, 16.0f, 0.0f, 0.0f),
                     Animation(Animation.Type.SMOOTH, 1F),
@@ -199,10 +211,6 @@ fun MapBody(mv: MutableState<MapView?>, viewModelScreen: CreationScreenViewModel
 
     mv.value?.map?.addCameraListener(viewModelScreen.cameraListener)
 
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp
-    val screenWidth = configuration.screenWidthDp
 //    mapView.map.
 
     Box() {
@@ -240,13 +248,6 @@ fun MapBody(mv: MutableState<MapView?>, viewModelScreen: CreationScreenViewModel
             painter = painterResource(id = R.drawable.map_pin),
             contentDescription = "pin"
         )
-        val fusedLocationClient: FusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(LocalContext.current)
-//        Button(onClick = {
-//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//        }) {
-//            Text("LOCATION")
-//        }
     }
 }
 
@@ -355,6 +356,31 @@ fun BottomSheetCreate(
                         )
                     }
                 }
+            }
+
+            IconButton(
+                onClick = {
+                    SingletonHelper.appNavigator.tryNavigateTo(
+                        AppDestination.Creation(),
+//                        inclusive = false,
+//                        isSingleTop = false,
+                        popUpToRoute = AppDestination.CreationMap()
+                    )
+                },
+                modifier = Modifier
+                    .size(55.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(blueCircle)
+                    .align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .scale(scaleX = -1f, scaleY = 1f)
+                )
             }
         }
     }

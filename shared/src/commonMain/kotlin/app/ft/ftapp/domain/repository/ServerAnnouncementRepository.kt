@@ -43,6 +43,35 @@ class ServerAnnouncementRepository constructor(private val api: Api) : IAnnounce
         return result
     }
 
+    override suspend fun getHistoryAnnouncements(
+        offset: Int,
+        limit: Int,
+        authorMail: String
+    ): ServerResult<PagingAnnounce> {
+        var result: ServerResult<PagingAnnounce>
+        try {
+            val response = api.getTravelHistory(offset, limit, authorMail)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
+    }
+
     override suspend fun createAnnounce(announce: Announce): ServerResult<Announce> {
         var result: ServerResult<Announce>
         try {

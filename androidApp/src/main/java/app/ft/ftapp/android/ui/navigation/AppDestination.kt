@@ -48,6 +48,11 @@ sealed class AppDestination(
     object Creation : NoArgumentDestination(ScreenValues.CREATION)
 
     /**
+     * Creation screen destination with map.
+     */
+    object CreationMap : NoArgumentDestination(ScreenValues.CREATION_MAP)
+
+    /**
      * Chatting screen destination.
      */
     object Chatting : NoArgumentDestination(ScreenValues.CHATTING)

@@ -34,6 +34,7 @@ import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.auth.AuthScreen
 import app.ft.ftapp.android.presentation.common.Keyboard
 import app.ft.ftapp.android.presentation.common.keyboardAsState
+import app.ft.ftapp.android.presentation.creation.AnnounceCreationScreen
 import app.ft.ftapp.android.presentation.creation.CreationWithMap
 import app.ft.ftapp.android.presentation.creation.SuccessView
 import app.ft.ftapp.android.presentation.groupchat.GroupChat
@@ -103,7 +104,7 @@ fun BottomNavs() {
             imageVector = Icons.Filled.Search
         ),
         BottomNavItems(description = ScreenValues.HOME, imageVector = Icons.Filled.Home),
-        BottomNavItems(description = ScreenValues.CREATION, imageVector = Icons.Filled.Add),
+        BottomNavItems(description = ScreenValues.CREATION_MAP, imageVector = Icons.Filled.Add),
         BottomNavItems(
             description = ScreenValues.CHATTING,
             painter = painterResource(id = R.drawable.message_bubble)
@@ -139,15 +140,24 @@ fun BottomNavs() {
                     selectedContentColor = bottomNavColor,
                     unselectedContentColor = Color.Black.copy(0.4f),
                     alwaysShowLabel = true,
-                    selected = currentRoute == item.description,
+                    selected = item.description.contains(currentRoute.toString()) ?: false,
                     interactionSource = NoRippleInteractionSource(),
                     onClick = {
                         if (currentRoute != item.description) {
-                            SingletonHelper.appNavigator.tryNavigateTo(
-                                item.description,
-                                isSingleTop = true,
-                                saveState = (item.description == ScreenValues.CREATION)
-                            )
+                            if (item.description == ScreenValues.CREATION_MAP) {
+                                SingletonHelper.appNavigator.tryNavigateTo(
+                                    item.description,
+                                    inclusive = false, isSingleTop = false,
+                                    saveState = (item.description == ScreenValues.CREATION_MAP)
+                                )
+                            } else {
+                                SingletonHelper.appNavigator.tryNavigateTo(
+                                    item.description,
+                                    isSingleTop = false,
+                                    saveState = (item.description == ScreenValues.CREATION_MAP)
+                                )
+                            }
+
                         }
                     }
                 )
@@ -262,11 +272,15 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
 
         composable(destination = AppDestination.Announce) {}
 
+        composable(destination = AppDestination.CreationMap) {
+            CreationWithMap()
+        }
+
         composable(destination = AppDestination.Creation) {
             BottomSheetApp(
                 pageContent = { listener ->
-//                    AnnounceCreationScreen(listener)
-                    CreationWithMap()
+                    AnnounceCreationScreen(listener)
+//                    CreationWithMap()
                 },
                 sheetContent = { SuccessView() }
             )
@@ -308,11 +322,22 @@ fun NavigationEffects(
                     navHostController.navigate(intent.route) {
 //                        launchSingleTop = intent.isSingleTop
 //                        intent.popUpToRoute?.let { popUpToRoute ->
-                        popUpTo(navHostController.graph.findStartDestination().id) {
-
-                            inclusive = intent.inclusive
-                            saveState = intent.saveState
+                        intent.popUpToRoute?.let { popUpToRoute ->
+                            popUpTo(popUpToRoute) {
+                                inclusive = intent.inclusive
+                                saveState = intent.saveState
+                            }
+                        } ?: run {
+                            popUpTo(navHostController.graph.findStartDestination().id) {
+                                inclusive = intent.inclusive
+                                saveState = intent.saveState
+                            }
                         }
+//                        popUpTo(intent.popUpToRoute ?: navHostController.graph.findStartDestination().) {
+//
+//                            inclusive = intent.inclusive
+//                            saveState = intent.saveState
+//                        }
                         launchSingleTop = intent.isSingleTop
                         restoreState = true
 //                        }

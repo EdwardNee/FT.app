@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
 <string name="car_price">Цена за машину</string>
+<string name="history_price">Поездка обошлась в</string>
+<string name="state_announce">Состояние поездки:</string>
 <string name="price">Цена:</string>
 <string name="currency_rub">₽</string>
 <string name="free_places">Свободных мест</string>

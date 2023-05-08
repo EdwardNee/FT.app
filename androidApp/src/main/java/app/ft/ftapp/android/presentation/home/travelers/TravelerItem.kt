@@ -34,7 +34,7 @@ fun TravelerItem(participant: Participant) {
                     color = Color.Gray,
                     fontSize = 16.sp
                 )
-                Text("Бакалавриат группа 197-2019", color = blueTextColor, fontSize = 16.sp)
+                Text("Студент НИУ ВШЭ", color = blueTextColor, fontSize = 16.sp)
             }
         }
     }

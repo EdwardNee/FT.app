@@ -18,7 +18,6 @@ import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
 import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
-import app.ft.ftapp.presentation.viewmodels.BaseViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.KMMContext
@@ -117,8 +116,9 @@ class Engine {
         bindSingleton<IAnnounceSQRepository>("db_ann_r") { AnnounceSQRepository(DIFactory.driverFactory!!) }
     }
 
-    private val useCaseModule = DI.Module("usecases") {
+    private val useCaseModule = DI.Module("use-cases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { GetHistoryAnnouncesUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { BecomeTravelerUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetAnnounceByEmailUseCase(instance(tag = "serv_ann_r")) }
@@ -138,8 +138,8 @@ class Engine {
 
     private val viewModelsModule = DI.Module("viewmodel") {
 //        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
-        bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
-        bindSingleton<MainActivityViewModel>("mainact_vm") { MainActivityViewModel() }
+        bindSingleton("announce_cr") { CreationViewModel() }
+        bindSingleton("mainact_vm") { MainActivityViewModel() }
     }
 
     private val utilsModule = DI.Module("utils") {

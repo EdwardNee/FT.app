@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -38,7 +40,10 @@ import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
+import app.ft.ftapp.android.ui.navigation.AppDestination
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
@@ -49,12 +54,15 @@ import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import com.yandex.mapkit.search.*
 import kotlinx.coroutines.launch
+import org.kodein.di.instance
 import java.time.LocalTime
 
 @Composable
 fun AnnounceCreationScreen(onAction: () -> Unit) {
 
-    val viewModel = setupViewModel<CreationViewModel>()
+    val kodein = DIFactory.di
+    val viewModel: CreationViewModel by kodein.instance(tag = "announce_cr")
+//    val viewModel = setupViewModel<CreationViewModel>()
 
     val loadResult by viewModel.loadResult.collectAsState()
 
@@ -71,7 +79,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
 //            is SurveyState.Result -> SurveyResultScreen(result = targetState)
             is ModelsState.Error -> {}
             ModelsState.Loading -> {
-                AnnounceCreationScreena() {}
+                AnnounceCreationScreena(viewModel) {}
             }
             ModelsState.NoData -> {}
             is ModelsState.Success<*> -> {
@@ -85,9 +93,8 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
  * Composable method to draw announcement creation screen.
  */
 @Composable
-fun AnnounceCreationScreena(onAction: () -> Unit) {
+fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) {
     val scope = rememberCoroutineScope()
-    val viewModel = setupViewModel<CreationViewModel>()
     val viewModelScreen: CreationScreenViewModel = setupViewModel<CreationScreenViewModel>(
         ArgsViewModelFactory(FactoryArgs(viewModel))
     )
@@ -177,6 +184,7 @@ fun AnnounceCreationScreena(onAction: () -> Unit) {
 
     LazyColumn {
         item {
+
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -192,7 +200,16 @@ fun AnnounceCreationScreena(onAction: () -> Unit) {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }) {
-                    HeaderText(text = stringResource(id = R.string.create_announce))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { SingletonHelper.appNavigator.tryNavigateBack() },
+                            Modifier.size(48.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                        }
+                        HeaderText(text = stringResource(id = R.string.create_announce))
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
