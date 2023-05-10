@@ -1,8 +1,10 @@
 package app.ft.ftapp.android.presentation
 
-//import app.ft.ftapp.android.presentation.home.HomeScreen
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,22 +13,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
+import androidx.navigation.*
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import app.ft.ftapp.android.BottomSheetApp
 import app.ft.ftapp.android.R
 import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
@@ -43,23 +37,23 @@ import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.preview.PreviewComposable
 import app.ft.ftapp.android.ui.ScreenValues
-import app.ft.ftapp.android.ui.navigation.AppDestination
-import app.ft.ftapp.android.ui.navigation.CustomNavigation
-import app.ft.ftapp.android.ui.navigation.NavigationIntent
-import app.ft.ftapp.android.ui.navigation.composable
+import app.ft.ftapp.android.ui.navigation.*
 import app.ft.ftapp.android.ui.theme.MyApplicationTheme
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.ui.theme.bottomNavColor
 import app.ft.ftapp.android.utils.SingletonHelper
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 /**
  * Main composable entry.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainComposable() {
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
     SingletonHelper.appNavigator.mainNavController = navController
 
     NavigationEffects(
@@ -73,8 +67,9 @@ fun MainComposable() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppScreens(navController: NavHostController = rememberNavController()) {
+fun AppScreens(navController: NavHostController = rememberAnimatedNavController()) {
     SingletonHelper.appNavigator.navControllerApp = navController
 
     NavigationEffects(
@@ -88,7 +83,6 @@ fun AppScreens(navController: NavHostController = rememberNavController()) {
     ) {
         Scaffold(bottomBar = { BottomNavs() }) {
             AppNavGraph(navController, Modifier.padding(it))
-//            MainNavGraph(navController, Modifier.padding(it))
         }
     }
 }
@@ -167,82 +161,143 @@ fun BottomNavs() {
 
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.loginGraph(navController: NavController) {
     navigation(startDestination = ScreenValues.PREVIEW, route = ScreenValues.FIRST_PREVIEW) {
-        composable(route = ScreenValues.PREVIEW) {
+        composable(destination = AppDestination.Preview) {
             PreviewComposable()
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-fun NavGraphBuilder.appGraph(navController: NavController) {
-    navigation(startDestination = ScreenValues.ANNOUNCES_LIST, route = ScreenValues.SECOND_APP) {
-        composable(destination = AppDestination.AuthScreen) {
-            BackHandler(true) {} //при выходе из профиля отключаю кнопку назад
-            AuthScreen()
-        }
-
-        composable(destination = AppDestination.HomeScreen) {
-            HomeScreen()
-        }
-
-
-        composable(destination = AppDestination.ListAnnounces) {
-//            AnnounceScreen()
-            BottomSheetApp(
-                pageContent = { listener ->
-                    AnnounceScreen(listener)
-                },
-                sheetContent = { state ->
-                    AnnouncementDetails(state)
-                },
-            )
-        }
-
-        composable(destination = AppDestination.Announce) {}
-
-        composable(destination = AppDestination.Creation) {
-            BottomSheetApp(
-                pageContent = { listener ->
-//                    AnnounceCreationScreen(listener)
-                    CreationWithMap()
-                },
-                sheetContent = { SuccessView() }
-            )
-        }
-
-        composable(destination = AppDestination.Chatting) {
-            GroupChat()
-        }
-    }
-}
+//@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
+//fun NavGraphBuilder.appGraph(navController: NavController) {
+//    navigation(startDestination = ScreenValues.ANNOUNCES_LIST, route = ScreenValues.SECOND_APP) {
+//
+//        composable(destination = AppDestination.AuthScreen) {
+//            BackHandler(true) {} //при выходе из профиля отключаю кнопку назад
+//            AuthScreen()
+//        }
+//
+//        composable(destination = AppDestination.HomeScreen) {
+//            HomeScreen()
+//        }
+//
+//
+//        composable(destination = AppDestination.ListAnnounces) {
+////            AnnounceScreen()
+//            BottomSheetApp(
+//                pageContent = { listener ->
+//                    AnnounceScreen(listener)
+//                },
+//                sheetContent = { state ->
+//                    AnnouncementDetails(state)
+//                },
+//            )
+//        }
+//
+//        composable(destination = AppDestination.Announce) {}
+//
+//        composable(destination = AppDestination.Creation) {
+//            BottomSheetApp(
+//                pageContent = { listener ->
+////                    AnnounceCreationScreen(listener)
+//                    CreationWithMap()
+//                },
+//                sheetContent = { SuccessView() }
+//            )
+//        }
+//
+//        composable(destination = AppDestination.Chatting) {
+//            GroupChat()
+//        }
+//    }
+//}
 
 
 /**
  * Navigation graph construction.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainNavGraph(navController: NavHostController) {
-    CustomNavigation(
+    CustomNavigationAnimated(
         navController = navController,
-        startDestination = AppDestination.PreviewBars,
+        startDestination = AppDestination.AppBars,
         route = ScreenValues.ROOT
     ) {
         loginGraph(navController)
 
-        composable(route = ScreenValues.SECOND_APP) {
+        composable(destination = AppDestination.AppBars) { //ScreenValues.SECOND_APP
             AppScreens()
         }
 //        appGraph(navController)
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
 
-    CustomNavigation(
+    val map = mapOf(
+        ScreenValues.ANNOUNCES_LIST to 1,
+        ScreenValues.HOME to 2,
+        ScreenValues.CREATION_MAP to 3,
+        ScreenValues.CHATTING to 4
+    )
+//    var previousScreen = remember { mutableStateOf(ScreenValues.ANNOUNCES_LIST) }
+
+    val enterAnimation = remember {
+        mutableStateOf<(AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?>(
+            { scaleIn(animationSpec = tween(500)) })
+    }
+    LaunchedEffect(navController) {
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+
+
+//            navGraph.findNode(previousIndex) as? NavDestination
+            println("TAG_NAVIGATION in not ${map[navController.previousBackStackEntry?.destination?.route] ?: 0} .. ${navController.previousBackStackEntry?.destination?.route}  curr ${destination?.route} to ${map[destination?.route]}")
+
+            if (map[destination.route] == null) {
+                SingletonHelper.appNavigator.enterTransition.value = null
+                SingletonHelper.appNavigator.exitTransition.value = null
+            } else {
+                if ((map[navController.previousBackStackEntry?.destination?.route]
+                        ?: 0) > (map[destination.route] ?: 0)
+                ) {
+                    SingletonHelper.appNavigator.enterTransition.value = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it },
+                            animationSpec = tween(400)
+                        )
+                    }
+                    SingletonHelper.appNavigator.exitTransition.value = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(400)
+                        )
+                    }
+                } else {
+                    SingletonHelper.appNavigator.enterTransition.value = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(400)
+                        )
+                    }
+                    SingletonHelper.appNavigator.exitTransition.value = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it },
+                            animationSpec = tween(400)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    CustomNavigationAnimated(
         modifier = Modifier.then(modifier),
         navController = navController,
         startDestination = AppDestination.ListAnnounces,
@@ -322,17 +377,17 @@ fun NavigationEffects(
                     navHostController.navigate(intent.route) {
 //                        launchSingleTop = intent.isSingleTop
 //                        intent.popUpToRoute?.let { popUpToRoute ->
-                        intent.popUpToRoute?.let { popUpToRoute ->
-                            popUpTo(popUpToRoute) {
-                                inclusive = intent.inclusive
-                                saveState = intent.saveState
-                            }
-                        } ?: run {
-                            popUpTo(navHostController.graph.findStartDestination().id) {
-                                inclusive = intent.inclusive
-                                saveState = intent.saveState
-                            }
-                        }
+//                        intent.popUpToRoute?.let { popUpToRoute ->
+//                            popUpTo(popUpToRoute) {
+//                                inclusive = intent.inclusive TODO TODO TODO TODO
+//                                saveState = intent.saveState
+//                            }
+//                        } ?: run {
+//                            popUpTo(navHostController.graph.findStartDestination().id) {
+//                                inclusive = intent.inclusive
+//                                saveState = intent.saveState
+//                            }
+//                        }
 //                        popUpTo(intent.popUpToRoute ?: navHostController.graph.findStartDestination().) {
 //
 //                            inclusive = intent.inclusive
