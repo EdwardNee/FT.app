@@ -17,30 +17,34 @@ import app.ft.ftapp.android.R
 import app.ft.ftapp.android.ui.theme.Montserrat
 
 /**
- * Alert error snackbar.
+ * Alert snackbar.
  */
 @Composable
-fun AlertSnackbar(text: String = "Проверьте подключение к Интернету") {
+fun AlertSnackbar(
+    text: String = "Проверьте подключение к Интернету",
+    snackColor: Color = Color.LightGray.copy(alpha = 0.2f),
+    painterSource: Int = R.drawable.error_info,
+    tintColor: Color = Color.Red
+) {
     Snackbar(
         elevation = 0.dp,
         modifier = Modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(15.dp))
-            .background(Color.LightGray.copy(alpha = 0.2f))
+            .background(snackColor)
             .fillMaxWidth()
     ) {
         Box(
             Modifier
-
         ) {
             Row(
                 Modifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.error_info),
+                    painter = painterResource(id = painterSource),
                     contentDescription = "",
-                    tint = Color.Red
+                    tint = tintColor
                 )
                 Spacer(modifier = Modifier.padding(16.dp))
                 Text(text, fontFamily = Montserrat)

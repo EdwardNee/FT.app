@@ -175,7 +175,7 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
 //        ModelsState.Success -> {
 //            onAction()
 //        }
-//    }123456789987654321
+//    }
 
 
     val query = "дубки вшэ"

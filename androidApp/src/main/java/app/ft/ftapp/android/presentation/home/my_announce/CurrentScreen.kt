@@ -41,7 +41,7 @@ import java.time.ZoneId
  * Current screen view.
  */
 @Composable
-fun CurrentScreen() {
+fun CurrentScreen(isHome: MutableState<Boolean>) {
     val viewModel = setupViewModel<HomeViewModel>()
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val isLoading by viewModel.isShowProgress.collectAsState()
@@ -173,14 +173,18 @@ fun CurrentScreen() {
                     fontSize = 16.sp
                 )
             }
-            Divider(color = Color.Black, thickness = 0.4.dp)
+            Divider(
+                color = Color.Black,
+                thickness = 0.4.dp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
             Button(
                 modifier = Modifier
+                    .padding(bottom = 20.dp)
+                    .clip(RoundedCornerShape(25.dp))
                     .fillMaxWidth()
-                    .align(Alignment.End)
-                    .clip(RoundedCornerShape(6.dp))
-                    .padding(bottom = 50.dp),
+                    .align(Alignment.End),
                 onClick = {
                     if (assignedAnnounce?.authorEmail != EMAIL) {
                         viewModel.onEvent(
@@ -195,7 +199,6 @@ fun CurrentScreen() {
                 colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
                 enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
             ) {
-
                 if (assignedAnnounce?.authorEmail != EMAIL) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
@@ -217,6 +220,31 @@ fun CurrentScreen() {
                 }
 
 
+            }
+
+
+            if (assignedAnnounce?.authorEmail == EMAIL) {
+                Button(
+                    modifier = Modifier
+                        .padding(bottom = 50.dp)
+                        .clip(RoundedCornerShape(25.dp))
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    onClick = {
+                        isHome.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
+                    enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        fontFamily = Montserrat,
+                        text = "Редактировать поездку",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
             }
 //            }
         }

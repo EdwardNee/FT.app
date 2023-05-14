@@ -7,6 +7,7 @@ import app.ft.ftapp.data.converters.CodeResponse.BAD_REQUEST
 import app.ft.ftapp.domain.models.*
 import app.ft.ftapp.domain.usecase.server.CreateAnnouncementUseCase
 import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
+import app.ft.ftapp.domain.usecase.server.UpdateAnnounceUseCase
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.key_yandex
 import app.ft.ftapp.utils.TimeUtil
@@ -15,6 +16,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * [BaseViewModel] inherited. ViewModel for creating announcements screen.
@@ -22,6 +25,7 @@ import org.kodein.di.instance
 class CreationViewModel : BaseViewModel() {
     //region di
     private val createAnnounce: CreateAnnouncementUseCase by kodein.instance()
+    private val updateAnnounce: UpdateAnnounceUseCase by kodein.instance()
     private val getTripByEmail: GetAnnounceByEmailUseCase by kodein.instance()
     private val getTripInfo: GetTripInfoUseCase by kodein.instance()
     //endregion
@@ -125,7 +129,13 @@ class CreationViewModel : BaseViewModel() {
     val loadResult: MutableStateFlow<ModelsState>
         get() = _loadResult
 
+    private val _updateResult = MutableStateFlow<ModelsState>(ModelsState.Loading)
+    val updateResult: MutableStateFlow<ModelsState>
+        get() = _updateResult
+
     val createdAnnounce = MutableStateFlow<Announce?>(null)
+
+    var shouldFind = false
 
     /**
      * Event calls on CreationScreen.
@@ -171,7 +181,27 @@ class CreationViewModel : BaseViewModel() {
                 startTime.value = TimeUtil.dateFormatProcess(event.hour, event.minute)
             }
             is CreationEvent.FieldEdit.ChangeFocus -> {
+                shouldFind = true
                 editTextTap.value = event.focus
+            }
+            CreationEvent.Action.SaveEditResult -> {
+                val announce = Announce(
+                    authorEmail = author.value,
+                    placeFrom = sourceDestination.value,
+                    placeTo = endDestination.value,
+                    participants = listOf(Participant(NAME, EMAIL)),
+                    countOfParticipants =
+                    if (countOfParticipants.value.isNotEmpty())
+                        countOfParticipants.value.toInt()
+                    else
+                        0,
+                    comment = comment.value,
+                    startTime = startTime.value
+                )
+                updateAnnounceCall(announce)
+            }
+            is CreationEvent.Action.UpdateEditAnnounce -> {
+                initializeUpdatingParams(event.announce)
             }
         }
     }
@@ -180,6 +210,7 @@ class CreationViewModel : BaseViewModel() {
      * Fills the edit text values by clicked addresses tabs.
      */
     private fun fillByClickedAddress(address: String, coordinates: LatLng) {
+        shouldFind = false
         when (editTextTap.value) {
             is FocusPosition.SourceField -> {
                 sourceDestination.value = address
@@ -192,6 +223,7 @@ class CreationViewModel : BaseViewModel() {
             }
 
             is FocusPosition.None -> {
+                //shouldFind = false
 
             }
         }
@@ -207,6 +239,55 @@ class CreationViewModel : BaseViewModel() {
 
     fun disableInTravel() {
         isInTravel.value = false
+    }
+
+    fun disableUpdateState() {
+        _updateResult.value = ModelsState.Loading
+    }
+
+
+    private fun updateAnnounceCall(announce: Announce) {
+//        showProgress()
+        disableUpdateState()
+        viewModelScope.launch {
+            delay(1500L)
+            _updateResult.value = ModelsState.Success(announce)
+            return@launch
+            val result = updateAnnounce(announce)
+            when (result) {
+                is ServerResult.SuccessfulResult -> {
+                    _updateResult.value = ModelsState.Success(result.model)
+                }
+
+                is ServerResult.UnsuccessfulResult -> {
+                    _updateResult.value = if (result.error == BAD_REQUEST) {
+                        ModelsState.Error("Неправильно введены значения.")
+                    } else {
+                        ModelsState.Error(result.error)
+                    }
+
+                }
+                is ServerResult.ResultException -> {
+                    _updateResult.value = ModelsState.Error(result.error ?: "Ошибка")
+                }
+            }
+
+            hideProgress()
+        }
+    }
+
+    /**
+     * Sets the initial values to parameters.
+     */
+    private fun initializeUpdatingParams(announce: Announce) {
+        val date = TimeUtil.fromStrToDate(announce.startTime ?: "").hour
+
+        sourceDestination.value = announce.placeFrom
+        endDestination.value = announce.placeTo
+        countOfParticipants.value = announce.countOfParticipants.toString()
+        comment.value = announce.comment
+        startTime.value = "${date.hours}:${date.minutes}"
+
     }
 
     /**
@@ -296,6 +377,8 @@ sealed class CreationEvent {
      */
     sealed class Action : CreationEvent() {
         object OnPublish : Action()
+        object SaveEditResult : FieldEdit()
+        class UpdateEditAnnounce(val announce: Announce) : FieldEdit()
         class OnAddressClicked(val address: String, val coordinates: LatLng) : Action()
     }
 
@@ -309,6 +392,7 @@ sealed class CreationEvent {
         data class ParticipantsCountEdit(val count: String) : FieldEdit()
         data class CommentEdit(val comment: String) : FieldEdit()
         data class StartTimeEdit(val hour: Int, val minute: Int) : FieldEdit()
+
     }
 }
 

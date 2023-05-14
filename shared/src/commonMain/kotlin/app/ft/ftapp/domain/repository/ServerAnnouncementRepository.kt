@@ -11,7 +11,6 @@ import io.ktor.client.plugins.*
 import io.ktor.util.network.*
 import io.ktor.utils.io.errors.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.JsonObject
 
 class ServerAnnouncementRepository constructor(private val api: Api) : IAnnouncementRepository {
 
@@ -97,8 +96,8 @@ class ServerAnnouncementRepository constructor(private val api: Api) : IAnnounce
         return result
     }
 
-    override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
-        var result: ServerResult<JsonObject>
+    override suspend fun updateAnnounce(announce: Announce): ServerResult<Announce> {
+        var result: ServerResult<Announce>
         try {
             val response = api.updateAnnounce(announce)
             result = response.await()

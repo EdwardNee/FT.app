@@ -1,17 +1,28 @@
 package app.ft.ftapp.android
 
+import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,9 +40,10 @@ import com.hse.core.BaseApplication
 import com.hse.core.ui.BaseActivity
 import com.yandex.mapkit.MapKitFactory
 import org.kodein.di.instance
+import java.util.concurrent.TimeUnit
 
 
-class MainActivity : BaseActivity(), OnGetUserLocation {
+class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
     private val kodein = DIFactory.di
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
@@ -60,11 +72,12 @@ class MainActivity : BaseActivity(), OnGetUserLocation {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
-        BaseApplication.appComponent.inject(this)
+//        BaseApplication.appComponent.inject(this)
         MapKitFactory.setApiKey(yandex_mapkit)
         DIFactory.locationListener = this
         MapKitFactory.initialize(this)
         super.onCreate(savedInstanceState)
+
 
 //        val chatMessageWork = PeriodicWorkRequestBuilder<MessagesWorker>(5, TimeUnit.SECONDS)
 //            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -78,11 +91,31 @@ class MainActivity : BaseActivity(), OnGetUserLocation {
 //        val intent = Intent(this, ChatService::class.java)
 //        ContextCompat.startForegroundService(this, intent)
 
+//        val serviceIntent = Intent(this, AnnounceService::class.java)
+//        startService(serviceIntent)
+
+        println(
+            "TAG_OF_ ${
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.SCHEDULE_EXACT_ALARM
+                ) == PackageManager.PERMISSION_GRANTED
+            }.. ${
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.USE_EXACT_ALARM
+                ) == PackageManager.PERMISSION_GRANTED
+            } ${
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.RECEIVE_BOOT_COMPLETED
+                ) == PackageManager.PERMISSION_GRANTED
+            }"
+        )
 
         setContent {
-
             MainComposable()
-
+//            requestPermissionLauncher.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
 //            Button({ AuthHelper.login(this, REQUEST_LOGIN)}) {
 //                Text("Adsadб ")
 //            }
@@ -95,6 +128,10 @@ class MainActivity : BaseActivity(), OnGetUserLocation {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun getPermissionForLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
@@ -104,6 +141,22 @@ class MainActivity : BaseActivity(), OnGetUserLocation {
             viewModel.onEvent(ActivityEvents.PermissionEvent.GrantPermission(true))
             getUserCurrentLocation()
         }
+    }
+
+    fun onE() {
+        val intent = Intent(this, AnnounceRemainderReceiver::class.java)
+        val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val i2 = Intent(this, MainActivity::class.java)
+        val pi2 =
+            PendingIntent.getActivity(applicationContext, 0, i2, PendingIntent.FLAG_UPDATE_CURRENT)
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pIntent)
+        alarmManager.setAlarmClock(
+            AlarmManager.AlarmClockInfo(
+                System.currentTimeMillis() + 10000,
+                pi2
+            ), pIntent
+        )
     }
 
     private fun getUserCurrentLocation() {

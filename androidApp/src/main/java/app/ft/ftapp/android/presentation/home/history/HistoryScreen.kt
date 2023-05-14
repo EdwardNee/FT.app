@@ -28,6 +28,7 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.Participant
+import app.ft.ftapp.presentation.viewmodels.HistoryViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -105,13 +106,14 @@ fun ListOfTravelers(announce: Announce, isChosen: MutableState<Boolean>) {
 @Composable
 fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
     val viewModelScreen = setupViewModel<HistoryScreenViewModel>()
+    val viewModel = setupViewModel<HistoryViewModel>()
     val historyList = viewModelScreen.pagerHistory.collectAsLazyPagingItems()
+    viewModel.setList(historyList.itemSnapshotList.items)
 
     val scope = rememberCoroutineScope()
     var isLoad by remember { mutableStateOf(true) }
     var isError: Boolean? by remember { mutableStateOf(null) }
     val stateRefresh = rememberPullRefreshState(isLoad, { historyList.refresh() })
-
     Column(
         modifier = Modifier
 //            .pullRefresh(stateRefresh)

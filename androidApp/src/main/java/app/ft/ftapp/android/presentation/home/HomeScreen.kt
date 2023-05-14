@@ -1,6 +1,6 @@
 package app.ft.ftapp.android.presentation.home
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.EMAIL
+import app.ft.ftapp.android.presentation.EditAnnounceScreen
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
@@ -33,18 +34,18 @@ import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import app.ft.ftapp.presentation.viewmodels.ModelsState
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
-/**
- * Home screen view.
- */
+
 @Composable
-fun HomeScreen() {
-    val viewModel = setupViewModel<HomeViewModel>()
+fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
+
     val items = listOf(
         BottomNavItems(ScreenValues.CURRENT), BottomNavItems(ScreenValues.HISTORY)
     )
@@ -92,7 +93,7 @@ fun HomeScreen() {
                     ))
         }
         if (isChosen) {
-            TabComposable(viewModel)
+            TabComposable(viewModel, isHome)
         } else {
             HistoryScreen()
         }
@@ -101,11 +102,41 @@ fun HomeScreen() {
 }
 
 /**
+ * Home screen view.
+ */
+@Composable
+fun HomeScreen() {
+    val isHome = remember { mutableStateOf(true) }
+    val viewModelHome = setupViewModel<HomeViewModel>()
+    val viewModel = setupViewModel<CreationViewModel>()
+    val updateResult = viewModel.updateResult.collectAsState()
+    AnimatedContent(
+        targetState = isHome.value,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(900)) + slideInVertically(animationSpec = tween(800),
+                initialOffsetY = { fullHeight -> fullHeight }) with
+                    fadeOut(animationSpec = tween(1200)) + slideOutVertically(
+                animationSpec = tween(
+                    800
+                )
+            )
+        }
+    ) { targetValue ->
+        if (targetValue) {
+            HomeScreena(isHome, viewModelHome)
+        } else {
+            EditAnnounceScreen(isHome, viewModelHome.assignedAnnounce.value ?: Announce())
+        }
+    }
+
+}
+
+/**
  * TabContent with tabs and tabviews.
  */
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun TabComposable(viewModel: HomeViewModel) {
+fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -129,7 +160,7 @@ fun TabComposable(viewModel: HomeViewModel) {
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
             tabName = "Мои поездки"
-        ) { CurrentScreen() },
+        ) { CurrentScreen(isHome) },
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
             tabName = "Попутчики"

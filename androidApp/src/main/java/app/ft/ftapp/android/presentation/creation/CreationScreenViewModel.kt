@@ -21,13 +21,15 @@ import com.yandex.runtime.Error
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+/**
+ * Viewmodel for creation screen.
+ */
 class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
     private val _uiMapState = MutableStateFlow<ModelsState>(ModelsState.Loading)
     val loadMapState: MutableStateFlow<ModelsState>
         get() = _uiMapState
 
 
-    var shouldFind = true
     val addressText = MutableStateFlow("Определяем адрес...")
 
     private val listener = object : Session.SearchListener {
@@ -100,7 +102,7 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
         .debounce(1000L)
         .onEach {
             println("TAG_OF_RES on earch")
-            if (it.isNotEmpty() && shouldFind) {
+            if (it.isNotEmpty() && viewModel.shouldFind) {
                 mapSearch.searchByQuery(it)
             }
         }
@@ -130,7 +132,7 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
         .debounce(1000L)
         .onEach {
             println("TAG_OF_RES on earch")
-            if (it.isNotEmpty() && shouldFind) {
+            if (it.isNotEmpty() && viewModel.shouldFind) {
                 mapSearch.searchByQuery(it)
             }
         }

@@ -5,11 +5,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import app.ft.ftapp.presentation.viewmodels.HistoryViewModel
 
 /**
  * ViewModel in Android module for HistoryScreen.
  */
-class HistoryScreenViewModel : ViewModel() {
+class HistoryScreenViewModel(viewModel: HistoryViewModel) : ViewModel() {
     val pagerHistory = Pager(
         PagingConfig(pageSize = HistoryPageSource.PAGE_SIZE)
     ) {

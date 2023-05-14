@@ -32,7 +32,7 @@ interface IAnnouncementRepository {
     /**
      * UPDATEs existing [Announce].
      */
-    suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject>
+    suspend fun updateAnnounce(announce: Announce): ServerResult<Announce>
 
     /**
      * DELETEs given [Announce].

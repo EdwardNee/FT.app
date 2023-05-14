@@ -58,7 +58,12 @@ class Api(private val client: HttpClient) {
 
     suspend fun updateAnnounce(announce: Announce): HttpResponse {
         return client.post("/api/travel/updateTravel") {
+            contentType(ContentType.Application.Json)
             setBody(announce)
+
+            headers {
+                append(HttpHeaders.Accept, "application/json")
+            }
         }
     }
 

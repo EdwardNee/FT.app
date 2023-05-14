@@ -339,7 +339,7 @@ fun BottomSheetCreate(
                                 )
                             )
 
-                            viewModelScreen.shouldFind = false
+                            viewModel.viewModel.shouldFind = false
                             onAnimateTo(it.latLng.toPoint())
                         }
 

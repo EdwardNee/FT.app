@@ -11,7 +11,9 @@
 <string name="pointB">B</string>
 <string name="available_announces">Доступные объявления</string>
 <string name="create_announce">Создать объявление</string>
+<string name="edit_announce">Редактировать</string>
 <string name="publish">Опубликовать</string>
+<string name="save_edit">Сохранить изменения</string>
 <string name="onward">Далее</string>
 <string name="from">Откуда едем?</string>
 <string name="to">Куда едем?</string>

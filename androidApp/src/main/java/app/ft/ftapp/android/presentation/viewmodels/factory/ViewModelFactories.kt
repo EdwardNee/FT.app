@@ -33,7 +33,8 @@ class NoArgsViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
             HomeViewModel::class.java -> HomeViewModel()
             ChatViewModel::class.java -> ChatViewModel()
             MainActivityViewModel::class.java -> MainActivityViewModel()
-            HistoryScreenViewModel::class.java -> HistoryScreenViewModel()
+            HistoryViewModel::class.java -> HistoryViewModel()
+
             else -> throw IllegalArgumentException("$modelClass is not registered ViewModel")
         } as T
 }
@@ -49,6 +50,7 @@ class ArgsViewModelFactory<T>(private val args: FactoryArgs<T>) :
             AnnounceScreenViewModel::class.java -> AnnounceScreenViewModel(args.vm!! as AnnouncesViewModel)
             ChatScreenViewModel::class.java -> ChatScreenViewModel(args.vm!! as ChatViewModel)
             CreationScreenViewModel::class.java -> CreationScreenViewModel(args.vm!! as CreationViewModel)
+            HistoryScreenViewModel::class.java -> HistoryScreenViewModel(args.vm!! as HistoryViewModel)
             else -> throw IllegalArgumentException("$modelClass is not registered ViewModel")
         } as T
 }
