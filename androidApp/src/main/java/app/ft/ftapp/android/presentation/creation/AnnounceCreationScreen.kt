@@ -142,7 +142,6 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
         LaunchedEffect(Unit) {
             scope.launch {
                 snackbarState.showSnackbar("У вас уже есть поездка")
-//                Toast.makeText(LocalContext.current, "У вас уже есть поездка", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -248,7 +247,7 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                                         } else {
                                             item {
                                                 Text(
-                                                    text = "Адреса не найдены",
+                                                    text = stringResource(id = R.string.no_address),
                                                     fontSize = 22.sp,
                                                     fontFamily = Montserrat,
                                                     modifier = Modifier.align(Alignment.Center),
@@ -285,7 +284,10 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
-                        Text("Начало поездки", fontFamily = Montserrat)
+                        Text(
+                            stringResource(id = R.string.travel_beginning),
+                            fontFamily = Montserrat
+                        )
                         Spacer(Modifier.weight(1f))
                         Card(
                             Modifier
@@ -384,7 +386,7 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
         textStyle = TextStyle(fontSize = 16.sp, fontFamily = Montserrat),
         value = comment,
         onValueChange = onChange,
-        placeholder = { PlaceHolderText("Дополнительные комментарии...") },
+        placeholder = { PlaceHolderText(stringResource(id = R.string.add_notes)) },
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
             disabledTextColor = Color.Transparent,

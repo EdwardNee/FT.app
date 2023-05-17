@@ -133,7 +133,7 @@ fun AnnounceCard(
                     Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
-                    text = "Информация"
+                    text = stringResource(id = app.ft.ftapp.android.R.string.info)
                 ) {
                     onClickInfo(announce)
                 }

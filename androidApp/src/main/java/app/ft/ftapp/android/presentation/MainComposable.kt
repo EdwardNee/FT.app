@@ -223,7 +223,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
 fun MainNavGraph(navController: NavHostController) {
     CustomNavigationAnimated(
         navController = navController,
-        startDestination = AppDestination.AppBars,
+        startDestination = AppDestination.PreviewBars,
         route = ScreenValues.ROOT
     ) {
         loginGraph(navController)

@@ -9,6 +9,9 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import app.ft.ftapp.domain.models.Announce
 
+/**
+ * Broadcast receiver catches alarmmanager events.
+ */
 class AnnounceRemainderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         // Retrieve details from the intent
@@ -36,6 +39,9 @@ class AnnounceRemainderReceiver : BroadcastReceiver() {
         notificationManager.notify(announceDetails?.id ?: 1, builder.build())
     }
 
+    /**
+     * Creates notification channel in which notifications will be shown.
+     */
     private fun createNotificationChannel(context: Context) {
         // Check if the device is running Android Oreo or above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -54,6 +60,6 @@ class AnnounceRemainderReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val CHANNEL_ID = "bus_reminders_channel"
+        const val CHANNEL_ID = "car_reminders_channel"
     }
 }

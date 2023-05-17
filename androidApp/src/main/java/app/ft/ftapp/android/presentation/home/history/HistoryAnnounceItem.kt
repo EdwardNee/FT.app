@@ -65,7 +65,7 @@ fun HistoryAnnounceItem(announce: Announce, onClickInfo: (Announce) -> Unit) {
                 Modifier
                     .padding(vertical = 8.dp)
                     .align(Alignment.CenterHorizontally),
-                text = "Информация",
+                text = stringResource(id = app.ft.ftapp.android.R.string.info),
             ) {
                 onClickInfo(announce)
             }

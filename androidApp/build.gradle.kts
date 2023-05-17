@@ -65,6 +65,7 @@ dependencies {
     implementation("com.yandex.android:maps.mobile:4.3.1-full")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.31.1-alpha")
 
+
 //    implementation("androidx.work:work-runtime-ktx::2.7.1")
 
 //    implementation("androidx.compose.ui:ui:1.2.1")

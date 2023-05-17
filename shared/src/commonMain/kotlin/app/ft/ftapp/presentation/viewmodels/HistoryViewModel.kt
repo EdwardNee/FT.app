@@ -1,8 +1,8 @@
 package app.ft.ftapp.presentation.viewmodels
 
 import app.ft.ftapp.domain.models.Announce
-import app.ft.ftapp.domain.models.Participant
 import app.ft.ftapp.domain.usecase.db.GetParticipantsByAnnounceIdUseCase
+import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.domain.usecase.db.InsertParticipantToDbUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +17,8 @@ import org.kodein.di.instance
 class HistoryViewModel : BaseViewModel() {
 
     val getParticipantByIdFromDb: GetParticipantsByAnnounceIdUseCase by kodein.instance()
-    val insertToDbUseCase: InsertParticipantToDbUseCase by kodein.instance()
-
+    val insertToDbParticipantUseCase: InsertParticipantToDbUseCase by kodein.instance()
+    val insertAnnounceToDbUseCase: InsertAnnounceToDbUseCase by kodein.instance()
 
     private val _historyList = MutableStateFlow(emptyList<Announce>())
     val historyList: StateFlow<List<Announce>>
@@ -28,10 +28,7 @@ class HistoryViewModel : BaseViewModel() {
     init {
         viewModelScope.launch {
             historyList.collectLatest {
-                it.forEach { announce ->
-                    onEvent(HistoryEvent.InsertToDb(announce.participants ?: emptyList()))
-                }
-
+                onEvent(HistoryEvent.InsertToDb(it))
             }
         }
     }
@@ -42,9 +39,7 @@ class HistoryViewModel : BaseViewModel() {
     fun onEvent(event: HistoryEvent) {
         when (event) {
             is HistoryEvent.InsertToDb -> {
-                event.participants.forEach { participant ->
-                    insertToDbCall(participant)
-                }
+                insertToDbCall(event.announces)
             }
             is HistoryEvent.GetParticipantsId -> {
                 getParticipantsById(event.id)
@@ -52,6 +47,9 @@ class HistoryViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * Sets list of announces to the flow value.
+     */
     fun setList(list: List<Announce>) {
         val lst = mutableListOf<Announce>()
         lst.addAll(list)
@@ -59,11 +57,16 @@ class HistoryViewModel : BaseViewModel() {
     }
 
     /**
-     * Inserts given [participant] to DB.
+     * Inserts given [announces] to DB with participants in them.
      */
-    private fun insertToDbCall(participant: Participant) {
+    private fun insertToDbCall(announces: List<Announce>) {
         viewModelScope.launch {
-            insertToDbUseCase(participant)
+            announces.forEach { announce ->
+                insertAnnounceToDbUseCase(announce)
+                announce.participants?.forEach { participant ->
+                    insertToDbParticipantUseCase(participant)
+                }
+            }
         }
     }
 
@@ -81,6 +84,6 @@ class HistoryViewModel : BaseViewModel() {
  * Types of Actions for History screen.
  */
 open class HistoryEvent {
-    class InsertToDb(val participants: List<Participant>) : HistoryEvent()
+    class InsertToDb(val announces: List<Announce>) : HistoryEvent()
     class GetParticipantsId(val id: Long) : HistoryEvent()
 }

@@ -211,7 +211,7 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                             } else {
                                                 item {
                                                     Text(
-                                                        text = "Адреса не найдены",
+                                                        text = stringResource(id = R.string.no_address),
                                                         fontSize = 22.sp,
                                                         fontFamily = Montserrat,
                                                         modifier = Modifier.align(Alignment.Center),
@@ -248,7 +248,10 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
-                            Text("Начало поездки", fontFamily = Montserrat)
+                            Text(
+                                stringResource(id = R.string.travel_beginning),
+                                fontFamily = Montserrat
+                            )
                             Spacer(Modifier.weight(1f))
                             Card(
                                 Modifier

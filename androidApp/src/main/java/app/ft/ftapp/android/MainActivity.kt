@@ -36,9 +36,12 @@ import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.OnGetUserLocation
 import app.ft.ftapp.yandex_mapkit
 import com.google.android.gms.location.LocationServices
+import com.hse.auth.AuthHelper
+import com.hse.auth.utils.AuthConstants
 import com.hse.core.BaseApplication
 import com.hse.core.ui.BaseActivity
 import com.yandex.mapkit.MapKitFactory
+import kotlinx.coroutines.flow.collectLatest
 import org.kodein.di.instance
 import java.util.concurrent.TimeUnit
 
@@ -47,20 +50,30 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
     private val kodein = DIFactory.di
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
-    private val REQUEST_LOGIN = 5
+    private val REQUEST_LOGIN = 510
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
-//        if (resultCode == Activity.RESULT_OK) {
-//            Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
-//        }
-//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        if (resultCode == Activity.RESULT_OK) {
-        Log.d("TAG_OF_F", "onActivityResult: $requestCode $resultCode")
-        Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
+
+        when (requestCode) {
+            REQUEST_LOGIN -> {
+                val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
+                val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
+                val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
+                val datsToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_EXPIRES_IN_MILLIS)
+
+                Log.d(
+                    "TAG_OF_F",
+                    "onActivityResult: $dataToken refter $refreshToken refter $accessToken"
+                )
+                viewModel.parseJwt(accessToken)
+                viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+
+                Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
 //        }
     }
@@ -114,11 +127,12 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         )
 
         setContent {
+            val isExpired: Boolean by viewModel.isExpired.collectAsState()
+            println("isExpired $isExpired")
+            if (isExpired) {
+                processHseAuth()
+            }
             MainComposable()
-//            requestPermissionLauncher.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
-//            Button({ AuthHelper.login(this, REQUEST_LOGIN)}) {
-//                Text("Adsadб ")
-//            }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
@@ -141,6 +155,10 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
             viewModel.onEvent(ActivityEvents.PermissionEvent.GrantPermission(true))
             getUserCurrentLocation()
         }
+    }
+
+    override fun processHseAuth() {
+        AuthHelper.login(this, REQUEST_LOGIN)
     }
 
     fun onE() {

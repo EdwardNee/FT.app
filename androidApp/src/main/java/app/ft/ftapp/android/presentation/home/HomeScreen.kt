@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.EMAIL
+import app.ft.ftapp.android.R
 import app.ft.ftapp.android.presentation.EditAnnounceScreen
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.ErrorView
@@ -66,7 +68,7 @@ fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            HeaderText(text = "Текущие",
+            HeaderText(text = stringResource(id = R.string.currents),
                 color = if (isChosen) Color.Black else Color.Gray,
                 fontSize = (if (isChosen) 40 else 28).sp,
                 modifier = Modifier
@@ -79,7 +81,7 @@ fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                         )
                     ))
             Spacer(Modifier.padding(10.dp))
-            HeaderText(text = "История",
+            HeaderText(text = stringResource(id = R.string.history),
                 color = if (isChosen) Color.Gray else Color.Black,
                 fontSize = (if (isChosen) 28 else 40).sp,
                 modifier = Modifier
@@ -159,11 +161,11 @@ fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
     val items = listOf(
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
-            tabName = "Мои поездки"
+            tabName = stringResource(id = R.string.my_announces)
         ) { CurrentScreen(isHome) },
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
-            tabName = "Попутчики"
+            tabName = stringResource(id = R.string.travelers)
         ) { ListTravelers(assignedAnnounce) }
     )
     val pagerState = rememberPagerState(pageCount = items.size)

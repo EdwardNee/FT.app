@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -348,7 +349,7 @@ fun BottomSheetCreate(
                 } else {
                     item {
                         Text(
-                            text = "Адреса не найдены",
+                            text = stringResource(id = R.string.no_address),
                             fontSize = 22.sp,
                             fontFamily = Montserrat,
 //                            modifier = Modifier.align(Alignment.CenterStart),

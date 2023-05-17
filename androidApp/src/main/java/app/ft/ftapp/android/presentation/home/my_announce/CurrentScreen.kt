@@ -203,7 +203,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
                         fontFamily = Montserrat,
-                        text = "Покинуть поездку",
+                        text = stringResource(id = R.string.leave_announce),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = Color.White
@@ -212,7 +212,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
                         fontFamily = Montserrat,
-                        text = "Удалить поездку",
+                        text = stringResource(id = R.string.delete_announce),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = Color.White
@@ -239,7 +239,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
                         fontFamily = Montserrat,
-                        text = "Редактировать поездку",
+                        text = stringResource(id = R.string.edit_ann),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = Color.White

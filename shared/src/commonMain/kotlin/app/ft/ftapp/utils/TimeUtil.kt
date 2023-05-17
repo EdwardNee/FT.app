@@ -1,5 +1,7 @@
 package app.ft.ftapp.utils
 
+import app.ft.ftapp.domain.models.SessionState
+import io.ktor.util.date.*
 import kotlinx.datetime.*
 
 /**
@@ -38,4 +40,25 @@ object TimeUtil {
             minute = minute
         ).toString()
     }
+
+
+    fun convertExpirationDateToMillisUTC(dataEntry: String): Long {
+        val parser = GMTDateParser(DATE_FORMAT)
+        return DateFormatter().convertDateString(dataEntry, DATE_FORMAT, UTC_PREFIX)
+    }
+
+    fun matchDates(currentTime: Long, expirationTime: Long): SessionState {
+        val currentDate = DateFormatter().convertDateLong(currentTime, DATE_FORMAT, UTC_PREFIX)
+        return when {
+            expirationTime == -1L -> SessionState.SessionInvalid
+            currentDate < expirationTime -> SessionState.SessionValid
+            currentDate > expirationTime -> SessionState.SessionExpired
+            else -> SessionState.SessionInvalid
+        }
+    }
+
+    private const val UTC_PREFIX = "UTC"
+    private const val DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z"
+
 }
+

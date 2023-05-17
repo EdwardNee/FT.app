@@ -16,6 +16,7 @@ import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
+import app.ft.ftapp.utils.CustomJwtParser
 import app.ft.ftapp.utils.KMMContext
 import app.ft.ftapp.utils.OnGetUserLocation
 import app.ft.ftapp.utils.PreferencesHelper
@@ -145,6 +146,7 @@ class Engine {
 
     private val utilsModule = DI.Module("utils") {
         bindSingleton { PreferencesHelper(DIFactory.initCtx!!) }
+        bindSingleton { CustomJwtParser() }
     }
 
     val kodein = DI {

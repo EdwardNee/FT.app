@@ -50,9 +50,9 @@ fun AuthScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "FT.app", fontSize = 48.sp, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(id = R.string.app_name), fontSize = 48.sp, fontWeight = FontWeight.Bold)
             Text(
-                text = "Найти попутчиков",
+                text = stringResource(id = R.string.find_traveler),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
                 color = Color.Gray
@@ -86,7 +86,7 @@ fun CredentialsField(params: CredentialsEnterParams, text: String) {
     TextField(
         modifier = Modifier
             .padding(8.dp),
-        value = "Введите пароль",
+        value = stringResource(id = R.string.enter_password),
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.Green,
             backgroundColor = Color.Transparent
