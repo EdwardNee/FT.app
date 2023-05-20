@@ -11,7 +11,6 @@ import io.ktor.client.plugins.*
 import io.ktor.util.network.*
 import io.ktor.utils.io.errors.*
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.JsonObject
 
 class ServerAnnouncementRepository constructor(private val api: Api) : IAnnouncementRepository {
 
@@ -22,6 +21,35 @@ class ServerAnnouncementRepository constructor(private val api: Api) : IAnnounce
         var result: ServerResult<PagingAnnounce>
         try {
             val response = api.getAnnouncements(offset, limit)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+
+        return result
+    }
+
+    override suspend fun getHistoryAnnouncements(
+        offset: Int,
+        limit: Int,
+        authorMail: String
+    ): ServerResult<PagingAnnounce> {
+        var result: ServerResult<PagingAnnounce>
+        try {
+            val response = api.getTravelHistory(offset, limit, authorMail)
             result = response.await()
         } catch (ex: Exception) {
             when (ex) {
@@ -68,8 +96,8 @@ class ServerAnnouncementRepository constructor(private val api: Api) : IAnnounce
         return result
     }
 
-    override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
-        var result: ServerResult<JsonObject>
+    override suspend fun updateAnnounce(announce: Announce): ServerResult<Announce> {
+        var result: ServerResult<Announce>
         try {
             val response = api.updateAnnounce(announce)
             result = response.await()

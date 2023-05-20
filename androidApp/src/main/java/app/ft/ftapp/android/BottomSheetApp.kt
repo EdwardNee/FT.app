@@ -19,18 +19,26 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetApp(
-    sheetContent: @Composable (modalBottomSheetState: ModalBottomSheetState, ) -> Unit,
+    sheetContent: @Composable (modalBottomSheetState: ModalBottomSheetState) -> Unit,
     pageContent: @Composable (onClick: () -> Unit) -> Unit
 ) {
     val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+        rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            skipHalfExpanded = true
+        )
     val scope = rememberCoroutineScope()
+
     ModalBottomSheetLayout(
         sheetContent = {
-            if(modalBottomSheetState.isVisible) {
+            if (modalBottomSheetState.isVisible) {
                 sheetContent(modalBottomSheetState)
             } else {
-                Surface(Modifier.size(0.2.dp).background(Color.Transparent)) {
+                Surface(
+                    Modifier
+                        .size(0.2.dp)
+                        .background(Color.Transparent)
+                ) {
                     Text("", fontSize = 0.sp)
                 }
             }

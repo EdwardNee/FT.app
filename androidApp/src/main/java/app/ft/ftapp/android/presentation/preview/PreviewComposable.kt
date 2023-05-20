@@ -1,33 +1,48 @@
 package app.ft.ftapp.android.presentation.preview
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.android.R
 import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
+import app.ft.ftapp.android.ui.theme.hseBlue
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.di.DIFactory
+import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.kodein.di.instance
 
 @Composable
 @Preview
 fun PreviewComposable() {
+    val kodein = DIFactory.di
+    val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
+
+    val isExpired: Boolean by viewModel.isExpired.collectAsState()
+
+    viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+
     val scope = rememberCoroutineScope()
     Column(
-        Modifier.fillMaxSize(),
+        Modifier
+            .fillMaxSize()
+            .background(Color.DarkGray),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (false) {
+        if (isExpired) {
             Spacer(modifier = Modifier.weight(1f))
         }
         Text(
@@ -40,17 +55,34 @@ fun PreviewComposable() {
         Text("Поиск попутчиков", fontFamily = Montserrat, fontSize = 12.sp, color = Color.LightGray)
         LaunchedEffect(Unit) {
             scope.launch {
-                SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
+                viewModel.isExpired.collectLatest {
+                    println("isExpired is scope $isExpired $it")
+                    if (!it) {
+                        SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
+                    }
+                }
+
+//                if (!isExpired) {
+//                    SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
+//                }
+
             }
         }
-        if (false) {
-            Spacer(Modifier.padding(130.dp))
+        if (isExpired) {
+            Spacer(Modifier.padding(80.dp))
             Spacer(modifier = Modifier.weight(1f))
-            CircularProgressIndicator(
-                color = Color.Magenta,
-                modifier = Modifier
-                    .size(30.dp)
-            )
+            Button(
+                onClick = { DIFactory.locationListener?.processHseAuth() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = hseBlue)
+            ) {
+                Text(
+                    stringResource(id = R.string.hse_enter),
+                    color = Color.White,
+                    modifier = Modifier.padding(7.dp),
+                    fontSize = 14.sp
+                )
+            }
+            Spacer(Modifier.padding(top = 40.dp))
         }
     }
 }

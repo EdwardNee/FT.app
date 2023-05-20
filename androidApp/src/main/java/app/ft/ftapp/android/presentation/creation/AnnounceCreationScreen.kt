@@ -1,6 +1,7 @@
 package app.ft.ftapp.android.presentation.creation
 
-import android.widget.Toast
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -19,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,8 +37,13 @@ import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
+import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
+import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
+import app.ft.ftapp.android.ui.navigation.AppDestination
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
@@ -46,16 +52,54 @@ import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import com.yandex.mapkit.search.*
 import kotlinx.coroutines.launch
+import org.kodein.di.instance
 import java.time.LocalTime
+
+@Composable
+fun AnnounceCreationScreen(onAction: () -> Unit) {
+
+    val kodein = DIFactory.di
+    val viewModel: CreationViewModel by kodein.instance(tag = "announce_cr")
+//    val viewModel = setupViewModel<CreationViewModel>()
+
+    val loadResult by viewModel.loadResult.collectAsState()
+
+    AnimatedContent(
+        targetState = loadResult,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(900)) + slideInVertically(animationSpec = tween(1000),
+                initialOffsetY = { fullHeight -> fullHeight }) with
+                    fadeOut(animationSpec = tween(1200))
+        }
+    ) { targetState ->
+        when (targetState) {
+//            is SurveyState.Questions -> SurveyQuestionsScreen(questions = targetState)
+//            is SurveyState.Result -> SurveyResultScreen(result = targetState)
+            is ModelsState.Error -> {}
+            ModelsState.Loading -> {
+                AnnounceCreationScreena(viewModel) {}
+            }
+            ModelsState.NoData -> {}
+            is ModelsState.Success<*> -> {
+                SuccessView()
+            }
+        }
+    }
+}
 
 /**
  * Composable method to draw announcement creation screen.
  */
 @Composable
-fun AnnounceCreationScreen(onAction: () -> Unit) {
+fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) {
     val scope = rememberCoroutineScope()
-    val viewModel = setupViewModel<CreationViewModel>()
+    val viewModelScreen: CreationScreenViewModel = setupViewModel<CreationScreenViewModel>(
+        ArgsViewModelFactory(FactoryArgs(viewModel))
+    )
+
+
     val progress by viewModel.isShowProgress.collectAsState()
 
     val loadResult by viewModel.loadResult.collectAsState()
@@ -69,7 +113,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     val comment by viewModel.comment.collectAsState()
     val startTime by viewModel.startTime.collectAsState()
 
-    val locations by viewModel.triple.collectAsState()
+    val locations by viewModelScreen.sourceDestCombine.collectAsState()
     val searchState by viewModel.editTextTap.collectAsState()
 
     val boxTimePickerColor = listOf(Color.Transparent, Color.Black)
@@ -94,12 +138,10 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
     }
 
 
-            if (isInTravel) {
-                LaunchedEffect(Unit) {
-                    scope.launch {
-                println(" her $isInTravel")
+    if (isInTravel) {
+        LaunchedEffect(Unit) {
+            scope.launch {
                 snackbarState.showSnackbar("У вас уже есть поездка")
-//                Toast.makeText(LocalContext.current, "У вас уже есть поездка", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -134,10 +176,14 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
 //        }
 //    }
 
+
+    val query = "дубки вшэ"
+//    viewModelScreen.mapSearch.searchByQuery(query)
     Spacer(modifier = Modifier.padding(40.dp))
 
     LazyColumn {
         item {
+
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,7 +199,16 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }) {
-                    HeaderText(text = stringResource(id = R.string.create_announce))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { SingletonHelper.appNavigator.tryNavigateBack() },
+                            Modifier.size(48.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                        }
+                        HeaderText(text = stringResource(id = R.string.create_announce))
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -165,7 +220,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                                 .background(backgroundEditTextBG)
                                 .padding(horizontal = 3.dp)
                         ) {
-                            FromToComposable(source, endDest, viewModel)
+                            FromToComposable(source, endDest, viewModelScreen)
                             if (searchState != FocusPosition.None) {
                                 Box(
                                     Modifier
@@ -192,7 +247,7 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                                         } else {
                                             item {
                                                 Text(
-                                                    text = "Адреса не найдены",
+                                                    text = stringResource(id = R.string.no_address),
                                                     fontSize = 22.sp,
                                                     fontFamily = Montserrat,
                                                     modifier = Modifier.align(Alignment.Center),
@@ -229,7 +284,10 @@ fun AnnounceCreationScreen(onAction: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
-                        Text("Начало поездки", fontFamily = Montserrat)
+                        Text(
+                            stringResource(id = R.string.travel_beginning),
+                            fontFamily = Montserrat
+                        )
                         Spacer(Modifier.weight(1f))
                         Card(
                             Modifier
@@ -328,7 +386,7 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
         textStyle = TextStyle(fontSize = 16.sp, fontFamily = Montserrat),
         value = comment,
         onValueChange = onChange,
-        placeholder = { PlaceHolderText("Дополнительные комментарии...") },
+        placeholder = { PlaceHolderText(stringResource(id = R.string.add_notes)) },
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
             disabledTextColor = Color.Transparent,

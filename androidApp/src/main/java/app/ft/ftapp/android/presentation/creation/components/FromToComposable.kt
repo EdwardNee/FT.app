@@ -10,9 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,29 +18,37 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
+import app.ft.ftapp.android.presentation.creation.CreationScreenViewModel
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.blueCircle
 import app.ft.ftapp.android.ui.theme.editTextBackground
 import app.ft.ftapp.android.ui.theme.redCircle
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
-import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
 
 /**
  * Composable component to show from to UI.
  */
 @Composable
-fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) {
+fun FromToComposable(
+    source: String,
+    end: String,
+    viewModel: CreationScreenViewModel,
+    size: MutableState<IntSize> = mutableStateOf(IntSize.Zero)
+) {
     val animVal = remember { androidx.compose.animation.core.Animatable(1f) }
 //    val stateA = remember { mutableStateOf("") }
 //    val stateB = remember { mutableStateOf("") }
 
+//    size =
     LaunchedEffect(source.isNotEmpty() && end.isNotEmpty()) {
         animVal.animateTo(
             targetValue = if (source.isNotEmpty() && end.isNotEmpty()) 5.36f else 1f,
@@ -58,6 +64,9 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             .background(color = editTextBackground)
             .padding(start = 26.dp)
             .padding(vertical = 5.dp)
+            .onGloballyPositioned { coordinates ->
+                size.value = coordinates.size
+            }
 
     ) {
         Canvas(modifier = Modifier) {
@@ -74,10 +83,14 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             stringResource(R.string.from),
             redCircle,
             source,
-            dismissFocus = { viewModel.editTextTap.value = FocusPosition.None },
-            onFocusState = { viewModel.editTextTap.value = FocusPosition.SourceField }
+            dismissFocus = {
+                viewModel.viewModel.onEvent(CreationEvent.FieldEdit.ChangeFocus(FocusPosition.None))
+            },
+            onFocusState = {
+                viewModel.viewModel.onEvent(CreationEvent.FieldEdit.ChangeFocus(FocusPosition.SourceField))
+            }
         ) {
-            viewModel.onEvent(CreationEvent.FieldEdit.SourceEdit(it))
+            viewModel.viewModel.onEvent(CreationEvent.FieldEdit.SourceEdit(it))
         }
 
         Divider(
@@ -91,10 +104,14 @@ fun FromToComposable(source: String, end: String, viewModel: CreationViewModel) 
             stringResource(R.string.to),
             blueCircle,
             end,
-            dismissFocus = { viewModel.editTextTap.value = FocusPosition.None },
-            onFocusState = { viewModel.editTextTap.value = FocusPosition.EndField }
+            dismissFocus = {
+                viewModel.viewModel.onEvent(CreationEvent.FieldEdit.ChangeFocus(FocusPosition.None))
+            },
+            onFocusState = {
+                viewModel.viewModel.onEvent(CreationEvent.FieldEdit.ChangeFocus(FocusPosition.EndField))
+            }
         ) {
-            viewModel.onEvent(CreationEvent.FieldEdit.EndEdit(it))
+            viewModel.viewModel.onEvent(CreationEvent.FieldEdit.EndEdit(it))
         }
     }
 }

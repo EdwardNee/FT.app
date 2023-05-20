@@ -7,7 +7,10 @@ object ScreenValues {
     const val AUTH = "autha"
     const val ANNOUNCE_DETAIL = "announce_detail"
     const val ANNOUNCES_LIST = "announces_list"
+
+    const val CREATION_MAP = "creation_map"
     const val CREATION = "creation"
+
     const val CHATTING = "chatting"
 
     const val HOME = "home"

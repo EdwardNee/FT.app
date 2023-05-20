@@ -40,4 +40,8 @@ val chipTimeColor = Color(0xffeb645e)
 val namesColor =
     listOf(Color.Yellow, Color.Magenta, Color.Green, Color.Red)
 
+val waitingStatusColor = Color(0xFFE4A426)
+
+val hseBlue = Color(0xff204fc7)
+
 

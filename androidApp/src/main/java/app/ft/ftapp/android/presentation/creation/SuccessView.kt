@@ -8,7 +8,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import app.ft.ftapp.android.R
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -16,9 +15,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.ft.ftapp.android.R
 import app.ft.ftapp.android.ui.theme.Montserrat
+import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.ui.theme.greenColor
-import app.ft.ftapp.android.ui.theme.infoBottomBackground
 
 /**
  * Successfully created announcement composable view.
@@ -28,11 +28,12 @@ import app.ft.ftapp.android.ui.theme.infoBottomBackground
 fun SuccessView() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
+//            .wrapContentHeight()
             .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
-            .background(infoBottomBackground)
-            .padding(horizontal = 12.dp)
+            .background(appBackground) //infoBottomBackground
+            .padding(horizontal = 12.dp),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             "Объявление опубликовано!",

@@ -37,10 +37,9 @@ import androidx.work.*
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
+import app.ft.ftapp.android.presentation.common.ErrorView
+import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.common.PlaceHolderText
-import app.ft.ftapp.android.presentation.home.ErrorView
-import app.ft.ftapp.android.presentation.home.NoDataView
-import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel

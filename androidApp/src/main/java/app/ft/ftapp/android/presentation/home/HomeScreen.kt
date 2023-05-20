@@ -1,31 +1,32 @@
 package app.ft.ftapp.android.presentation.home
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.EMAIL
+import app.ft.ftapp.android.R
+import app.ft.ftapp.android.presentation.EditAnnounceScreen
 import app.ft.ftapp.android.presentation.LoadingView
+import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.common.NoDataView
+import app.ft.ftapp.android.presentation.home.history.HistoryScreen
 import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.models.BottomNavItems
@@ -35,18 +36,18 @@ import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
-import app.ft.ftapp.presentation.viewmodels.ModelsState
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 
-/**
- * Home screen view.
- */
+
 @Composable
-fun HomeScreen() {
-    val viewModel = setupViewModel<HomeViewModel>()
+fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
+
     val items = listOf(
         BottomNavItems(ScreenValues.CURRENT), BottomNavItems(ScreenValues.HISTORY)
     )
@@ -67,7 +68,7 @@ fun HomeScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            HeaderText(text = "Текущие",
+            HeaderText(text = stringResource(id = R.string.currents),
                 color = if (isChosen) Color.Black else Color.Gray,
                 fontSize = (if (isChosen) 40 else 28).sp,
                 modifier = Modifier
@@ -80,7 +81,7 @@ fun HomeScreen() {
                         )
                     ))
             Spacer(Modifier.padding(10.dp))
-            HeaderText(text = "История",
+            HeaderText(text = stringResource(id = R.string.history),
                 color = if (isChosen) Color.Gray else Color.Black,
                 fontSize = (if (isChosen) 28 else 40).sp,
                 modifier = Modifier
@@ -93,8 +94,43 @@ fun HomeScreen() {
                         )
                     ))
         }
-        TabComposable(viewModel)
+        if (isChosen) {
+            TabComposable(viewModel, isHome)
+        } else {
+            HistoryScreen()
+        }
+
     }
+}
+
+/**
+ * Home screen view.
+ */
+@Composable
+fun HomeScreen() {
+    val isHome = remember { mutableStateOf(true) }
+    val viewModelHome = setupViewModel<HomeViewModel>()
+    val viewModel = setupViewModel<CreationViewModel>()
+    val updateResult = viewModel.updateResult.collectAsState()
+    AnimatedContent(
+        targetState = isHome.value,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(900)) + slideInVertically(animationSpec = tween(800),
+                initialOffsetY = { fullHeight -> fullHeight }) with
+                    fadeOut(animationSpec = tween(1200)) + slideOutVertically(
+                animationSpec = tween(
+                    800
+                )
+            )
+        }
+    ) { targetValue ->
+        if (targetValue) {
+            HomeScreena(isHome, viewModelHome)
+        } else {
+            EditAnnounceScreen(isHome, viewModelHome.assignedAnnounce.value ?: Announce())
+        }
+    }
+
 }
 
 /**
@@ -102,7 +138,8 @@ fun HomeScreen() {
  */
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun TabComposable(viewModel: HomeViewModel) {
+fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
+    val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val scope = rememberCoroutineScope()
 
     var isLoad by remember { mutableStateOf(true) }
@@ -124,12 +161,12 @@ fun TabComposable(viewModel: HomeViewModel) {
     val items = listOf(
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
-            tabName = "Мои поездки"
-        ) { CurrentScreen() },
+            tabName = stringResource(id = R.string.my_announces)
+        ) { CurrentScreen(isHome) },
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
-            tabName = "Попутчики"
-        ) { ListTravelers() }
+            tabName = stringResource(id = R.string.travelers)
+        ) { ListTravelers(assignedAnnounce) }
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
@@ -170,59 +207,6 @@ fun TabComposable(viewModel: HomeViewModel) {
 }
 
 /**
- * Error while loading view.
- */
-@Composable
-fun ErrorView(onClick: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Ошибка при загрузке данных", fontFamily = Montserrat, fontSize = 18.sp)
-        Button(
-            border = null,
-            modifier = Modifier.size(72.dp),
-            elevation = null,
-            onClick = { onClick() },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Transparent,
-                contentColor = Color.Transparent,
-                disabledBackgroundColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(30.dp)
-        ) {
-            Image(
-                modifier = Modifier.size(50.dp),
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = "retry",
-                colorFilter = ColorFilter.tint(Color.Green)
-            )
-        }
-    }
-}
-
-@Composable
-fun NoDataView() {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-            .background(appBackground),
-        contentAlignment = Center
-    ) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Нет активных поездок", fontFamily = Montserrat, fontSize = 18.sp)
-        }
-    }
-}
-
-/**
  * List of tabs to show.
  */
 @OptIn(ExperimentalPagerApi::class)
@@ -259,7 +243,13 @@ fun Tabs(tabs: List<BottomNavItems>, pagerState: PagerState) {
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TabsContent(tabs: List<BottomNavItems>, pagerState: PagerState) {
-    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(appBackground),
+        verticalAlignment = Alignment.Top
+    ) { page ->
         tabs[page].content?.invoke()
     }
 }

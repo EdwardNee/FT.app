@@ -74,7 +74,7 @@ fun String.toDate(): LocalDateTime {
         if (this.length <= 16) {
             "$this:00"
         } else {
-            this
+            this.subSequence(0, 19)
         }
 
     val date =

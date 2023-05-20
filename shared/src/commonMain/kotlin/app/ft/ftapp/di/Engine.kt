@@ -3,25 +3,22 @@ package app.ft.ftapp.di
 import app.ft.ftapp.data.db.DatabaseDriverFactory
 import app.ft.ftapp.data.ktor.Api
 import app.ft.ftapp.data.ktor.TaxiApi
-import app.ft.ftapp.data.repository.IAnnounceSQRepository
-import app.ft.ftapp.data.repository.IAnnouncementRepository
-import app.ft.ftapp.data.repository.IServerChatRepository
-import app.ft.ftapp.data.repository.ITaxiRepository
+import app.ft.ftapp.data.repository.*
 import app.ft.ftapp.domain.repository.ServerAnnouncementRepository
 import app.ft.ftapp.domain.repository.ServerChatRepository
 import app.ft.ftapp.domain.repository.TaxiRepository
 import app.ft.ftapp.domain.repository.db.AnnounceSQRepository
+import app.ft.ftapp.domain.repository.db.ParticipantSQRepository
 import app.ft.ftapp.domain.usecase.chat.GetChatMessagesUseCase
 import app.ft.ftapp.domain.usecase.chat.SendChatMessageUseCase
-import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
-import app.ft.ftapp.domain.usecase.db.GetAnnounceFromDbUseCase
-import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
+import app.ft.ftapp.domain.usecase.db.*
 import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
-import app.ft.ftapp.presentation.viewmodels.BaseViewModel
-import app.ft.ftapp.presentation.viewmodels.ChatViewModel
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
+import app.ft.ftapp.utils.CustomJwtParser
 import app.ft.ftapp.utils.KMMContext
+import app.ft.ftapp.utils.OnGetUserLocation
 import app.ft.ftapp.utils.PreferencesHelper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -114,21 +111,27 @@ class Engine {
         bindSingleton<IServerChatRepository>("serv_ann_ch_r") { ServerChatRepository(instance()) }
         bindSingleton<ITaxiRepository>("taxi_ya_r") { TaxiRepository(instance()) }
         bindSingleton<IAnnounceSQRepository>("db_ann_r") { AnnounceSQRepository(DIFactory.driverFactory!!) }
+        bindSingleton<IParticipantSQRepository>("db_part_r") { ParticipantSQRepository(DIFactory.driverFactory!!) }
     }
 
-    private val useCaseModule = DI.Module("usecases") {
+    private val useCaseModule = DI.Module("use-cases") {
         bindSingleton { GetAnnouncementsUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { GetHistoryAnnouncesUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { CreateAnnouncementUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { BecomeTravelerUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetAnnounceByEmailUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { DeleteAnnounceUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { GetOutOfTravelUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { UpdateAnnounceUseCase(instance(tag = "serv_ann_r")) }
 
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
 
         bindSingleton { InsertAnnounceToDbUseCase(instance(tag = "db_ann_r")) }
         bindSingleton { GetAnnounceFromDbUseCase(instance(tag = "db_ann_r")) }
         bindSingleton { GetAllAnnouncesFromDb(instance(tag = "db_ann_r")) }
+
+        bindSingleton { InsertParticipantToDbUseCase(instance(tag = "db_part_r")) }
+        bindSingleton { GetParticipantsByAnnounceIdUseCase(instance(tag = "db_part_r")) }
 
         bindSingleton { GetChatMessagesUseCase(instance(tag = "serv_ann_ch_r")) }
         bindSingleton { SendChatMessageUseCase(instance(tag = "serv_ann_ch_r")) }
@@ -137,12 +140,13 @@ class Engine {
 
     private val viewModelsModule = DI.Module("viewmodel") {
 //        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
-        bindSingleton<BaseViewModel>("announce_cr") { CreationViewModel() }
-        bindSingleton<ChatViewModel>("chat_vm") { ChatViewModel() }
+        bindSingleton("announce_cr") { CreationViewModel() }
+        bindSingleton("mainact_vm") { MainActivityViewModel() }
     }
 
     private val utilsModule = DI.Module("utils") {
         bindSingleton { PreferencesHelper(DIFactory.initCtx!!) }
+        bindSingleton { CustomJwtParser() }
     }
 
     val kodein = DI {
@@ -151,7 +155,7 @@ class Engine {
         importAll(
             ktorModule, useCaseModule, repositoryModule, viewModelsModule, utilsModule
         )
-        bindConstant(tag = "base_url") { "https://ftapp.herokuapp.com" }
+        bindConstant(tag = "base_url") { "https://ftapp-aapetropavlovskiy.b4a.run" }
         bindConstant(tag = "taxi_url") { "https://taxi-routeinfo.taxi.yandex.net" }
     }
 }
@@ -164,6 +168,7 @@ object DIFactory {
 
     var initCtx: KMMContext? = null
     var driverFactory: DatabaseDriverFactory? = null
+    var locationListener: OnGetUserLocation? = null
 
     val direct = di.direct
 

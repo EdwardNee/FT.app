@@ -9,6 +9,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 
 class Api(private val client: HttpClient) {
+    /**
+     * Gets all available [Announce] from the server.
+     */
     suspend fun getAnnouncements(offset: Int, limit: Int): HttpResponse {
         return client.get("/api/travel/getAllTravels") {
             url {
@@ -18,6 +21,22 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Returns History list of [Announce] from the server.
+     */
+    suspend fun getTravelHistory(offset: Int, limit: Int, authorEmail: String): HttpResponse {
+        return client.get("/api/travel/getTravelHistoryByAuthor") {
+            url {
+                parameters.append(Api.offset, offset.toString())
+                parameters.append(Api.limit, limit.toString())
+                parameters.append(Api.authorEmail, authorEmail)
+            }
+        }
+    }
+
+    /**
+     * Gets particular [Announce] by giver [userMail].
+     */
     suspend fun getTravelByUserEmail(userMail: String): HttpResponse {
         return client.get("/api/travel/getTravelByUserEmail") {
             url {
@@ -36,9 +55,15 @@ class Api(private val client: HttpClient) {
             }
         }
     }
+
     suspend fun updateAnnounce(announce: Announce): HttpResponse {
         return client.post("/api/travel/updateTravel") {
+            contentType(ContentType.Application.Json)
             setBody(announce)
+
+            headers {
+                append(HttpHeaders.Accept, "application/json")
+            }
         }
     }
 
@@ -87,6 +112,7 @@ class Api(private val client: HttpClient) {
         private const val offset = "offset"
         const val limit = "limit"
         const val userEmail = "userEmail"
+        const val authorEmail = "authorEmail"
         const val travelId = "travelId"
         const val chatId = "chatId"
     }

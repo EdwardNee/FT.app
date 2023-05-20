@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+<string name="app_name">FT.app</string>
 <string name="car_price">Цена за машину</string>
+<string name="history_price">Поездка обошлась в</string>
+<string name="state_announce">Состояние поездки:</string>
 <string name="price">Цена:</string>
 <string name="currency_rub">₽</string>
 <string name="free_places">Свободных мест</string>
@@ -9,10 +12,28 @@
 <string name="pointB">B</string>
 <string name="available_announces">Доступные объявления</string>
 <string name="create_announce">Создать объявление</string>
+<string name="edit_announce">Редактировать</string>
 <string name="publish">Опубликовать</string>
+<string name="save_edit">Сохранить изменения</string>
 <string name="onward">Далее</string>
 <string name="from">Откуда едем?</string>
 <string name="to">Куда едем?</string>
 <string name="group_chat">Group chat</string>
 <string name="enter_message">Введите сообщение</string>
+<string name="hse_enter">Войти через ЕЛК</string>
+<string name="find_traveler">Найти попутчиков</string>
+<string name="enter_password">Введите пароль</string>
+<string name="no_address">Адреса не найдены</string>
+<string name="travel_beginning">Начало поездки</string>
+<string name="edit_saved">Изменения успешно сохранены.</string>
+<string name="add_notes">Дополнительные комментарии...</string>
+<string name="announce_exists">У вас уже есть поездка</string>
+<string name="currents">Текущие</string>
+<string name="history">История</string>
+<string name="my_announces">Мои поездки</string>
+<string name="travelers">Попутчики</string>
+<string name="info">Информация</string>
+<string name="leave_announce">Покинуть поездку</string>
+<string name="delete_announce">Удалить поездку</string>
+<string name="edit_ann">Редактировать поездку</string>
 </resources>

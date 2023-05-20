@@ -1,4 +1,4 @@
 package app.ft.ftapp
 
-val EMAIL = "testmail@edu.hse.ru"
-val NAME = "testuser"
+val EMAIL = "aapetropavlovskiy@edu.hse.ru"
+val NAME = "test1"

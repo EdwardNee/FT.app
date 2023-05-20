@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SnackbarData
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -25,9 +26,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.AlertSnackbar
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
+import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
-import app.ft.ftapp.android.presentation.home.ErrorView
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
@@ -155,7 +156,7 @@ fun AnnounceScreen(onClick: () -> Unit) {
                                 isError = true
 
                                 scope.launch {
-                                    snackbarState.showSnackbar("")
+                                    snackbarState.showSnackbar("Возникла ошибка")
                                 }
                             }
                         }
@@ -221,8 +222,8 @@ fun AnnounceScreen(onClick: () -> Unit) {
     Box {
         SnackbarHost(
             modifier = Modifier.align(TopCenter), hostState = snackbarState
-        ) {
-            AlertSnackbar()
+        ) { snackbarData: SnackbarData ->
+            AlertSnackbar(snackbarData.message)
         }
     }
 //    }

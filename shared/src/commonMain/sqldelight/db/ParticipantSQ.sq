@@ -1,7 +1,8 @@
 CREATE TABLE ParticipantSQ (
     announce_id INTEGER AS Int NOT NULL,
     name TEXT,
-    email TEXT
+    email TEXT,
+    PRIMARY KEY(email)
 );
 
 insertParticipant:
@@ -13,7 +14,7 @@ INSERT INTO ParticipantSQ(
 
 deleteParticipant:
 DELETE FROM ParticipantSQ
-WHERE announce_id = :id AND email = :email;
+WHERE email = :email;
 
 getAllParticipants:
 SELECT * FROM ParticipantSQ;
