@@ -3,19 +3,12 @@ package app.ft.ftapp.android
 import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
@@ -38,14 +31,13 @@ import app.ft.ftapp.yandex_mapkit
 import com.google.android.gms.location.LocationServices
 import com.hse.auth.AuthHelper
 import com.hse.auth.utils.AuthConstants
-import com.hse.core.BaseApplication
-import com.hse.core.ui.BaseActivity
 import com.yandex.mapkit.MapKitFactory
-import kotlinx.coroutines.flow.collectLatest
 import org.kodein.di.instance
-import java.util.concurrent.TimeUnit
 
 
+/**
+ * Application main activity.
+ */
 class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
     private val kodein = DIFactory.di
@@ -54,8 +46,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        if (resultCode == Activity.RESULT_OK) {
-
         when (requestCode) {
             REQUEST_LOGIN -> {
                 val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
@@ -69,13 +59,10 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                 )
                 viewModel.parseJwt(accessToken)
                 viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
-
-                Toast.makeText(this, "success $resultCode", Toast.LENGTH_SHORT).show()
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data)
-//        }
     }
 
     override fun onStart() {
@@ -177,6 +164,9 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         )
     }
 
+    /**
+     * Returns users current location.
+     */
     private fun getUserCurrentLocation() {
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         try {
