@@ -1,5 +1,9 @@
 FROM openjdk:11-jdk-slim-buster
 
+ARG KEY_YANDEX
+ARG YANDEX_CLID
+ARG YANDEX_MAPKIT
+
 # Just matched `app/build.gradle`
 ENV ANDROID_COMPILE_SDK "30"
 
@@ -10,6 +14,9 @@ ENV ANDROID_BUILD_TOOLS "30.0.2"
 ENV ANDROID_SDK_TOOLS "7583922"
 ENV ANDROID_HOME /android-sdk-linux
 ENV PATH="${PATH}:/android-sdk-linux/platform-tools/"
+
+# Make sure package is up to date
+RUN apt-get update
 
 # Install OS packages
 RUN apt-get --quiet update --yes && \
@@ -28,13 +35,28 @@ RUN wget --quiet --output-document=android-sdk.zip "https://dl.google.com/androi
 # Set up the workspace and copy your Android project into the container
 WORKDIR /app
 
-
 COPY . /app
 
+RUN chmod +x ./gradlew
 RUN ls -l
 
-RUN chmod +x ./gradlew
 RUN ./gradlew -v
 
-# Run the UI tests
+RUN chmod -R +rwx /app/shared
+
+WORKDIR /app/shared
+RUN ls -l
+RUN cd /src
+RUN ls -l
+RUN cd /commonMain
+RUN ls -l
+RUN cd /kotlin/app/ft/ftapp
+RUN ls -l
+
+RUN echo "package app.ft.ftapp" > /shared/src/commonMain/kotlin/app/ft/ftapp/HiddenCredentials.kt \
+    && echo "const val clid = \"$YANDEX_CLID\"" > /shared/src/commonMain/kotlin/app/ft/ftapp/HiddenCredentials.kt \
+    && echo "const val key_yandex = \"$KEY_YANDEX\"" >> /shared/src/commonMain/kotlin/app/ft/ftapp/HiddenCredentials.kt \
+    && echo "const val yandex_mapkit = \"$YANDEX_MAPKIT\"" >> /shared/src/commonMain/kotlin/app/ft/ftapp/HiddenCredentials.kt
+
+# Run the tests
 RUN ./gradlew test
