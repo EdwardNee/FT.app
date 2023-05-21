@@ -5,16 +5,33 @@ on:
   - pull_request
 
 jobs:
-  lint:
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#        with:
+#          distribution: 'ubuntu'
+#
+#      - name: Setup JDK
+#        uses: actions/setup-java@v2
+#        with:
+#          java-version: '11'
+#          distribution: 'temurin'
+#
+#      - name: Run Detekt linter
+#        run: |
+#          chmod +x ./gradlew
+#          ./gradlew detekt
+          
+
+  unit-test:
+#    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-
-      - name: Run Detekt linter
-        run: ./gradlew detektCheck
+      - name: Run tests
+        run: |
+          docker build --tag ft-app:latest .

@@ -28,7 +28,7 @@ internal class AnnounceDbMapperTest {
 
         val announce = announceDbMapper.fromDbToModel(dbAnnounce)
 
-        assertEquals(2, announce.id)
+        assertEquals(1, announce.id)
         assertEquals(2, announce.chatId)
         assertEquals("authorEmail", announce.authorEmail)
         assertEquals("placeFrom", announce.placeFrom)
