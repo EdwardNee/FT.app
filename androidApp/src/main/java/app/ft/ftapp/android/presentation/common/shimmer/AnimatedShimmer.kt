@@ -12,8 +12,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 
 @Composable
-fun ShimmerItem(isLoading: Boolean, pattern: @Composable () -> Unit, contentAfter: @Composable () -> Unit) {
-    if(isLoading) {
+fun ShimmerItem(
+    isLoading: Boolean,
+    pattern: @Composable () -> Unit,
+    contentAfter: @Composable () -> Unit
+) {
+    if (isLoading) {
         pattern()
     } else {
         contentAfter()
@@ -36,7 +40,8 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         initialValue = -2 * size.width.toFloat(),
         targetValue = 2 * size.width.toFloat(),
         animationSpec = infiniteRepeatable(
-            animation = tween(1000,  easing = FastOutSlowInEasing), repeatMode = RepeatMode.Reverse
+            animation = tween(1000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         )
     )
 
@@ -47,6 +52,6 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     )
 
     background(brush = brush).onGloballyPositioned {
-            size = it.size
-        }
+        size = it.size
+    }
 }

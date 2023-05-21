@@ -63,7 +63,7 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         return ServerResult.UnsuccessfulResult("some error")
     }
 
-    override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
+    override suspend fun updateAnnounce(announce: Announce): ServerResult<Announce> {
         TODO("Not yet implemented")
     }
 

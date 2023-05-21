@@ -1,4 +1,4 @@
-package app.ft.ftapp.android.presentation.announce_details.component
+package app.ft.ftapp.android.presentation.announcedetails.component
 
 import android.content.Context
 import android.util.AttributeSet
@@ -37,7 +37,7 @@ class SeatsFreeView(
     private fun initDefaultColors() {
         filledColor = android.graphics.Color.GREEN
         emptyColor = android.graphics.Color.WHITE
-        gridColor =  android.graphics.Color.BLACK
+        gridColor = android.graphics.Color.BLACK
     }
 
     private fun initAttributes(
@@ -52,9 +52,12 @@ class SeatsFreeView(
             defStyleRes
         )
 
-        filledColor = typedArray.getColor(R.styleable.SeatsFreeView_filledColor, android.graphics.Color.GREEN)
-        emptyColor = typedArray.getColor(R.styleable.SeatsFreeView_emptyColor, android.graphics.Color.WHITE)
-        gridColor = typedArray.getColor(R.styleable.SeatsFreeView_gridColor, android.graphics.Color.BLACK)
+        filledColor =
+            typedArray.getColor(R.styleable.SeatsFreeView_filledColor, android.graphics.Color.GREEN)
+        emptyColor =
+            typedArray.getColor(R.styleable.SeatsFreeView_emptyColor, android.graphics.Color.WHITE)
+        gridColor =
+            typedArray.getColor(R.styleable.SeatsFreeView_gridColor, android.graphics.Color.BLACK)
 
         typedArray.recycle()
     }

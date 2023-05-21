@@ -32,12 +32,11 @@ class ChatScreenViewModel(private val viewModel: ChatViewModel): ViewModel() {
         }
     }
 
-    fun startListening(chatId : Long) {
+    fun startListening() {
         if (!scheduled) {
             timer = Timer()
             timer.schedule(object : TimerTask() {
                 override fun run() {
-                    // TODO: Implement message listening logic here
                     viewModelScope.launch {
                         println("TAG_OF_CHAT in vm")
                         viewModel.onEvent(ChatEvent.GetMessages)

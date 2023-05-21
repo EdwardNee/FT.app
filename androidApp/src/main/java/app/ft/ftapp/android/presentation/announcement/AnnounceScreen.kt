@@ -81,8 +81,8 @@ fun AnnounceScreen(onClick: () -> Unit) {
     val announcesList = screenViewModel.pagerAnnounces.collectAsLazyPagingItems()
     viewModel.setList(announcesList.itemSnapshotList.items)
 
-    val isLoading by viewModel.isShowProgress.collectAsState()
-    val announces by viewModel.announcesList.collectAsState()
+//    val isLoading by viewModel.isShowProgress.collectAsState()
+//    val announces by viewModel.announcesList.collectAsState()
 
 
     val becameState by viewModel.becameState.collectAsState()

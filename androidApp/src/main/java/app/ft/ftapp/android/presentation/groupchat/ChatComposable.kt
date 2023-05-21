@@ -33,7 +33,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.work.*
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
@@ -84,7 +83,7 @@ fun GroupChat() {
         val job = scope.launch {
             viewModel.chatId.collectLatest {
                 if (it > 0) {
-                    screenViewModel.startListening(it)
+                    screenViewModel.startListening()
                 } else {
                     screenViewModel.stopListening()
                 }
@@ -165,7 +164,7 @@ fun GroupChat() {
             }, chatMessages, lazyState, scrollableRemember)
         }
 
-        when(chatLoad) {
+        when (chatLoad) {
             is ModelsState.Error -> {
                 ErrorView {
 
@@ -271,7 +270,7 @@ fun CustomEditText(
         TextFieldDefaults.TextFieldDecorationBox(
             trailingIcon = {
                 Icon(
-                    tint = if(message.value.trim().isNotEmpty()) cursorColor else Color.Gray,
+                    tint = if (message.value.trim().isNotEmpty()) cursorColor else Color.Gray,
                     imageVector = Icons.Filled.Send,
                     contentDescription = "",
                     modifier = Modifier

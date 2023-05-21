@@ -21,17 +21,21 @@ class AnnounceReminderWorker(
         // Get the bus information and time from the input data
         val busName = inputData.getString(KEY_BUS_NAME)
         val departureTime = inputData.getString(KEY_DEPARTURE_TIME)
-        println("TAG_OF_JOB ${ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.POST_NOTIFICATIONS
-        )}")
+        println(
+            "TAG_OF_JOB ${
+                ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            }"
+        )
         // Create the notification content
         val contentText = "Your bus ($busName) is departing at $departureTime."
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("Bus Reminder")
-            .setContentText(contentText)
-            .setSmallIcon(R.drawable.become_travel)
-            .build()
+//        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+//            .setContentTitle("Bus Reminder")
+//            .setContentText(contentText)
+//            .setSmallIcon(R.drawable.become_travel)
+//            .build()
 
         // Show the notification
 
@@ -40,7 +44,8 @@ class AnnounceReminderWorker(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
-        ) {}
+        ) {
+        }
         // Create a notification builder
         val builder = NotificationCompat.Builder(context, AnnounceRemainderReceiver.CHANNEL_ID)
             .setSmallIcon(R.drawable.become_travel)

@@ -1,4 +1,4 @@
-package app.ft.ftapp.android.presentation.announce_details
+package app.ft.ftapp.android.presentation.announcedetails
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -121,7 +121,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
             text = announceDb?.comment
-                ?: "",//"Хочу уехать на ситимобил и сидеть спереди. Багажа нет, только рюкзак с ноутбуком. Встречаемся около Мака.",
+                ?: "",
             fontFamily = Montserrat,
             fontSize = 16.sp
         )

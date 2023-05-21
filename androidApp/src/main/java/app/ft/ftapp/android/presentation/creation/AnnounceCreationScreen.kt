@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.ft.ftapp.R
+import app.ft.ftapp.android.TestTags
 import app.ft.ftapp.android.presentation.AlertSnackbar
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.common.HeaderText
@@ -40,7 +42,6 @@ import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
-import app.ft.ftapp.android.ui.navigation.AppDestination
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.SingletonHelper
 import app.ft.ftapp.di.DIFactory
@@ -52,13 +53,12 @@ import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
-import com.yandex.mapkit.search.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
 import java.time.LocalTime
 
 @Composable
-fun AnnounceCreationScreen(onAction: () -> Unit) {
+fun AnnounceCreationScreen() {
 
     val kodein = DIFactory.di
     val viewModel: CreationViewModel by kodein.instance(tag = "announce_cr")
@@ -226,7 +226,10 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                                     Modifier
                                         .height(210.dp)
                                         .padding(top = 3.dp),
-                                    contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
+                                    contentAlignment = if (locations.isNotEmpty())
+                                        Alignment.TopCenter
+                                    else
+                                        Alignment.CenterEnd
                                 ) {
                                     LazyColumn(
                                         modifier = Modifier.fillMaxWidth(),
@@ -272,9 +275,14 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                         TextValues(
                             price.toString(),
                             stringResource(R.string.price),
+                            modifier = Modifier.testTag(TestTags.PriceTextField),
                             stringResource(R.string.currency_rub),
                         ) {}
-                        TextValues(countOfParticipants, stringResource(R.string.places_count)) {
+                        TextValues(
+                            countOfParticipants,
+                            stringResource(R.string.places_count),
+                            modifier = Modifier.testTag(TestTags.PlacesTextField)
+                        ) {
                             viewModel.onEvent(CreationEvent.FieldEdit.ParticipantsCountEdit(it))
                         }
                     }
@@ -311,11 +319,13 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                                     .background(color = editTextBackground)
                             ) {
                                 Text(
-                                    if (selectedTime.value == null) "Время начала" else selectedTime.value.toString(),
+                                    if (selectedTime.value == null) "Время начала"
+                                    else selectedTime.value.toString(),
                                     fontFamily = Montserrat,
                                     color = placeholderColor,
                                     fontSize = (if (selectedTime.value == null) 15 else 20).sp,
-                                    fontWeight = if (selectedTime.value == null) FontWeight.Normal else FontWeight.SemiBold
+                                    fontWeight = if (selectedTime.value == null) FontWeight.Normal
+                                    else FontWeight.SemiBold
                                 )
                             }
                         }
@@ -423,6 +433,7 @@ fun AdditionalNotes(comment: String, onChange: (String) -> Unit) {
 fun TextValues(
     numeric: String,
     text: String,
+    modifier: Modifier = Modifier,
     currency: String = "",
     onEventCall: (String) -> Unit
 ) {
@@ -438,7 +449,11 @@ fun TextValues(
                 .padding(end = 4.dp)
                 .focusable(true, interactionSource)
         )
-        Card(modifier = Modifier.wrapContentSize()) {
+        Card(
+            modifier = Modifier
+                .wrapContentSize()
+                .then(modifier)
+        ) {
             BasicTextField(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 textStyle = TextStyle.Default.copy(

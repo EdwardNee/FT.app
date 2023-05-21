@@ -6,13 +6,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalView
 
 /**
- * Enum keyboard state.
- */
-enum class Keyboard {
-    Opened, Closed
-}
-
-/**
  * Shows keyboard state.
  */
 @Composable
@@ -39,4 +32,11 @@ fun keyboardAsState(): State<Keyboard> {
     }
 
     return keyboardState
+}
+
+/**
+ * Enum keyboard state.
+ */
+enum class Keyboard {
+    Opened, Closed
 }

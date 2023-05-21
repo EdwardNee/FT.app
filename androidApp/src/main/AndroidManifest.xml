@@ -60,6 +60,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:name="app.ft.ftapp.android.TestActivity"
+            android:exported="true">
+
+        </activity>
+
         <meta-data
             android:name="auth.hse.ru.client_id"
             android:value="fe0df921-754d-45e8-8d48-1fcef2d91df8" />

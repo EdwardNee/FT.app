@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
-import app.ft.ftapp.android.presentation.announce_details.FromToText
+import app.ft.ftapp.android.presentation.announcedetails.FromToText
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.utils.TimeUtil

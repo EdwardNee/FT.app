@@ -27,7 +27,7 @@ import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.home.history.HistoryScreen
-import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
+import app.ft.ftapp.android.presentation.home.myannounce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource

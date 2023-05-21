@@ -187,7 +187,9 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                         Modifier
                                             .height(210.dp)
                                             .padding(top = 3.dp),
-                                        contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
+                                        contentAlignment = if (locations.isNotEmpty())
+                                            Alignment.TopCenter
+                                        else Alignment.CenterEnd
                                     ) {
                                         LazyColumn(
                                             modifier = Modifier.fillMaxWidth(),
@@ -236,6 +238,7 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                             TextValues(
                                 price.toString(),
                                 stringResource(R.string.price),
+                                modifier = Modifier,
                                 stringResource(R.string.currency_rub),
                             ) {}
                             TextValues(countOfParticipants, stringResource(R.string.places_count)) {
@@ -275,11 +278,15 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                         .background(color = editTextBackground)
                                 ) {
                                     Text(
-                                        if (selectedTime.value == null) "Время начала" else selectedTime.value.toString(),
+                                        if (selectedTime.value == null) "Время начала"
+                                        else selectedTime.value.toString(),
                                         fontFamily = Montserrat,
                                         color = placeholderColor,
                                         fontSize = (if (selectedTime.value == null) 15 else 20).sp,
-                                        fontWeight = if (selectedTime.value == null) FontWeight.Normal else FontWeight.SemiBold
+                                        fontWeight = if (selectedTime.value == null)
+                                            FontWeight.Normal
+                                        else
+                                            FontWeight.SemiBold
                                     )
                                 }
                             }

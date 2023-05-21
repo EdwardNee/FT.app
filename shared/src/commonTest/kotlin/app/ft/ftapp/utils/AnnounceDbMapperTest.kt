@@ -22,6 +22,7 @@ internal class AnnounceDbMapperTest {
             startTime = "startTime",
             createTime = "createTime",
             countOfParticipants = 2,
+            nowParticipants = 1,
             comment = "comment"
         )
 
@@ -35,6 +36,7 @@ internal class AnnounceDbMapperTest {
         assertEquals("startTime", announce.startTime)
         assertEquals("createTime", announce.createTime)
         assertEquals(2, announce.countOfParticipants)
+        assertEquals(1, announce.participants?.size)
         assertEquals("comment", announce.comment)
     }
 

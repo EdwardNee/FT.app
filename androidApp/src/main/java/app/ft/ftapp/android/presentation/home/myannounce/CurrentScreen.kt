@@ -1,11 +1,7 @@
-package app.ft.ftapp.android.presentation.home.my_announce
+package app.ft.ftapp.android.presentation.home.myannounce
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
-import app.ft.ftapp.android.presentation.announce_details.FromToText
+import app.ft.ftapp.android.presentation.announcedetails.FromToText
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil

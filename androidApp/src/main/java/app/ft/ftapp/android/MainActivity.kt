@@ -8,19 +8,17 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.work.*
 import app.ft.ftapp.android.presentation.MainComposable
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.LatLng
@@ -42,8 +40,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
     private val kodein = DIFactory.di
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
-    private val REQUEST_LOGIN = 510
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
@@ -51,7 +47,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                 val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
                 val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
                 val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
-                val datsToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_EXPIRES_IN_MILLIS)
 
                 Log.d(
                     "TAG_OF_F",
@@ -129,10 +124,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun getPermissionForLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
@@ -182,9 +173,8 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                                 )
                             )
                         )
-                    } else {
-
                     }
+
                 }.addOnFailureListener {
                     println("TAG_OF_LOCATION ${it.message}")
                 }
@@ -210,7 +200,11 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 //                }
             }
         } catch (e: SecurityException) {
-
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    companion object {
+        private const val REQUEST_LOGIN = 510
     }
 }

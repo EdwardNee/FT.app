@@ -2,11 +2,11 @@ package app.ft.ftapp.android.presentation.announcement
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import app.ft.ftapp.android.presentation.announcement.AnnouncePageSource.Companion.PAGE_SIZE
-import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
