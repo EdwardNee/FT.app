@@ -21,7 +21,7 @@ class GetAnnounceByEmailUseCaseTest {
     }
 
     @Test
-    fun `testing usecase GetAnnounceByEmailUseCase`() {
+    fun testing_usecase_GetAnnounceByEmailUseCase() {
         val expected = fakeRepository.announces[0]
 
         val result = runBlocking {

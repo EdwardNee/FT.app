@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
  */
 internal class TimeUtilTest {
     @Test
-    fun `testing converting string date to LocalDateTime`() {
+    fun testing_converting_string_date_to_LocalDateTime() {
         val expectedDate = LocalDateTime(
             year = 2020,
             monthNumber = 8,
@@ -25,7 +25,7 @@ internal class TimeUtilTest {
     }
 
     @Test
-    fun `testing converting fromDateToString`() {
+    fun testing_converting_fromDateToString() {
         val date = LocalDateTime(
             year = 2020,
             monthNumber = 8,

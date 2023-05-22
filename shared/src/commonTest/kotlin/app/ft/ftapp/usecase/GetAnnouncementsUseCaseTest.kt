@@ -22,7 +22,7 @@ internal class GetAnnouncementsUseCaseTest {
     }
 
     @Test
-    fun `testing usecase GetAnnouncementsUseCase`() {
+    fun testing_usecase_GetAnnouncementsUseCase() {
         val expected = PagingAnnounce(content = fakeRepository.announces)
 
         val result = runBlocking {

@@ -12,7 +12,7 @@ internal class AnnounceDbMapperTest {
     private val announceDbMapper = AnnounceDbMapper()
 
     @Test
-    fun `testing mapper from db model`() {
+    fun testing_mapper_from_db_model() {
         val dbAnnounce = AnnounceSQ(
             id = 2,
             chatId = 2,
@@ -28,7 +28,7 @@ internal class AnnounceDbMapperTest {
 
         val announce = announceDbMapper.fromDbToModel(dbAnnounce)
 
-        assertEquals(1, announce.id)
+        assertEquals(2, announce.id)
         assertEquals(2, announce.chatId)
         assertEquals("authorEmail", announce.authorEmail)
         assertEquals("placeFrom", announce.placeFrom)
@@ -41,7 +41,7 @@ internal class AnnounceDbMapperTest {
     }
 
     @Test
-    fun `testing mapper to db model`() {
+    fun testing_mapper_to_db_model() {
         val announce = Announce(
             id = 2,
             chatId = 2,
