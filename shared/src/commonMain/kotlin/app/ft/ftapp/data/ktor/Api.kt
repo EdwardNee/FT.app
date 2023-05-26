@@ -20,20 +20,6 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
-    /**
-     * Returns History list of [Announce] from the server.
-     */
-    suspend fun getTravelHistory(offset: Int, limit: Int, authorEmail: String): HttpResponse {
-        return client.get("/api/travel/getTravelHistoryByAuthor") {
-            url {
-                parameters.append(Api.offset, offset.toString())
-                parameters.append(Api.limit, limit.toString())
-                parameters.append(Api.authorEmail, authorEmail)
-            }
-        }
-    }
-
     /**
      * Gets particular [Announce] by giver [userMail].
      */
@@ -44,7 +30,9 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
+    /**
+     * Posts [Announce] to the server.
+     */
     suspend fun createAnnounce(announce: Announce): HttpResponse {
         return client.post("/api/travel/createTravel") {
             contentType(ContentType.Application.Json)
@@ -52,6 +40,19 @@ class Api(private val client: HttpClient) {
 
             headers {
                 append(HttpHeaders.Accept, "application/json")
+            }
+        }
+    }
+
+    /**
+     * Returns History list of [Announce] from the server.
+     */
+    suspend fun getTravelHistory(offset: Int, limit: Int, authorEmail: String): HttpResponse {
+        return client.get("/api/travel/getTravelHistoryByAuthor") {
+            url {
+                parameters.append(Api.offset, offset.toString())
+                parameters.append(Api.limit, limit.toString())
+                parameters.append(Api.authorEmail, authorEmail)
             }
         }
     }

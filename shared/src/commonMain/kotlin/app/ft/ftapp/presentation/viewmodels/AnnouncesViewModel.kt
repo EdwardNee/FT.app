@@ -118,6 +118,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     fun changeStateBec() {
         becameState.value = BecomingState.NotHappened
     }
+
     private fun becomeTravelerCall(travelId: Long) {
         viewModelScope.launch {
 

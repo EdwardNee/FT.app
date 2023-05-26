@@ -20,9 +20,9 @@ data class Announce(
         .toString(),
     val startTime: String? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         .toString(),
-    val placeFrom: String = "placeFrom",
-    val placeTo: String = "placeTo",
+    val placeFrom: String = "Дениса Давыдова 3",
+    val placeTo: String = "Дубровская застава 5",
     val participants: List<Participant>? = emptyList(),
-    val countOfParticipants: Int = 0,
+    val countOfParticipants: Int = 3,
     val comment: String = ""
 ) : Parcelable

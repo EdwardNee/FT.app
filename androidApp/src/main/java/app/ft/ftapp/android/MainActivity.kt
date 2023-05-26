@@ -68,9 +68,14 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
 //        BaseApplication.appComponent.inject(this)
-        MapKitFactory.setApiKey(yandex_mapkit)
+
+        if (!viewModel.isMapInitialized.value) {
+            MapKitFactory.setApiKey(yandex_mapkit)
+            MapKitFactory.initialize(this)
+            viewModel.isMapInitialized.value = true
+        }
         DIFactory.locationListener = this
-        MapKitFactory.initialize(this)
+
         super.onCreate(savedInstanceState)
 
 

@@ -250,9 +250,9 @@ class CreationViewModel : BaseViewModel() {
 //        showProgress()
         disableUpdateState()
         viewModelScope.launch {
-            delay(1500L)
+//            delay(1500L)
             _updateResult.value = ModelsState.Success(announce)
-            return@launch
+//            return@launch
             val result = updateAnnounce(announce)
             when (result) {
                 is ServerResult.SuccessfulResult -> {
@@ -297,9 +297,9 @@ class CreationViewModel : BaseViewModel() {
         showProgress()
 
         viewModelScope.launch {
-            delay(2000L)
-            _loadResult.value = ModelsState.Success(announce)
-            return@launch
+//            delay(2000L)
+//            _loadResult.value = ModelsState.Success(announce)
+
             val res = getTripByEmail(EMAIL)
             println("TAG_OF_ISIN $res")
             if (res is ServerResult.SuccessfulResult) {

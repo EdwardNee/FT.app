@@ -35,5 +35,6 @@
 <string name="info">Информация</string>
 <string name="leave_announce">Покинуть поездку</string>
 <string name="delete_announce">Удалить поездку</string>
+<string name="yandex_redirect">Перейти для заказа</string>
 <string name="edit_ann">Редактировать поездку</string>
 </resources>

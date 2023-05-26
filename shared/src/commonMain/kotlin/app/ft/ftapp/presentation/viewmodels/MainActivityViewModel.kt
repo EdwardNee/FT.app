@@ -29,6 +29,8 @@ class MainActivityViewModel : ViewModel() {
 
     val isExpired = MutableStateFlow<Boolean>(false)
 
+    val isMapInitialized = MutableStateFlow<Boolean>(false)
+
     /**
      * Event calls.
      */
