@@ -138,49 +138,49 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-//                when (historyList.loadState.refresh) {
-//                    is LoadState.NotLoading -> {
-//                        isLoad = false
-//                        isError = null
-//                    }
-//                    LoadState.Loading -> {
-//                        isLoad = true
-//                        isError = null
-//                    }
-//                    is LoadState.Error -> {
-//                        isLoad = false
-//                        if (isError == null) {
-//                            isError = true
-//
-//                            scope.launch {
-////                            snackbarState.showSnackbar("")
-//                            }
-//                        }
-//                    }
-//                    else -> {
-////                        viewModel.showProgress()
-//                    }
-//                }
+                when (historyList.loadState.refresh) {
+                    is LoadState.NotLoading -> {
+                        isLoad = false
+                        isError = null
+                    }
+                    LoadState.Loading -> {
+                        isLoad = true
+                        isError = null
+                    }
+                    is LoadState.Error -> {
+                        isLoad = false
+                        if (isError == null) {
+                            isError = true
 
-                val hist = listOf(
-                    Announce(placeTo = "Дубровская застава 5"),
-                    Announce(placeTo = "Покровский бульвар 11"),
-                    Announce(placeTo = "ул. Боженко 5"),
-                )
-                items(hist.size) { item ->
-                    HistoryAnnounceItem(hist[item] ?: Announce()) {
-                        scope.launch {
-                            modalBottomSheetState.show()
+                            scope.launch {
+//                            snackbarState.showSnackbar("")
+                            }
                         }
                     }
+                    else -> {
+//                        viewModel.showProgress()
+                    }
                 }
-//                items(historyList.itemCount) { item ->
-//                    HistoryAnnounceItem(historyList[item] ?: Announce()) {
+
+//                val hist = listOf(
+//                    Announce(placeTo = "Дубровская застава 5"),
+//                    Announce(placeTo = "Покровский бульвар 11"),
+//                    Announce(placeTo = "ул. Боженко 5"),
+//                )
+//                items(hist.size) { item ->
+//                    HistoryAnnounceItem(hist[item] ?: Announce()) {
 //                        scope.launch {
 //                            modalBottomSheetState.show()
 //                        }
 //                    }
 //                }
+                items(historyList.itemCount) { item ->
+                    HistoryAnnounceItem(historyList[item] ?: Announce()) {
+                        scope.launch {
+                            modalBottomSheetState.show()
+                        }
+                    }
+                }
             }
 
             if (!isLoad && isError == null) {
@@ -194,11 +194,11 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
                 }
             }
 
-//            PullRefreshIndicator(
-//                isLoad,
-//                stateRefresh,
-//                modifier = Modifier.align(Alignment.TopCenter)
-//            )
+            PullRefreshIndicator(
+                isLoad,
+                stateRefresh,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

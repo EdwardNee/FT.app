@@ -28,6 +28,7 @@ import app.ft.ftapp.android.presentation.AlertSnackbar
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
 import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
@@ -161,15 +162,11 @@ fun AnnounceScreen(onClick: () -> Unit) {
                             }
                         }
                         else -> {
-
 //                        viewModel.showProgress()
                         }
                     }
 
                     Box(modifier = Modifier.padding(bottom = if (isLoad) 15.dp else 30.dp)) {
-//                        if(!isLoad && (isError == null || isError == false) ) {
-//                            NoDataView()
-//                        }
                         ShimmerItem(isLoading = isLoad, pattern = { AnnounceCardShimmer() }) {
                             if (announcesList.itemCount > 0) {
                                 val current = announcesList[idx]
@@ -200,17 +197,19 @@ fun AnnounceScreen(onClick: () -> Unit) {
 //                }
 //            }
 
-                item {
-                    if (isError == true) {
+            }
 
-                        ErrorView() {
-                            isLoad = true
-                            announcesList.refresh()
-                        }
-//                        isError = false
-                    }
+            if (!isLoad && isError == null) {
+                NoDataView(text = "Нет новых поездок.")
+            }
+
+            if (isError == true) {
+                ErrorView {
+                    isLoad = true
+                    announcesList.refresh()
                 }
             }
+
             PullRefreshIndicator(
                 isLoad,
                 stateRefresh,
@@ -228,6 +227,4 @@ fun AnnounceScreen(onClick: () -> Unit) {
     }
 //    }
 //    val stateRefresh = rememberPullRefreshState(isLoad, ::refresh)
-
-
 }

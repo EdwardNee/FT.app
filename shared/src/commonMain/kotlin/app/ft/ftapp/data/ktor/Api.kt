@@ -2,6 +2,7 @@ package app.ft.ftapp.data.ktor
 
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ChatSenderMessage
+import app.ft.ftapp.domain.models.RegisterUser
 import app.ft.ftapp.domain.models.TravelerUser
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -87,6 +88,13 @@ class Api(private val client: HttpClient) {
         return client.post("/api/travel/reduceTravaller") {
             contentType(ContentType.Application.Json)
             setBody(data)
+        }
+    }
+
+    suspend fun registerUser(user: RegisterUser): HttpResponse {
+        return client.post("/api/user/addUserToSystem") {
+            contentType(ContentType.Application.Json)
+            setBody(user)
         }
     }
 

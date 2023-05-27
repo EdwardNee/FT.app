@@ -19,6 +19,7 @@ import app.ft.ftapp.android.ui.theme.hseBlue
 import app.ft.ftapp.android.utils.SingletonHelper
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
+import app.ft.ftapp.presentation.viewmodels.ModelsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,6 +32,7 @@ fun PreviewComposable() {
     val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
 
     val isExpired: Boolean by viewModel.isExpired.collectAsState()
+    val registerState: ModelsState by viewModel.registerState.collectAsState()
 
     viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
 
@@ -55,10 +57,22 @@ fun PreviewComposable() {
         Text("Поиск попутчиков", fontFamily = Montserrat, fontSize = 12.sp, color = Color.LightGray)
         LaunchedEffect(Unit) {
             scope.launch {
+                viewModel.registerState.collectLatest {
+                    println(it)
+
+                    when(it) {
+                        is ModelsState.Error -> TODO()
+                        ModelsState.Loading -> {}
+                        ModelsState.NoData -> TODO()
+                        is ModelsState.Success<*> -> {
+                            SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
+                        }
+                    }
+                }
                 viewModel.isExpired.collectLatest {
                     println("isExpired is scope $isExpired $it")
                     if (!it) {
-                        SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
+//                        SingletonHelper.appNavigator.navigateTo(ScreenValues.SECOND_APP)
                     }
                 }
 

@@ -15,8 +15,10 @@ import com.yandex.mapkit.map.CameraListener
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.CameraUpdateReason
 import com.yandex.mapkit.map.Map
+import com.yandex.mapkit.search.Address
 import com.yandex.mapkit.search.Response
 import com.yandex.mapkit.search.Session
+import com.yandex.mapkit.search.ToponymObjectMetadata
 import com.yandex.runtime.Error
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -38,12 +40,35 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
 
             p0.collection.children.forEach { item ->
                 objects.add(item.obj!!)
+
+                val city = item?.obj
+                    ?.metadataContainer
+                    ?.getItem(ToponymObjectMetadata::class.java)
+                    ?.address
+
+
+                val c2 = item?.obj
+                    ?.metadataContainer
+                    ?.getItem(ToponymObjectMetadata::class.java)
+                    ?.formerName
                 println(
-                    "TAG_OF_Ya ${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. ${item.obj?.aref}" +
+                    "TAG_OF_Ya $city ${city?.formattedAddress} $c2  ]]]${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. ${item.obj?.aref}" +
                             "${item.obj?.attributionMap} ,, ${item.obj?.geometry}"
                 )
             }
+            /*
+            * 2 НЕнул - 2
+            * 2 нул   - 5
+            * \\
+            *
+            * 1 и 2 и 3 нулл -> 4 назв, 5 адрес
+            * 3 нул, 1 и 2 НЕнул -> 4 назв, 5 адрес
+            * 3 нул, 1 и 2 НЕнул ->  4 назв, 2 адрес
+            * */
 
+            //Если название, то 1 2 3 нул, а в 4 название, 5 адрес
+            //Если улица, то 1 2 НЕ нул, 3 нул 4 название, 5 точный адрес
+            //Если адрес, то 1 2 НЕ нул, 2 и 4 (не всегда) адрес норм, 5 просто НСК РОССИЯ
             _uiMapState.value = ModelsState.Success(objects)
         }
 

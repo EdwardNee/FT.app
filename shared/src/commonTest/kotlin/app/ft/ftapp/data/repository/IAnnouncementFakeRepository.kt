@@ -97,6 +97,10 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun registerUser(user: RegisterUser): ServerResult<RegisterUser> {
+        TODO("Not yet implemented")
+    }
+
     companion object {
 
         internal const val SOME_ERROR = "some error"

@@ -3,10 +3,7 @@ package app.ft.ftapp.domain.repository
 import app.ft.ftapp.data.converters.await
 import app.ft.ftapp.data.ktor.Api
 import app.ft.ftapp.data.repository.IAnnouncementRepository
-import app.ft.ftapp.domain.models.Announce
-import app.ft.ftapp.domain.models.PagingAnnounce
-import app.ft.ftapp.domain.models.ServerResult
-import app.ft.ftapp.domain.models.TravelerUser
+import app.ft.ftapp.domain.models.*
 import io.ktor.client.plugins.*
 import io.ktor.util.network.*
 import io.ktor.utils.io.errors.*
@@ -198,6 +195,30 @@ class ServerAnnouncementRepository constructor(private val api: Api) : IAnnounce
         var result: ServerResult<Announce>
         try {
             val response = api.getOutOfTravel(data)
+            result = response.await()
+        } catch (ex: Exception) {
+            when (ex) {
+                is UnresolvedAddressException -> {
+                    result = ServerResult.ResultException("Ошибка подключения к сети.", ex)
+                }
+                is ClientRequestException,
+                is ServerResponseException,
+                is IOException,
+                is SerializationException -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+                else -> {
+                    result = ServerResult.ResultException(ex.message, ex)
+                }
+            }
+        }
+        return result
+    }
+
+    override suspend fun registerUser(user: RegisterUser): ServerResult<RegisterUser> {
+        var result: ServerResult<RegisterUser>
+        try {
+            val response = api.registerUser(user)
             result = response.await()
         } catch (ex: Exception) {
             when (ex) {

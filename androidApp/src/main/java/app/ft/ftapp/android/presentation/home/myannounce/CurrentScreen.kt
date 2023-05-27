@@ -205,7 +205,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                 }
 
                 val ctx = LocalContext.current
-//                makeRedirect(ctx, LatLng(55.73400123907955, 37.58853341882172), LatLng(55.76776211471192, 37.6071492112))
+
                 Button(
                     modifier = Modifier
                         .padding(bottom = 50.dp)
@@ -213,8 +213,11 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                         .fillMaxWidth()
                         .align(Alignment.End),
                     onClick = {
-
-                        makeRedirect(ctx, LatLng(55.73400123907955, 37.58853341882172), LatLng(55.76776211471192, 37.6071492112))
+                        makeRedirect(
+                            ctx,
+                            LatLng(55.73400123907955, 37.58853341882172),
+                            LatLng(55.76776211471192, 37.6071492112)
+                        )
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = yandexYellow),
                     enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
@@ -285,23 +288,29 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
 
 fun makeRedirect(context: Context, source: LatLng, end: LatLng) {
     val redirectUrl = "https://3.redirect.appmetrica.yandex.com/route?start-lat=" +
-                "${source.lat}&start-lon=${source.lon}&end-lat=${end.lat}&end-lon=${end.lon}" +
-                "&level=50&ref=ftapp&appmetrica_tracking_id=1178268795219780156"
+            "${source.lat}&start-lon=${source.lon}&end-lat=${end.lat}&end-lon=${end.lon}" +
+            "&level=50&ref=ftapp&appmetrica_tracking_id=1178268795219780156"
 
-val uri = Uri.parse("yandextaxi://route?start-lat=55.73400123907955&start-lon=37.588533418821726&end-lat=55.76776211471192&end-lon=37.60714921124336&level=50&ref=yoursiteru&appmetrica_tracking_id=1178268795219780156")
-
-
+    val uri =
+        Uri.parse(
+            "yandextaxi://route?" +
+                    "start-lat=55.73400123907955&" +
+                    "start-lon=37.588533418821726&" +
+                    "end-lat=55.76776211471192&" +
+                    "end-lon=37.60714921124336&" +
+                    "level=50&ref=yoursiteru&appmetrica_tracking_id=1178268795219780156"
+        )
 
     val intent = Intent(Intent.ACTION_VIEW, uri)
-//    browse.action =
+
 //    browse.data = Uri.parse(redirectUrl)
 
     // problems with permissions.
 //    if (intent.resolveActivity(context.packageManager) != null) {
 //        context.startActivity(intent)
 //    } else {
-        val installationIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(redirectUrl))
-        context.startActivity(intent)
+    val installationIntent = Intent(Intent.ACTION_VIEW, Uri.parse(redirectUrl))
+    context.startActivity(intent)
 //    }
 
 }

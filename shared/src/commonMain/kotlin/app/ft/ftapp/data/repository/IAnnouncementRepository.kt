@@ -1,9 +1,6 @@
 package app.ft.ftapp.data.repository
 
-import app.ft.ftapp.domain.models.Announce
-import app.ft.ftapp.domain.models.PagingAnnounce
-import app.ft.ftapp.domain.models.ServerResult
-import app.ft.ftapp.domain.models.TravelerUser
+import app.ft.ftapp.domain.models.*
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -48,5 +45,14 @@ interface IAnnouncementRepository {
      * GETs announce for user by a given [email].
      */
     suspend fun getAnnounceByEmail(email: String): ServerResult<Announce>
+
+    /**
+     * User leaves the travel
+     */
     suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce>
+
+    /**
+     * Registers user in the system.
+     */
+    suspend fun registerUser(user: RegisterUser): ServerResult<RegisterUser>
 }

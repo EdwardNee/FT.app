@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                 )
                 viewModel.parseJwt(accessToken)
                 viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+
+                viewModel.isAuthed.value = true
             }
         }
 
@@ -115,9 +117,14 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
         setContent {
             val isExpired: Boolean by viewModel.isExpired.collectAsState()
-            println("isExpired $isExpired")
+            val isAuthed: Boolean by viewModel.isAuthed.collectAsState()
+            println("isExpired isAuthed $isExpired $isAuthed")
             if (isExpired) {
                 processHseAuth()
+            }
+
+            if (isAuthed) {
+                viewModel.onEvent(ActivityEvents.RegisterUser)
             }
             MainComposable()
         }
@@ -132,7 +139,7 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
     override fun getPermissionForLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.onEvent(ActivityEvents.PermissionEvent.GrantPermission(true))
@@ -183,26 +190,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                 }.addOnFailureListener {
                     println("TAG_OF_LOCATION ${it.message}")
                 }
-//                currentLocation.addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        val lastKnownLocation = task.result
-//
-//                        println("TAG_OF_LOCATION $lastKnownLocation")
-//                        if (lastKnownLocation != null) {
-//                            viewModel.onEvent(
-//                                ActivityEvents.LocationDetect(
-//                                    LatLng(
-//                                        lastKnownLocation.latitude,
-//                                        lastKnownLocation.longitude
-//                                    )
-//                                )
-//                            )
-//
-//                        } else {
-//                            //now location detected
-//                        }
-//                    }
-//                }
             }
         } catch (e: SecurityException) {
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
