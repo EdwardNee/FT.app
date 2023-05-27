@@ -1,7 +1,6 @@
 package app.ft.ftapp.data.repository
 
 import app.ft.ftapp.domain.models.*
-import kotlinx.serialization.json.JsonObject
 
 class AnnouncementFakeRepository : IAnnouncementRepository {
 
@@ -90,6 +89,10 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
     }
 
     override suspend fun deleteAnnounce(travelId: Long): ServerResult<Int> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun startTravel(travelId: Long): ServerResult<Announce> {
         TODO("Not yet implemented")
     }
 

@@ -29,6 +29,7 @@ import app.ft.ftapp.EMAIL
 import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.announcedetails.FromToText
+import app.ft.ftapp.android.presentation.announcement.OrderDialogAlert
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
@@ -36,7 +37,6 @@ import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
-import java.lang.String
 import java.time.ZoneId
 
 /**
@@ -47,6 +47,8 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
     val viewModel = setupViewModel<HomeViewModel>()
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val isLoading by viewModel.isShowProgress.collectAsState()
+
+    val isDialogShowing by viewModel.isDialogShowing.collectAsState()
 
 
     var announceTime by remember {
@@ -82,6 +84,21 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
     }
 //    LazyColumn(Modifier.fillMaxWidth()
 //        .fillMaxHeight().background(appBackground)) {
+
+    val ctx = LocalContext.current
+
+    if (isDialogShowing) {
+        OrderDialogAlert(onYesClicked = {
+            viewModel.onEvent(HomeEvent.StartAnnounce)
+            makeRedirect(
+                ctx,
+                LatLng(55.73400123907955, 37.58853341882172),
+                LatLng(55.76776211471192, 37.6071492112)
+            )
+        }) {
+            viewModel.onEvent(HomeEvent.ShowDialogStop(false))
+        }
+    }
 
     Box(
         Modifier
@@ -204,8 +221,6 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                     )
                 }
 
-                val ctx = LocalContext.current
-
                 Button(
                     modifier = Modifier
                         .padding(bottom = 50.dp)
@@ -213,11 +228,12 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                         .fillMaxWidth()
                         .align(Alignment.End),
                     onClick = {
-                        makeRedirect(
-                            ctx,
-                            LatLng(55.73400123907955, 37.58853341882172),
-                            LatLng(55.76776211471192, 37.6071492112)
-                        )
+                        viewModel.onEvent(HomeEvent.ShowDialogStop(true))
+//                        makeRedirect(
+//                            ctx,
+//                            LatLng(55.73400123907955, 37.58853341882172),
+//                            LatLng(55.76776211471192, 37.6071492112)
+//                        )
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = yandexYellow),
                     enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL

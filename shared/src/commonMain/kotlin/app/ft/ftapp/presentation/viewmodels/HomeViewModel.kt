@@ -8,6 +8,7 @@ import app.ft.ftapp.domain.models.TravelerUser
 import app.ft.ftapp.domain.usecase.server.DeleteAnnounceUseCase
 import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
 import app.ft.ftapp.domain.usecase.server.GetOutOfTravelUseCase
+import app.ft.ftapp.domain.usecase.server.StartTravelUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ class HomeViewModel : BaseViewModel() {
     private val getAnnounceByEmail: GetAnnounceByEmailUseCase by kodein.instance()
     private val deleteTravel: DeleteAnnounceUseCase by kodein.instance()
     private val getOutOfTravel: GetOutOfTravelUseCase by kodein.instance()
+    private val startTravel: StartTravelUseCase by kodein.instance()
     //endregion
 
     private val _assignedAnnounce = MutableStateFlow<Announce?>(null)
@@ -28,6 +30,8 @@ class HomeViewModel : BaseViewModel() {
     private val _uiState = MutableStateFlow<ModelsState>(ModelsState.Loading)
     val uiState: StateFlow<ModelsState>
         get() = _uiState.asStateFlow()
+
+    val isDialogShowing = MutableStateFlow(false)
 
     init {
         onEvent(HomeEvent.GetAnnounceByEmail(EMAIL))
@@ -47,14 +51,42 @@ class HomeViewModel : BaseViewModel() {
             is HomeEvent.LeaveAnnounce -> {
                 leaveAnnounce(event.travelId)
             }
+            is HomeEvent.ShowDialogStop -> {
+                changeDialogValue(event.flag)
+            }
+            is HomeEvent.StartAnnounce -> {
+                startTravelCall()
+            }
         }
+    }
+
+    /**
+     * Changes flag to show dialog.
+     */
+    private fun changeDialogValue(flag: Boolean) {
+        isDialogShowing.value = flag
+    }
+
+    /**
+     * Calls startTravel usecase to start the travel.
+     */
+    private fun startTravelCall() {
+        viewModelScope.launch {
+            val result = startTravel(assignedAnnounce.value?.id?.toLong() ?: return@launch)
+
+            when (result) {
+                is ServerResult.ResultException -> {}
+                is ServerResult.SuccessfulResult -> {}
+                is ServerResult.UnsuccessfulResult -> {}
+            }
+        }
+
     }
 
     /**
      * Gets announce from the server by a particular user.
      */
     private fun getAnnounceByEmailCall(email: String) {
-        showProgress()
 
         if (_uiState.value !is ModelsState.Success<*>) {
             _uiState.value = ModelsState.Loading
@@ -85,27 +117,28 @@ class HomeViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * Deletes given announce by its [travelId]
+     */
     private fun deleteAnnounceById(travelId: Long) {
+        showProgress()
         viewModelScope.launch {
             println("TAG_OF_DELETE ${deleteTravel(travelId)}")
             getAnnounceByEmailCall(EMAIL)
         }
     }
 
+    /**
+     * Method calls getOutOfTravel usecase to leave the travel.
+     */
     private fun leaveAnnounce(travelId: Long) {
+        showProgress()
         viewModelScope.launch {
             println("TAG_OF_LEAVE ${getOutOfTravel(TravelerUser(travelId, EMAIL))}")
             getAnnounceByEmailCall(EMAIL)
         }
     }
 }
-
-//sealed interface ModelsState {
-//    object Loading : ModelsState
-//    object NoData : ModelsState
-//    data class Success<T>(val dataResult: T) : ModelsState
-//    data class Error(val message: String) : ModelsState
-//}
 
 /**
  * HomeScreen events class.
@@ -114,4 +147,6 @@ sealed class HomeEvent {
     class GetAnnounceByEmail(val email: String) : HomeEvent()
     class DeleteAnnounce(val travelId: Long) : HomeEvent()
     class LeaveAnnounce(val travelId: Long) : HomeEvent()
+    object StartAnnounce : HomeEvent()
+    class ShowDialogStop(val flag: Boolean) : HomeEvent()
 }

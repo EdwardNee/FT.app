@@ -15,7 +15,6 @@ import com.yandex.mapkit.map.CameraListener
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.CameraUpdateReason
 import com.yandex.mapkit.map.Map
-import com.yandex.mapkit.search.Address
 import com.yandex.mapkit.search.Response
 import com.yandex.mapkit.search.Session
 import com.yandex.mapkit.search.ToponymObjectMetadata
@@ -52,7 +51,9 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
                     ?.getItem(ToponymObjectMetadata::class.java)
                     ?.formerName
                 println(
-                    "TAG_OF_Ya $city ${city?.formattedAddress} $c2  ]]]${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. ${item.obj?.aref}" +
+                    "TAG_OF_Ya $city ${city?.formattedAddress} $c2  ]]]" +
+                            "${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. " +
+                            "${item.obj?.aref}" +
                             "${item.obj?.attributionMap} ,, ${item.obj?.geometry}"
                 )
             }

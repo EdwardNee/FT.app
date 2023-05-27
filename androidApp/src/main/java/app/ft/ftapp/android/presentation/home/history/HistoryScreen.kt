@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HistoryScreen() {
 
-    var isChosen = rememberSaveable { mutableStateOf(true) }
+    val isChosen = rememberSaveable { mutableStateOf(true) }
 
     val modalBottomSheetState =
         rememberModalBottomSheetState(
@@ -183,7 +183,7 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
                 }
             }
 
-            if (!isLoad && isError == null) {
+            if (!isLoad && isError == null && historyList.itemCount <= 0) {
                 NoDataView(text = "История поездок пуста.")
             }
 

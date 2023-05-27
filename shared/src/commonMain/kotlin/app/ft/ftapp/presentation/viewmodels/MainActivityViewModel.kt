@@ -1,5 +1,7 @@
 package app.ft.ftapp.presentation.viewmodels
 
+import app.ft.ftapp.EMAIL
+import app.ft.ftapp.NAME
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.domain.models.RegisterUser
@@ -87,9 +89,20 @@ class MainActivityViewModel : ViewModel() {
         preferences.tokenExpirationDate = parsedResult.expirationDate
         preferences.userName = "${parsedResult.givenName} ${parsedResult.familyName}"
         preferences.userMail = parsedResult.email
-        println("isExpired parseJwt ${parsedResult} ${preferences.tokenExpirationDate}")
+
+        fillCredentials()
+//        EMAIL = parsedResult.email ?: EMAIL
+//        NAME = "${parsedResult.givenName} ${parsedResult.familyName}"
+        println("isExpired parseJwt $parsedResult ${preferences.tokenExpirationDate}/ $EMAIL $NAME")
     }
 
+    /**
+     * Fills credentials with values from preferences.
+     */
+    fun fillCredentials() {
+        EMAIL = preferences.userMail ?: ""
+        NAME = preferences.userName ?: ""
+    }
 
     /**
      * Changes permission for location grant.

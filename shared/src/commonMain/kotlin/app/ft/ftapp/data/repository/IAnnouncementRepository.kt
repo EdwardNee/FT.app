@@ -1,7 +1,6 @@
 package app.ft.ftapp.data.repository
 
 import app.ft.ftapp.domain.models.*
-import kotlinx.serialization.json.JsonObject
 
 /**
  * Repository to process data from the server.
@@ -35,6 +34,11 @@ interface IAnnouncementRepository {
      * DELETEs given [Announce].
      */
     suspend fun deleteAnnounce(travelId: Long): ServerResult<Int>
+
+    /**
+     * Starts the given travel by [travelId].
+     */
+    suspend fun startTravel(travelId: Long): ServerResult<Announce>
 
     /**
      * POSTs new user to become a traveler.

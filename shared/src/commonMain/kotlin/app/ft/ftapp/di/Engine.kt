@@ -124,6 +124,7 @@ class Engine {
         bindSingleton { GetOutOfTravelUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { UpdateAnnounceUseCase(instance(tag = "serv_ann_r")) }
         bindSingleton { RegisterUserUseCase(instance(tag = "serv_ann_r")) }
+        bindSingleton { StartTravelUseCase(instance(tag = "serv_ann_r")) }
 
         bindSingleton { GetTripInfoUseCase(instance(tag = "taxi_ya_r")) }
 

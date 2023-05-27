@@ -76,6 +76,20 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Sends request to start the travel.
+     */
+    suspend fun startTravel(travelId: Long): HttpResponse {
+        return client.post("/api/travel/startTravel") {
+            url {
+                parameters.append(Api.travelId, travelId.toString())
+            }
+        }
+    }
+
+    /**
+     * Deletes the [Announce] from the server by given [travelId].
+     */
     suspend fun deleteAnnounce(travelId: Long): HttpResponse {
         return client.post("/api/travel/deleteTravel") {
             url {
@@ -84,6 +98,9 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Removes user from the given [data] travel.
+     */
     suspend fun getOutOfTravel(data: TravelerUser): HttpResponse {
         return client.post("/api/travel/reduceTravaller") {
             contentType(ContentType.Application.Json)
@@ -91,6 +108,9 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Registers user's email in the system.
+     */
     suspend fun registerUser(user: RegisterUser): HttpResponse {
         return client.post("/api/user/addUserToSystem") {
             contentType(ContentType.Application.Json)
@@ -114,7 +134,6 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
     //endregion
 
     companion object {

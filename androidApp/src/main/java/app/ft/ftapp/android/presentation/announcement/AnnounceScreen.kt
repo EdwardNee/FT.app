@@ -42,30 +42,6 @@ import app.ft.ftapp.presentation.viewmodels.BecomingState
 import kotlinx.coroutines.launch
 
 /**
- * Composable timer with [Handler].
- */
-@Composable
-fun counterTimer(items: List<Announce>): List<Announce> {
-    DisposableEffect(Unit) {
-        val handler = Handler(Looper.getMainLooper())
-
-        val runnable = Runnable {
-            for (item in items) {
-                item.timeRemained = TimeUtil.getMinutesLeft(until = item.timeRemained)
-            }
-        }
-
-        handler.postDelayed(runnable, 1000L)
-
-        onDispose {
-            handler.removeCallbacks(runnable)
-        }
-    }
-
-    return items
-}
-
-/**
  * Composable method to show all the created announcements.
  */
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -199,7 +175,7 @@ fun AnnounceScreen(onClick: () -> Unit) {
 
             }
 
-            if (!isLoad && isError == null) {
+            if (!isLoad && isError == null && announcesList.itemCount <= 0) {
                 NoDataView(text = "Нет новых поездок.")
             }
 
