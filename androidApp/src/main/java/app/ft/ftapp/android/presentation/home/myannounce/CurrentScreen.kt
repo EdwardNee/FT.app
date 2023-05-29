@@ -35,6 +35,7 @@ import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.domain.models.LatLng
+import app.ft.ftapp.domain.models.toLatLng
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import java.time.ZoneId
@@ -89,11 +90,12 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
 
     if (isDialogShowing) {
         OrderDialogAlert(onYesClicked = {
+
             viewModel.onEvent(HomeEvent.StartAnnounce)
             makeRedirect(
                 ctx,
-                LatLng(55.73400123907955, 37.58853341882172),
-                LatLng(55.76776211471192, 37.6071492112)
+                viewModel.assignedAnnounce.value?.placeFromCoords?.toLatLng() ?: LatLng(),
+                viewModel.assignedAnnounce.value?.placeToCoords?.toLatLng() ?: LatLng()
             )
         }) {
             viewModel.onEvent(HomeEvent.ShowDialogStop(false))
@@ -306,6 +308,7 @@ fun makeRedirect(context: Context, source: LatLng, end: LatLng) {
     val redirectUrl = "https://3.redirect.appmetrica.yandex.com/route?start-lat=" +
             "${source.lat}&start-lon=${source.lon}&end-lat=${end.lat}&end-lon=${end.lon}" +
             "&level=50&ref=ftapp&appmetrica_tracking_id=1178268795219780156"
+    println("REDR $source, $end $redirectUrl ")
 
     val uri =
         Uri.parse(

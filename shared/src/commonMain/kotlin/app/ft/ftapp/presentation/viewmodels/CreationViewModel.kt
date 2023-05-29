@@ -97,7 +97,7 @@ class CreationViewModel : BaseViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
 
     val triple = sourceDestination
-        .debounce(1000L)
+        .debounce(2000L)
         .onEach { println("TAG_OF_RES on each") }
         .combine(
             editTextTap
@@ -129,13 +129,22 @@ class CreationViewModel : BaseViewModel() {
     val loadResult: MutableStateFlow<ModelsState>
         get() = _loadResult
 
+    val loadResultAnimate = MutableStateFlow(false)
+
     private val _updateResult = MutableStateFlow<ModelsState>(ModelsState.Loading)
     val updateResult: MutableStateFlow<ModelsState>
         get() = _updateResult
 
     val createdAnnounce = MutableStateFlow<Announce?>(null)
 
-    var shouldFind = false
+    var shouldFind = MutableStateFlow(false)
+
+    fun resetFlows() {
+        loadResultAnimate.value = false
+        shouldFind.value = false
+        isInTravel.value = false
+        _loadResult.value = ModelsState.Loading
+    }
 
     /**
      * Event calls on CreationScreen.
@@ -153,6 +162,7 @@ class CreationViewModel : BaseViewModel() {
             }
 
             is CreationEvent.Action.OnPublish -> {
+                println("TAG_ROUT $route")
                 val announce = Announce(
                     authorEmail = author.value,
                     placeFrom = sourceDestination.value,
@@ -164,7 +174,9 @@ class CreationViewModel : BaseViewModel() {
                     else
                         0,
                     comment = comment.value,
-                    startTime = startTime.value
+                    startTime = startTime.value,
+                    placeFromCoords = route.first.toStrLL(),
+                    placeToCoords = route.second.toStrLL()
                 )
                 createAnnounceCall(announce = announce)
             }
@@ -181,8 +193,9 @@ class CreationViewModel : BaseViewModel() {
                 startTime.value = TimeUtil.dateFormatProcess(event.hour, event.minute)
             }
             is CreationEvent.FieldEdit.ChangeFocus -> {
-                shouldFind = true
+                shouldFind.value = true
                 editTextTap.value = event.focus
+                println("ChangeFocus $shouldFind")
             }
             CreationEvent.Action.SaveEditResult -> {
                 val announce = Announce(
@@ -196,7 +209,9 @@ class CreationViewModel : BaseViewModel() {
                     else
                         0,
                     comment = comment.value,
-                    startTime = startTime.value
+                    startTime = startTime.value,
+                    placeFromCoords = route.first.toStrLL(),
+                    placeToCoords = route.second.toStrLL()
                 )
                 updateAnnounceCall(announce)
             }
@@ -210,16 +225,18 @@ class CreationViewModel : BaseViewModel() {
      * Fills the edit text values by clicked addresses tabs.
      */
     private fun fillByClickedAddress(address: String, coordinates: LatLng) {
-        shouldFind = false
+        shouldFind.value = false
         when (editTextTap.value) {
             is FocusPosition.SourceField -> {
                 sourceDestination.value = address
                 route = route.copy(first = coordinates)
+                println("TAG_ROUT 1 $route, $coordinates")
             }
 
             is FocusPosition.EndField -> {
                 endDestination.value = address
                 route = route.copy(second = coordinates)
+                println("TAG_ROUT 2 $route, $coordinates")
             }
 
             is FocusPosition.None -> {

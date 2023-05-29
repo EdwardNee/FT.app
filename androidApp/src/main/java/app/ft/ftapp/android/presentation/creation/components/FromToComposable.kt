@@ -161,7 +161,8 @@ fun DestinationComponent(
                     }
                 }
                 .padding(vertical = 16.dp),
-            value = destination, onValueChange = { /*stateVal.value = it*/ onEventCall(it) }
+            value = destination, onValueChange = { /*stateVal.value = it*/ onEventCall(it) },
+            maxLines = 1
         ) {
             if (destination.trim().isEmpty()) {
                 PlaceHolderText(helpText)

@@ -42,20 +42,23 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        println("CODES $requestCode, $resultCode")
         when (requestCode) {
             REQUEST_LOGIN -> {
-                val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
-                val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
-                val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
+                if (resultCode == RESULT_REQUEST_OK) {
+                    val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
+                    val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
+                    val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
 
-                Log.d(
-                    "TAG_OF_F",
-                    "onActivityResult: $dataToken refter $refreshToken refter $accessToken"
-                )
-                viewModel.parseJwt(accessToken)
-                viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+                    Log.d(
+                        "TAG_OF_F",
+                        "onActivityResult: $dataToken refter $refreshToken refter $accessToken"
+                    )
+                    viewModel.parseJwt(accessToken)
+                    viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
 
-                viewModel.isAuthed.value = true
+                    viewModel.isAuthed.value = true
+                }
             }
         }
 
@@ -198,5 +201,6 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
     companion object {
         private const val REQUEST_LOGIN = 510
+        private const val RESULT_REQUEST_OK = -1
     }
 }

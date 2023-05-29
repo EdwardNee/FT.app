@@ -348,7 +348,7 @@ fun BottomSheetCreate(
                                 )
                             )
 
-                            viewModel.viewModel.shouldFind = false
+                            viewModel.viewModel.shouldFind.value = false
                             onAnimateTo(it.latLng.toPoint())
                         }
 

@@ -64,7 +64,7 @@ fun AnnounceCreationScreen() {
     val viewModel: CreationViewModel by kodein.instance(tag = "announce_cr")
 //    val viewModel = setupViewModel<CreationViewModel>()
 
-    val loadResult by viewModel.loadResult.collectAsState()
+    val loadResult by viewModel.loadResultAnimate.collectAsState()
 
     AnimatedContent(
         targetState = loadResult,
@@ -74,18 +74,23 @@ fun AnnounceCreationScreen() {
                     fadeOut(animationSpec = tween(1200))
         }
     ) { targetState ->
-        when (targetState) {
-//            is SurveyState.Questions -> SurveyQuestionsScreen(questions = targetState)
-//            is SurveyState.Result -> SurveyResultScreen(result = targetState)
-            is ModelsState.Error -> {}
-            ModelsState.Loading -> {
-                AnnounceCreationScreena(viewModel) {}
-            }
-            ModelsState.NoData -> {}
-            is ModelsState.Success<*> -> {
-                SuccessView()
-            }
+
+        if (targetState) {
+            SuccessView()
+        } else {
+            AnnounceCreationScreena(viewModel) {}
         }
+//        when (targetState) {
+//
+//            ModelsState.Loading -> {
+//                AnnounceCreationScreena(viewModel) {}
+//            }
+//            ModelsState.NoData -> {}
+//            is ModelsState.Success<*> -> {
+//
+//            }
+//            is ModelsState.Error -> TODO()
+//        }
     }
 }
 
@@ -158,6 +163,7 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                     ModelsState.NoData -> {}
                     is ModelsState.Success<*> -> {
                         onAction()
+                        viewModel.loadResultAnimate.value = true
                     }
                 }
             }
