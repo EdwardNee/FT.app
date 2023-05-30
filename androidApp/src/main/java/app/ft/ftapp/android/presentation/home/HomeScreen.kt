@@ -162,11 +162,11 @@ fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
             tabName = stringResource(id = R.string.my_announces)
-        ) { CurrentScreen(isHome) },
+        ) { CurrentScreen(isHome, viewModel) },
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
             tabName = stringResource(id = R.string.travelers)
-        ) { ListTravelers(assignedAnnounce) }
+        ) { ListTravelers(assignedAnnounce ?: Announce()) }
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 

@@ -35,11 +35,15 @@
     <string name="info">Информация</string>
     <string name="leave_announce">Покинуть поездку</string>
     <string name="delete_announce">Удалить поездку</string>
+    <string name="stop_announce">Завершить поездку</string>
     <string name="yandex_redirect">Перейти для заказа</string>
     <string name="edit_ann">Редактировать поездку</string>
     <string name="continue_str">Продолжить</string>
     <string name="cancel_str">Отменить</string>
     <string name="alert_text_start">Вы начинаете поездку. Ваше объявление исчезнет из списка. Другие
         пользователи не смогут присоединиться к Вам.
+    </string>
+    <string name="alert_text_stop">Вы завершаете поездку. Текущее объявление удалится и попадет в
+        историю поездок.
     </string>
 </resources>

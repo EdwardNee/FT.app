@@ -96,6 +96,10 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun stopTravel(travelId: Long): ServerResult<Announce> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce> {
         TODO("Not yet implemented")
     }

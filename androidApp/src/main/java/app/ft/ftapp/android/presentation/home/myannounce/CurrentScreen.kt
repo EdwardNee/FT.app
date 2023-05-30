@@ -30,7 +30,6 @@ import app.ft.ftapp.R
 import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.announcedetails.FromToText
 import app.ft.ftapp.android.presentation.announcement.OrderDialogAlert
-import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.android.utils.toDate
@@ -38,18 +37,22 @@ import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.domain.models.toLatLng
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
 import app.ft.ftapp.presentation.viewmodels.HomeViewModel
+import app.ft.ftapp.utils.ConstantValues
 import java.time.ZoneId
 
 /**
  * Current screen view.
  */
 @Composable
-fun CurrentScreen(isHome: MutableState<Boolean>) {
-    val viewModel = setupViewModel<HomeViewModel>()
+fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
+    var isLoad by remember { mutableStateOf(true) }
+
+    //val viewModel = setupViewModel<HomeViewModel>()
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val isLoading by viewModel.isShowProgress.collectAsState()
 
     val isDialogShowing by viewModel.isDialogShowing.collectAsState()
+    val isDialogStopShowing by viewModel.isDialogStopShowing.collectAsState()
 
 
     var announceTime by remember {
@@ -89,7 +92,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
     val ctx = LocalContext.current
 
     if (isDialogShowing) {
-        OrderDialogAlert(onYesClicked = {
+        OrderDialogAlert(R.string.alert_text_start, onYesClicked = {
 
             viewModel.onEvent(HomeEvent.StartAnnounce)
             makeRedirect(
@@ -97,6 +100,14 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                 viewModel.assignedAnnounce.value?.placeFromCoords?.toLatLng() ?: LatLng(),
                 viewModel.assignedAnnounce.value?.placeToCoords?.toLatLng() ?: LatLng()
             )
+        }) {
+            viewModel.onEvent(HomeEvent.ShowDialogStart(false))
+        }
+    }
+
+    if (isDialogStopShowing) {
+        OrderDialogAlert(R.string.alert_text_stop, onYesClicked = {
+            viewModel.onEvent(HomeEvent.StopAnnounce)
         }) {
             viewModel.onEvent(HomeEvent.ShowDialogStop(false))
         }
@@ -200,101 +211,125 @@ fun CurrentScreen(isHome: MutableState<Boolean>) {
                 modifier = Modifier.padding(bottom = 46.dp)
             )
 
-            if (assignedAnnounce?.authorEmail == EMAIL) {
-                Button(
-                    modifier = Modifier
-                        .padding(bottom = 10.dp)
-                        .clip(RoundedCornerShape(25.dp))
-                        .fillMaxWidth()
-                        .align(Alignment.End),
-                    onClick = {
-                        isHome.value = false
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = chatBackground),
-                    enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontFamily = Montserrat,
-                        text = stringResource(id = R.string.edit_ann),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                }
 
-                Button(
-                    modifier = Modifier
-                        .padding(bottom = 50.dp)
-                        .clip(RoundedCornerShape(25.dp))
-                        .fillMaxWidth()
-                        .align(Alignment.End),
-                    onClick = {
-                        viewModel.onEvent(HomeEvent.ShowDialogStop(true))
-//                        makeRedirect(
-//                            ctx,
-//                            LatLng(55.73400123907955, 37.58853341882172),
-//                            LatLng(55.76776211471192, 37.6071492112)
-//                        )
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = yandexYellow),
-                    enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontFamily = Montserrat,
-                        text = stringResource(id = R.string.yandex_redirect),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            Button(
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .clip(RoundedCornerShape(25.dp))
-                    .fillMaxWidth()
-                    .align(Alignment.End),
-                onClick = {
-                    if (assignedAnnounce?.authorEmail != EMAIL) {
-                        viewModel.onEvent(
-                            HomeEvent.LeaveAnnounce((assignedAnnounce?.id ?: 0).toLong())
-                        )
-                    } else {
-                        viewModel.onEvent(
-                            HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
+            if (assignedAnnounce?.travelStatus == ConstantValues.TravelStatus.CREATED) {
+                //Редактировать
+                if (assignedAnnounce?.authorEmail == EMAIL) {
+                    Button(
+                        modifier = Modifier
+                            .padding(bottom = 10.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .fillMaxWidth()
+                            .align(Alignment.End),
+                        onClick = {
+                            isHome.value = false
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = chatBackground),
+                        enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontFamily = Montserrat,
+                            text = stringResource(id = R.string.edit_ann),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.White
                         )
                     }
-                },
-                colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
-                enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
-            ) {
-                if (assignedAnnounce?.authorEmail != EMAIL) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontFamily = Montserrat,
-                        text = stringResource(id = R.string.leave_announce),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                } else {
-                    Text(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontFamily = Montserrat,
-                        text = stringResource(id = R.string.delete_announce),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
+
+                    Button(
+                        modifier = Modifier
+                            .padding(bottom = 50.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .fillMaxWidth()
+                            .align(Alignment.End),
+                        onClick = {
+                            viewModel.onEvent(HomeEvent.ShowDialogStart(true))
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = yandexYellow),
+                        enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontFamily = Montserrat,
+                            text = stringResource(id = R.string.yandex_redirect),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                    }
                 }
 
+                //Удалить или выйти
+                Button(
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
+                        .clip(RoundedCornerShape(25.dp))
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    onClick = {
+                        if (assignedAnnounce?.authorEmail != EMAIL) {
+                            viewModel.onEvent(
+                                HomeEvent.LeaveAnnounce((assignedAnnounce?.id ?: 0).toLong())
+                            )
+                        } else {
+                            viewModel.onEvent(
+                                HomeEvent.DeleteAnnounce((assignedAnnounce?.id ?: 0).toLong())
+                            )
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
+                    enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
+                ) {
+                    if (assignedAnnounce?.authorEmail != EMAIL) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontFamily = Montserrat,
+                            text = stringResource(id = R.string.leave_announce),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontFamily = Montserrat,
+                            text = stringResource(id = R.string.delete_announce),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
 
+
+                }
+            } else {
+                if (assignedAnnounce?.authorEmail == EMAIL) {
+                    Button(
+                        modifier = Modifier
+                            .padding(bottom = 20.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .fillMaxWidth()
+                            .align(Alignment.End),
+                        onClick = {
+                            viewModel.onEvent(HomeEvent.ShowDialogStop(true))
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = chipTimeColor),
+                        enabled = !isLoading || assignedAnnounce?.authorEmail == EMAIL
+                    ) {
+                        if (assignedAnnounce?.authorEmail == EMAIL) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                fontFamily = Montserrat,
+                                text = stringResource(id = R.string.stop_announce),
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
-
-//            }
         }
     }
 
@@ -320,7 +355,7 @@ fun makeRedirect(context: Context, source: LatLng, end: LatLng) {
                     "level=50&ref=yoursiteru&appmetrica_tracking_id=1178268795219780156"
         )
 
-    val intent = Intent(Intent.ACTION_VIEW, uri)
+//    val intent = Intent(Intent.ACTION_VIEW, uri)
 
 //    browse.data = Uri.parse(redirectUrl)
 
@@ -329,7 +364,7 @@ fun makeRedirect(context: Context, source: LatLng, end: LatLng) {
 //        context.startActivity(intent)
 //    } else {
     val installationIntent = Intent(Intent.ACTION_VIEW, Uri.parse(redirectUrl))
-    context.startActivity(intent)
+    context.startActivity(installationIntent)
 //    }
 
 }

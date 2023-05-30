@@ -1,8 +1,6 @@
 package app.ft.ftapp.android.presentation.announcement
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,8 +32,6 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
-import app.ft.ftapp.android.utils.TimeUtil
-import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.AnnounceListEvent
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.BecomingState

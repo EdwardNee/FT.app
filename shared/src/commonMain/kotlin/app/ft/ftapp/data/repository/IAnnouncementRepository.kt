@@ -41,6 +41,11 @@ interface IAnnouncementRepository {
     suspend fun startTravel(travelId: Long): ServerResult<Announce>
 
     /**
+     * Stops the given travel by [travelId].
+     */
+    suspend fun stopTravel(travelId: Long): ServerResult<Announce>
+
+    /**
      * POSTs new user to become a traveler.
      */
     suspend fun becomeTraveler(travelerUser: TravelerUser): ServerResult<Announce>

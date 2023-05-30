@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HistoryScreen() {
 
+    val chosenAnnounce = remember { mutableStateOf(Announce()) }
     val isChosen = rememberSaveable { mutableStateOf(true) }
 
     val modalBottomSheetState =
@@ -53,19 +54,10 @@ fun HistoryScreen() {
             if (modalBottomSheetState.isVisible) {
 
                 if (isChosen.value) {
-                    HistoryDetails(isChosen)
+                    HistoryDetails(isChosen, chosenAnnounce)
                 } else {
                     ListOfTravelers(
-                        Announce(
-                            participants = listOf(
-                                Participant(
-                                    username = "testuser",
-                                    email = "testuser@hse.ru"
-                                ),
-                                Participant(username = "testuser2", email = "testuser2@hse.ru"),
-                                Participant(username = "testuser1", email = "testuser1@hse.ru")
-                            )
-                        ),
+                        chosenAnnounce,
                         isChosen
                     )
                 }
@@ -85,7 +77,7 @@ fun HistoryScreen() {
         sheetBackgroundColor = appBackground,
         // scrimColor = ,  //Color for the fade background when open/close the drawer
     ) {
-        HistoryList(modalBottomSheetState)
+        HistoryList(modalBottomSheetState, chosenAnnounce)
     }
 }
 
@@ -93,12 +85,12 @@ fun HistoryScreen() {
  * Composable shows list of travelers.
  */
 @Composable
-fun ListOfTravelers(announce: Announce, isChosen: MutableState<Boolean>) {
+fun ListOfTravelers(announce: MutableState<Announce>, isChosen: MutableState<Boolean>) {
     Column(Modifier.fillMaxWidth()) {
         IconButton(onClick = { isChosen.value = true }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         }
-        ListTravelers(announce)
+        ListTravelers(announce.value)
     }
 }
 
@@ -107,7 +99,10 @@ fun ListOfTravelers(announce: Announce, isChosen: MutableState<Boolean>) {
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
+fun HistoryList(
+    modalBottomSheetState: ModalBottomSheetState,
+    chosenAnnounce: MutableState<Announce>
+) {
     val viewModel = setupViewModel<HistoryViewModel>()
     val viewModelScreen =
         setupViewModel<HistoryScreenViewModel>(ArgsViewModelFactory(FactoryArgs(viewModel)))
@@ -162,20 +157,9 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
                     }
                 }
 
-//                val hist = listOf(
-//                    Announce(placeTo = "Дубровская застава 5"),
-//                    Announce(placeTo = "Покровский бульвар 11"),
-//                    Announce(placeTo = "ул. Боженко 5"),
-//                )
-//                items(hist.size) { item ->
-//                    HistoryAnnounceItem(hist[item] ?: Announce()) {
-//                        scope.launch {
-//                            modalBottomSheetState.show()
-//                        }
-//                    }
-//                }
                 items(historyList.itemCount) { item ->
                     HistoryAnnounceItem(historyList[item] ?: Announce()) {
+                        chosenAnnounce.value = it
                         scope.launch {
                             modalBottomSheetState.show()
                         }

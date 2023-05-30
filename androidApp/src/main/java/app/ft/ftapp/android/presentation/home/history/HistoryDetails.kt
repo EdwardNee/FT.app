@@ -28,8 +28,7 @@ import app.ft.ftapp.domain.models.Announce
  * Composable to show history details.
  */
 @Composable
-fun HistoryDetails(isChosen: MutableState<Boolean>) {
-    val announce = Announce()
+fun HistoryDetails(isChosen: MutableState<Boolean>, chosenAnnounce: MutableState<Announce>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,13 +39,13 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
     ) {
         Text(
             modifier = Modifier.padding(top = 28.dp),
-            text = TimeUtil.toStringDateParser(announce?.startTime),
+            text = TimeUtil.toStringDateParser(chosenAnnounce.value.startTime),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             fontFamily = Montserrat
         )
 
-        FromToText(announce?.placeFrom ?: "", announce?.placeTo ?: "")
+        FromToText(chosenAnnounce.value.placeFrom, chosenAnnounce.value.placeTo)
         Divider(
             modifier = Modifier
                 .padding(start = 40.dp)
@@ -96,7 +95,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                (announce.participants?.size ?: 1).toString(),
+                (chosenAnnounce.value.participants?.size ?: 1).toString(),
                 fontFamily = Montserrat,
                 modifier = Modifier
                     .padding(end = 8.dp)
@@ -115,8 +114,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
 
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
-            text = announce.comment
-                ?: "",
+            text = chosenAnnounce.value.comment,
             fontFamily = Montserrat,
             fontSize = 16.sp
         )

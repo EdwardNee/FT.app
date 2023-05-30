@@ -27,11 +27,11 @@ import app.ft.ftapp.android.ui.theme.yandexYellow
  * Composable Ordering taxi alert dialog creating.
  */
 @Composable
-fun OrderDialogAlert(onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
+fun OrderDialogAlert(messageText: Int, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
     Dialog(onDismissRequest = {
         onNoClicked()
     }) {
-        OrderingAlert(onYesClicked = onYesClicked, onNoClicked = onNoClicked)
+        OrderingAlert(messageText, onYesClicked = onYesClicked, onNoClicked = onNoClicked)
     }
 }
 
@@ -39,7 +39,7 @@ fun OrderDialogAlert(onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
  * View of composable alert dialog creation.
  */
 @Composable
-fun OrderingAlert(onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
+fun OrderingAlert(messageText: Int, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
     Card(
         elevation = 5.dp,
         shape = RoundedCornerShape(15.dp),
@@ -53,7 +53,7 @@ fun OrderingAlert(onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(bottom = 12.dp),
-                text = stringResource(id = R.string.alert_text_start),
+                text = stringResource(id = messageText),
                 fontFamily = Montserrat,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center

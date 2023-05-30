@@ -5,10 +5,7 @@ import app.ft.ftapp.data.converters.CodeResponse.NOT_FOUND
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
-import app.ft.ftapp.domain.usecase.server.DeleteAnnounceUseCase
-import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
-import app.ft.ftapp.domain.usecase.server.GetOutOfTravelUseCase
-import app.ft.ftapp.domain.usecase.server.StartTravelUseCase
+import app.ft.ftapp.domain.usecase.server.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +18,7 @@ class HomeViewModel : BaseViewModel() {
     private val deleteTravel: DeleteAnnounceUseCase by kodein.instance()
     private val getOutOfTravel: GetOutOfTravelUseCase by kodein.instance()
     private val startTravel: StartTravelUseCase by kodein.instance()
+    private val stopTravel: StopTravelUseCase by kodein.instance()
     //endregion
 
     private val _assignedAnnounce = MutableStateFlow<Announce?>(null)
@@ -32,6 +30,7 @@ class HomeViewModel : BaseViewModel() {
         get() = _uiState.asStateFlow()
 
     val isDialogShowing = MutableStateFlow(false)
+    val isDialogStopShowing = MutableStateFlow(false)
 
     init {
         onEvent(HomeEvent.GetAnnounceByEmail(EMAIL))
@@ -51,20 +50,34 @@ class HomeViewModel : BaseViewModel() {
             is HomeEvent.LeaveAnnounce -> {
                 leaveAnnounce(event.travelId)
             }
-            is HomeEvent.ShowDialogStop -> {
+            is HomeEvent.ShowDialogStart -> {
                 changeDialogValue(event.flag)
+            }
+            is HomeEvent.ShowDialogStop -> {
+                changeDialogStopValue(event.flag)
             }
             is HomeEvent.StartAnnounce -> {
                 startTravelCall()
             }
+            HomeEvent.StopAnnounce -> {
+                stopTravelCall()
+            }
         }
     }
+
 
     /**
      * Changes flag to show dialog.
      */
     private fun changeDialogValue(flag: Boolean) {
         isDialogShowing.value = flag
+    }
+
+    /**
+     * Changes flag to show dialog.
+     */
+    private fun changeDialogStopValue(flag: Boolean) {
+        isDialogStopShowing.value = flag
     }
 
     /**
@@ -79,8 +92,26 @@ class HomeViewModel : BaseViewModel() {
                 is ServerResult.SuccessfulResult -> {}
                 is ServerResult.UnsuccessfulResult -> {}
             }
-        }
 
+            getAnnounceByEmailCall(EMAIL)
+        }
+    }
+
+    /**
+     * Calls stopTravel usecase to start the travel.
+     */
+    private fun stopTravelCall() {
+        viewModelScope.launch {
+            val result = stopTravel(assignedAnnounce.value?.id?.toLong() ?: return@launch)
+
+            when (result) {
+                is ServerResult.ResultException -> {}
+                is ServerResult.SuccessfulResult -> {}
+                is ServerResult.UnsuccessfulResult -> {}
+            }
+
+            getAnnounceByEmailCall(EMAIL)
+        }
     }
 
     /**
@@ -88,6 +119,7 @@ class HomeViewModel : BaseViewModel() {
      */
     private fun getAnnounceByEmailCall(email: String) {
 
+        showProgress()
         if (_uiState.value !is ModelsState.Success<*>) {
             _uiState.value = ModelsState.Loading
         }
@@ -95,6 +127,7 @@ class HomeViewModel : BaseViewModel() {
         viewModelScope.launch {
 //            delay(500L)
 //            _uiState.value = HomeModelState.Success(Announce())
+
             val result = getAnnounceByEmail(email)
 
             when (result) {
@@ -148,5 +181,7 @@ sealed class HomeEvent {
     class DeleteAnnounce(val travelId: Long) : HomeEvent()
     class LeaveAnnounce(val travelId: Long) : HomeEvent()
     object StartAnnounce : HomeEvent()
+    object StopAnnounce : HomeEvent()
+    class ShowDialogStart(val flag: Boolean) : HomeEvent()
     class ShowDialogStop(val flag: Boolean) : HomeEvent()
 }

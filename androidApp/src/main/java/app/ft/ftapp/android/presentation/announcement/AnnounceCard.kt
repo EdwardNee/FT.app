@@ -28,6 +28,7 @@ import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.utils.ConstantValues
 import java.time.ZoneId
 
 
@@ -184,7 +185,7 @@ fun AnnounceParams(text: String, paramValue: String) {
 @Composable
 fun String.ToStateText() {
     when (this) {
-        "Создана" -> {
+        ConstantValues.TravelStatus.CREATED -> {
             Text(
                 this,
                 fontSize = 18.sp,
@@ -202,7 +203,7 @@ fun String.ToStateText() {
                 fontFamily = Montserrat
             )
         }
-        "В процессе" -> {
+        ConstantValues.TravelStatus.IN_PROGRESS -> {
             Text(
                 this,
                 fontSize = 18.sp,
@@ -211,7 +212,7 @@ fun String.ToStateText() {
                 fontFamily = Montserrat
             )
         }
-        "Завершена" -> {
+        ConstantValues.TravelStatus.CLOSED -> {
             Text(
                 this,
                 fontSize = 18.sp,

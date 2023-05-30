@@ -167,7 +167,6 @@ class CreationViewModel : BaseViewModel() {
                     authorEmail = author.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
-                    participants = listOf(Participant(NAME, EMAIL)),
                     countOfParticipants =
                     if (countOfParticipants.value.isNotEmpty())
                         countOfParticipants.value.toInt()
@@ -202,7 +201,6 @@ class CreationViewModel : BaseViewModel() {
                     authorEmail = author.value,
                     placeFrom = sourceDestination.value,
                     placeTo = endDestination.value,
-                    participants = listOf(Participant(NAME, EMAIL)),
                     countOfParticipants =
                     if (countOfParticipants.value.isNotEmpty())
                         countOfParticipants.value.toInt()

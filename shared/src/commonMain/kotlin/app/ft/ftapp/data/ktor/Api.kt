@@ -88,6 +88,17 @@ class Api(private val client: HttpClient) {
     }
 
     /**
+     * Sends request to stop the travel.
+     */
+    suspend fun stopTravel(travelId: Long): HttpResponse {
+        return client.post("/api/travel/stopTravel") {
+            url {
+                parameters.append(Api.travelId, travelId.toString())
+            }
+        }
+    }
+
+    /**
      * Deletes the [Announce] from the server by given [travelId].
      */
     suspend fun deleteAnnounce(travelId: Long): HttpResponse {
