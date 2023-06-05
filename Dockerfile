@@ -67,12 +67,13 @@ RUN ls -l
 # RUN cat HiddenCredentials.kt
 WORKDIR /app
 
-RUN ./android-sdk-linux/cmdline-tools/bin/emulator -list-avds
+# RUN ./android-sdk-linux/cmdline-tools/bin/emulator -list-avds
 
-RUN echo "Running android UI tests."
-# CMD ["./gradlew", "connectedAndroidTest"]
-
-RUN ./gradlew connectedAndroidTest
 RUN echo "Running android unit tests."
 # Run the tests
 RUN ./gradlew test
+
+RUN echo "Running android UI tests."
+CMD ["./gradlew", "connectedAndroidTest"]
+
+# RUN ./gradlew connectedAndroidTest
