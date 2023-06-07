@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -123,7 +124,8 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
             text = announceDb?.comment
                 ?: "",
             fontFamily = Montserrat,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic
         )
     }
 }

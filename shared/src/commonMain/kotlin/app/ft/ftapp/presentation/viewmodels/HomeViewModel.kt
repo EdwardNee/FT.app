@@ -25,7 +25,7 @@ class HomeViewModel : BaseViewModel() {
     val assignedAnnounce: StateFlow<Announce?>
         get() = _assignedAnnounce.asStateFlow()
 
-    private val _uiState = MutableStateFlow<ModelsState>(ModelsState.Loading)
+    private val _uiState = MutableStateFlow<ModelsState>(ModelsState.NoData)
     val uiState: StateFlow<ModelsState>
         get() = _uiState.asStateFlow()
 
@@ -133,6 +133,8 @@ class HomeViewModel : BaseViewModel() {
             when (result) {
                 is ServerResult.SuccessfulResult -> {
                     _assignedAnnounce.value = result.model
+
+//                    if (result.model)
                     _uiState.value = ModelsState.Success(result.model)
                 }
                 is ServerResult.UnsuccessfulResult -> {
@@ -141,6 +143,7 @@ class HomeViewModel : BaseViewModel() {
                     } else {
                         ModelsState.Error(result.error)
                     }
+//                    _uiState.value =ModelsState.Error(result.error)
                 }
                 is ServerResult.ResultException -> {
                     _uiState.value = ModelsState.Error(result.error ?: "Ошибка")

@@ -25,18 +25,22 @@ import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.presentation.viewmodels.ActivityEvents
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.OnGetUserLocation
+import app.ft.ftapp.android.utils.OnStartTimerNotification
 import app.ft.ftapp.yandex_mapkit
 import com.google.android.gms.location.LocationServices
 import com.hse.auth.AuthHelper
 import com.hse.auth.utils.AuthConstants
 import com.yandex.mapkit.MapKitFactory
 import org.kodein.di.instance
+import java.time.Duration
+import java.time.LocalDateTime
+import java.util.*
 
 
 /**
  * Application main activity.
  */
-class MainActivity : AppCompatActivity(), OnGetUserLocation {
+class MainActivity : AppCompatActivity(), OnGetUserLocation, OnStartTimerNotification {
 
     private val kodein = DIFactory.di
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
@@ -80,6 +84,7 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
             viewModel.isMapInitialized.value = true
         }
         DIFactory.locationListener = this
+        DIFactory.baseListener = this
 
         super.onCreate(savedInstanceState)
 
@@ -154,7 +159,10 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         AuthHelper.login(this, REQUEST_LOGIN)
     }
 
-    fun onE() {
+    fun onE(date: LocalDateTime) {
+
+//        Duration.between(date, LocalDateTime.now()).toMinutes()
+        //time - current
         val intent = Intent(this, AnnounceRemainderReceiver::class.java)
         val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
@@ -164,10 +172,44 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 //        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pIntent)
         alarmManager.setAlarmClock(
             AlarmManager.AlarmClockInfo(
-                System.currentTimeMillis() + 10000,
+//                System.currentTimeMillis() + 10000,
+                System.currentTimeMillis() + Duration.between(LocalDateTime.now(), date).toMillis(),
                 pi2
             ), pIntent
         )
+    }
+
+
+    override fun onSetNotification(date: LocalDateTime?) {
+        if (date == null) {
+            return
+        }
+
+        val intent = Intent(this, AnnounceRemainderReceiver::class.java)
+        val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val i2 = Intent(this, MainActivity::class.java)
+        val pi2 =
+            PendingIntent.getActivity(applicationContext, 0, i2, PendingIntent.FLAG_UPDATE_CURRENT)
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pIntent)
+        alarmManager.setAlarmClock(
+            AlarmManager.AlarmClockInfo(
+                System.currentTimeMillis().minus(60000) + Duration.between(
+                    LocalDateTime.now(),
+                    date
+                ).toMillis(),
+                pi2
+            ), pIntent
+        )
+    }
+
+    override fun onCancelNotification() {
+        val intent = Intent(this, AnnounceRemainderReceiver::class.java)
+        val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        alarmManager.cancel(pIntent)
+        pIntent.cancel()
     }
 
     /**

@@ -15,11 +15,9 @@ import app.ft.ftapp.domain.usecase.db.*
 import app.ft.ftapp.domain.usecase.server.*
 import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
-import app.ft.ftapp.utils.CustomJwtParser
-import app.ft.ftapp.utils.KMMContext
-import app.ft.ftapp.utils.OnGetUserLocation
-import app.ft.ftapp.utils.PreferencesHelper
+import app.ft.ftapp.utils.*
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -145,6 +143,7 @@ class Engine {
 //        bindSingleton<BaseViewModel>("announce_vm") { AnnouncesViewModel() }
         bindSingleton("announce_cr") { CreationViewModel() }
         bindSingleton("mainact_vm") { MainActivityViewModel() }
+        bindSingleton("home_vm") { HomeViewModel() }
     }
 
     private val utilsModule = DI.Module("utils") {
@@ -172,6 +171,7 @@ object DIFactory {
     var initCtx: KMMContext? = null
     var driverFactory: DatabaseDriverFactory? = null
     var locationListener: OnGetUserLocation? = null
+    var baseListener: BaseListener? = null
 
     val direct = di.direct
 

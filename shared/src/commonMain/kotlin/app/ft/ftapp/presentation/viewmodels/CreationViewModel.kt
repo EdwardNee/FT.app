@@ -12,7 +12,6 @@ import app.ft.ftapp.domain.usecase.taxi.GetTripInfoUseCase
 import app.ft.ftapp.key_yandex
 import app.ft.ftapp.utils.TimeUtil
 import dev.icerock.moko.mvvm.flow.cMutableStateFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.kodein.di.instance
@@ -153,6 +152,7 @@ class CreationViewModel : BaseViewModel() {
         when (event) {
             is CreationEvent.FieldEdit.SourceEdit -> {
                 sourceDestination.value = event.source
+                println("TAG_OF_DATA_DURATION ${sourceDestination.value}..${event.source}")
             }
             is CreationEvent.FieldEdit.EndEdit -> {
                 endDestination.value = event.end
@@ -211,10 +211,13 @@ class CreationViewModel : BaseViewModel() {
                     placeFromCoords = route.first.toStrLL(),
                     placeToCoords = route.second.toStrLL()
                 )
+
+                println("TAG_OF_DATA_DURATION $announce")
                 updateAnnounceCall(announce)
             }
             is CreationEvent.Action.UpdateEditAnnounce -> {
                 initializeUpdatingParams(event.announce)
+                println("ADSDDS")
             }
         }
     }
@@ -244,7 +247,7 @@ class CreationViewModel : BaseViewModel() {
         }
 
         if (route.first.lat != 0.0 && route.second.lat != 0.0) {
-//            getTripInfoCall(route)
+            getTripInfoCall(route)
             price.value = 560
         }
     }
@@ -266,7 +269,6 @@ class CreationViewModel : BaseViewModel() {
         disableUpdateState()
         viewModelScope.launch {
 //            delay(1500L)
-            _updateResult.value = ModelsState.Success(announce)
 //            return@launch
             val result = updateAnnounce(announce)
             when (result) {
@@ -295,6 +297,10 @@ class CreationViewModel : BaseViewModel() {
      * Sets the initial values to parameters.
      */
     private fun initializeUpdatingParams(announce: Announce) {
+        if (isSet()) {
+            return
+        }
+
         val date = TimeUtil.fromStrToDate(announce.startTime ?: "").hour
 
         sourceDestination.value = announce.placeFrom
@@ -302,7 +308,13 @@ class CreationViewModel : BaseViewModel() {
         countOfParticipants.value = announce.countOfParticipants.toString()
         comment.value = announce.comment
         startTime.value = "${date.hours}:${date.minutes}"
+    }
 
+    /**
+     * Checks whether the announce value is set or not.
+     */
+    private fun isSet(): Boolean {
+        return sourceDestination.value.isNotEmpty() && endDestination.value.isNotEmpty()
     }
 
     /**
@@ -366,12 +378,14 @@ class CreationViewModel : BaseViewModel() {
             when (result) {
                 is ServerResult.SuccessfulResult -> {
                     println("Succ ${result.model}")
+                    price.value = result.model.options[0].price.toInt()
                 }
                 is ServerResult.UnsuccessfulResult -> {
                     println("Unsuc ${result.error}")
+                    price.value = 0
                 }
                 is ServerResult.ResultException -> {
-
+                    price.value = 0
                 }
             }
         }

@@ -31,8 +31,10 @@ import app.ft.ftapp.android.presentation.LoadingView
 import app.ft.ftapp.android.presentation.announcedetails.FromToText
 import app.ft.ftapp.android.presentation.announcement.OrderDialogAlert
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.OnStartTimerNotification
 import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.android.utils.toDate
+import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.domain.models.toLatLng
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
@@ -95,6 +97,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
         OrderDialogAlert(R.string.alert_text_start, onYesClicked = {
 
             viewModel.onEvent(HomeEvent.StartAnnounce)
+            (DIFactory.baseListener as OnStartTimerNotification).onCancelNotification()
             makeRedirect(
                 ctx,
                 viewModel.assignedAnnounce.value?.placeFromCoords?.toLatLng() ?: LatLng(),
@@ -108,6 +111,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
     if (isDialogStopShowing) {
         OrderDialogAlert(R.string.alert_text_stop, onYesClicked = {
             viewModel.onEvent(HomeEvent.StopAnnounce)
+            (DIFactory.baseListener as OnStartTimerNotification).onCancelNotification()
         }) {
             viewModel.onEvent(HomeEvent.ShowDialogStop(false))
         }
@@ -268,6 +272,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                         .fillMaxWidth()
                         .align(Alignment.End),
                     onClick = {
+                        (DIFactory.baseListener as OnStartTimerNotification).onCancelNotification()
                         if (assignedAnnounce?.authorEmail != EMAIL) {
                             viewModel.onEvent(
                                 HomeEvent.LeaveAnnounce((assignedAnnounce?.id ?: 0).toLong())
@@ -300,8 +305,6 @@ fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                             color = Color.White
                         )
                     }
-
-
                 }
             } else {
                 if (assignedAnnounce?.authorEmail == EMAIL) {

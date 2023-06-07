@@ -43,8 +43,11 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
+import app.ft.ftapp.android.utils.OnStartTimerNotification
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.di.DIFactory
+import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
@@ -162,6 +165,9 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                     }
                     ModelsState.NoData -> {}
                     is ModelsState.Success<*> -> {
+                        (DIFactory.baseListener as OnStartTimerNotification).onCancelNotification()
+                        (DIFactory.baseListener as OnStartTimerNotification)
+                            .onSetNotification((it.dataResult as Announce).startTime?.toDate())
                         onAction()
                         viewModel.loadResultAnimate.value = true
                     }
@@ -358,7 +364,9 @@ fun AnnounceCreationScreena(viewModel: CreationViewModel, onAction: () -> Unit) 
                             .align(Alignment.End)
                             .clip(RoundedCornerShape(6.dp))
                             .padding(bottom = 50.dp),
-                        onClick = { viewModel.onEvent(CreationEvent.Action.OnPublish) },
+                        onClick = {
+                            viewModel.onEvent(CreationEvent.Action.OnPublish)
+                        },
                         colors = ButtonDefaults.buttonColors(backgroundColor = buttonColors),
                         enabled = !isInTravel
                     ) {
