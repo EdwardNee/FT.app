@@ -17,13 +17,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.ft.ftapp.android.BottomSheetApp
 import app.ft.ftapp.android.R
-import app.ft.ftapp.android.presentation.announce_details.AnnouncementDetails
+import app.ft.ftapp.android.presentation.announcedetails.AnnouncementDetails
 import app.ft.ftapp.android.presentation.announcement.AnnounceScreen
 import app.ft.ftapp.android.presentation.auth.AuthScreen
 import app.ft.ftapp.android.presentation.common.Keyboard
@@ -52,7 +53,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainComposable() {
+fun MainComposable(startDestination: AppDestination = AppDestination.PreviewBars) {
     val navController = rememberAnimatedNavController()
     SingletonHelper.appNavigator.mainNavController = navController
 
@@ -63,7 +64,7 @@ fun MainComposable() {
     )
 
     MyApplicationTheme {
-        MainNavGraph(navController)
+        MainNavGraph(navController, startDestination)
     }
 }
 
@@ -115,6 +116,7 @@ fun BottomNavs() {
         BottomNavigation(backgroundColor = Color.White) {
             items.forEach { item ->
                 BottomNavigationItem(
+                    modifier = Modifier.testTag(item.description),
                     icon = {
                         if (item.imageVector == null) {
                             Icon(
@@ -162,7 +164,7 @@ fun BottomNavs() {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.loginGraph(navController: NavController) {
+fun NavGraphBuilder.loginGraph() {
     navigation(startDestination = ScreenValues.PREVIEW, route = ScreenValues.FIRST_PREVIEW) {
         composable(destination = AppDestination.Preview) {
             PreviewComposable()
@@ -220,13 +222,16 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainNavGraph(navController: NavHostController) {
+fun MainNavGraph(
+    navController: NavHostController,
+    startDestination: AppDestination = AppDestination.PreviewBars
+) {
     CustomNavigationAnimated(
         navController = navController,
-        startDestination = AppDestination.PreviewBars,
+        startDestination = startDestination,
         route = ScreenValues.ROOT
     ) {
-        loginGraph(navController)
+        loginGraph()
 
         composable(destination = AppDestination.AppBars) { //ScreenValues.SECOND_APP
             AppScreens()
@@ -246,19 +251,10 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
         ScreenValues.CREATION_MAP to 3,
         ScreenValues.CHATTING to 4
     )
-//    var previousScreen = remember { mutableStateOf(ScreenValues.ANNOUNCES_LIST) }
 
-    val enterAnimation = remember {
-        mutableStateOf<(AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?>(
-            { scaleIn(animationSpec = tween(500)) })
-    }
     LaunchedEffect(navController) {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-
-
-//            navGraph.findNode(previousIndex) as? NavDestination
-            println("TAG_NAVIGATION in not ${map[navController.previousBackStackEntry?.destination?.route] ?: 0} .. ${navController.previousBackStackEntry?.destination?.route}  curr ${destination?.route} to ${map[destination?.route]}")
 
             if (map[destination.route] == null) {
                 SingletonHelper.appNavigator.enterTransition.value = null
@@ -334,7 +330,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier) {
         composable(destination = AppDestination.Creation) {
             BottomSheetApp(
                 pageContent = { listener ->
-                    AnnounceCreationScreen(listener)
+                    AnnounceCreationScreen()
 //                    CreationWithMap()
                 },
                 sheetContent = { SuccessView() }

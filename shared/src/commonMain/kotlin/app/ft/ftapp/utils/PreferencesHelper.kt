@@ -12,31 +12,20 @@ class PreferencesHelper(private val context: KMMContext) {
         get() = getChosenDetail()
         set(value) = setChosenDetail(value)
 
-    var cookies: String?
-        get() = getCookie()
-        set(value) = setCookie(value)
 
     var userName: String?
         get() = getName()
         set(value) = setName(value)
 
-    var userCity: String?
-        get() = getCity()
-        set(value) = setCity(value)
+    var userMail: String?
+        get() = getEmail()
+        set(value) = setEmail(value)
 
-    var modelListIsEmpty: Boolean?
-        get() = getModelList()
-        set(value) = setModelList(value)
-
-    var downloadInBackground: Boolean?
-        get() = getSettingDownloadInBackground()
-        set(value) = setSettingDownloadInBackground(value)
 
     fun eraseUserData() {
         chosenDetailId = null
         userName = null
-        userCity = null
-        cookies = null
+        userMail = null
         tokenExpirationDate = null
     }
 
@@ -56,12 +45,12 @@ class PreferencesHelper(private val context: KMMContext) {
         context.putLong(SESSION_EXPIRATION, tokenExpirationDate ?: -1L)
     }
 
-    private fun getCookie(): String? {
-        return context.getString(KEY_COOKIE, null)
+    private fun setEmail(value: String?) {
+        context.putString(USER_MAIL, value)
     }
 
-    private fun setCookie(cookie: String?) {
-        context.putString(KEY_COOKIE, cookie)
+    private fun getEmail(): String? {
+        return context.getString(USER_MAIL, "")
     }
 
     private fun getName(): String? {
@@ -72,38 +61,15 @@ class PreferencesHelper(private val context: KMMContext) {
         context.putString(KEY_USER_NAME, name)
     }
 
-    private fun getCity(): String? {
-        return context.getString(KEY_USER_CITY, null)
-    }
-
-    private fun setCity(city: String?) {
-        context.putString(KEY_USER_CITY, city)
-    }
-
     private fun saveLocation(latitude: Double, longitude: Double) {
         context.putString(KEY_USER_LOCATION_LATITUDE, latitude.toString())
         context.putString(KEY_USER_LOCATION_LONGITUDE, longitude.toString())
     }
 
-    private fun getModelList(): Boolean {
-        return context.getBoolean(KEY_MODEL_LIST_EMPTY, true)
-    }
-
-    private fun setModelList(value: Boolean?) {
-        context.putBoolean(KEY_MODEL_LIST_EMPTY, value ?: true)
-    }
-
-    private fun getSettingDownloadInBackground(): Boolean {
-        return context.getBoolean(KEY_SETTINGS_DOWNLOAD_BACKGROUND, false)
-    }
-
-    private fun setSettingDownloadInBackground(value: Boolean?) {
-        context.putBoolean(KEY_SETTINGS_DOWNLOAD_BACKGROUND, value ?: false)
-    }
-
     companion object {
         private const val CHOSEN_DETAIL_ITEM = "CHOSEN_DETAIL_ITEM"
         private const val SESSION_EXPIRATION = "SESSION_EXPIRATION"
+        private const val USER_MAIL = "USER_MAIL"
         private const val KEY_COOKIE = "KEY_COOKIE"
         private const val KEY_USER_NAME = "KEY_USER_NAME"
         private const val KEY_USER_CITY = "KEY_USER_CITY"

@@ -50,7 +50,11 @@ fun AuthScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.app_name), fontSize = 48.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = stringResource(id = R.string.app_name),
+                fontSize = 48.sp,
+                fontWeight = FontWeight.Bold
+            )
             Text(
                 text = stringResource(id = R.string.find_traveler),
                 fontSize = 12.sp,
@@ -63,7 +67,6 @@ fun AuthScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             CredentialsField(
-                text = login,
                 params = CredentialsEnterParams(
                     "Login", VisualTransformation.None,
                     ImeAction.Next,
@@ -82,7 +85,7 @@ fun AuthScreen() {
  * TextField to enter user's credentials.
  */
 @Composable
-fun CredentialsField(params: CredentialsEnterParams, text: String) {
+fun CredentialsField(params: CredentialsEnterParams) {
     TextField(
         modifier = Modifier
             .padding(8.dp),

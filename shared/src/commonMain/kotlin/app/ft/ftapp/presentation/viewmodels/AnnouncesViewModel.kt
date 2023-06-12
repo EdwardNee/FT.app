@@ -5,11 +5,11 @@ import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ServerResult
 import app.ft.ftapp.domain.models.TravelerUser
 import app.ft.ftapp.domain.models.toAnnounce
+import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
+import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.domain.usecase.server.BecomeTravelerUseCase
 import app.ft.ftapp.domain.usecase.server.GetAnnounceByEmailUseCase
 import app.ft.ftapp.domain.usecase.server.GetAnnouncementsUseCase
-import app.ft.ftapp.domain.usecase.db.GetAllAnnouncesFromDb
-import app.ft.ftapp.domain.usecase.db.InsertAnnounceToDbUseCase
 import app.ft.ftapp.utils.PreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -118,6 +118,7 @@ class AnnouncesViewModel(private val preferencesHelper: PreferencesHelper) : Bas
     fun changeStateBec() {
         becameState.value = BecomingState.NotHappened
     }
+
     private fun becomeTravelerCall(travelId: Long) {
         viewModelScope.launch {
 

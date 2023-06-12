@@ -2,6 +2,7 @@ package app.ft.ftapp.data.ktor
 
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.domain.models.ChatSenderMessage
+import app.ft.ftapp.domain.models.RegisterUser
 import app.ft.ftapp.domain.models.TravelerUser
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -20,20 +21,6 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
-    /**
-     * Returns History list of [Announce] from the server.
-     */
-    suspend fun getTravelHistory(offset: Int, limit: Int, authorEmail: String): HttpResponse {
-        return client.get("/api/travel/getTravelHistoryByAuthor") {
-            url {
-                parameters.append(Api.offset, offset.toString())
-                parameters.append(Api.limit, limit.toString())
-                parameters.append(Api.authorEmail, authorEmail)
-            }
-        }
-    }
-
     /**
      * Gets particular [Announce] by giver [userMail].
      */
@@ -44,7 +31,9 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
+    /**
+     * Posts [Announce] to the server.
+     */
     suspend fun createAnnounce(announce: Announce): HttpResponse {
         return client.post("/api/travel/createTravel") {
             contentType(ContentType.Application.Json)
@@ -52,6 +41,19 @@ class Api(private val client: HttpClient) {
 
             headers {
                 append(HttpHeaders.Accept, "application/json")
+            }
+        }
+    }
+
+    /**
+     * Returns History list of [Announce] from the server.
+     */
+    suspend fun getTravelHistory(offset: Int, limit: Int, authorEmail: String): HttpResponse {
+        return client.get("/api/travel/getTravelHistoryByAuthor") {
+            url {
+                parameters.append(Api.offset, offset.toString())
+                parameters.append(Api.limit, limit.toString())
+                parameters.append(Api.authorEmail, authorEmail)
             }
         }
     }
@@ -74,6 +76,31 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Sends request to start the travel.
+     */
+    suspend fun startTravel(travelId: Long): HttpResponse {
+        return client.post("/api/travel/startTravel") {
+            url {
+                parameters.append(Api.travelId, travelId.toString())
+            }
+        }
+    }
+
+    /**
+     * Sends request to stop the travel.
+     */
+    suspend fun stopTravel(travelId: Long): HttpResponse {
+        return client.post("/api/travel/stopTravel") {
+            url {
+                parameters.append(Api.travelId, travelId.toString())
+            }
+        }
+    }
+
+    /**
+     * Deletes the [Announce] from the server by given [travelId].
+     */
     suspend fun deleteAnnounce(travelId: Long): HttpResponse {
         return client.post("/api/travel/deleteTravel") {
             url {
@@ -82,10 +109,23 @@ class Api(private val client: HttpClient) {
         }
     }
 
+    /**
+     * Removes user from the given [data] travel.
+     */
     suspend fun getOutOfTravel(data: TravelerUser): HttpResponse {
         return client.post("/api/travel/reduceTravaller") {
             contentType(ContentType.Application.Json)
             setBody(data)
+        }
+    }
+
+    /**
+     * Registers user's email in the system.
+     */
+    suspend fun registerUser(user: RegisterUser): HttpResponse {
+        return client.post("/api/user/addUserToSystem") {
+            contentType(ContentType.Application.Json)
+            setBody(user)
         }
     }
 
@@ -105,7 +145,6 @@ class Api(private val client: HttpClient) {
             }
         }
     }
-
     //endregion
 
     companion object {

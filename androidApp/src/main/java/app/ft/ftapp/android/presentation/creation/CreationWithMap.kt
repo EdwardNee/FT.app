@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.ft.ftapp.android.R
+import app.ft.ftapp.android.TestTags
 import app.ft.ftapp.android.presentation.creation.components.FromToComposable
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
@@ -52,7 +53,6 @@ import app.ft.ftapp.presentation.viewmodels.CreationEvent
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.FocusPosition
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
-import app.ft.ftapp.utils.toLatLng
 import app.ft.ftapp.utils.toPoint
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
@@ -106,15 +106,18 @@ fun CreationWithMap() {
         }
     }
 
-    scope.launch {
-        mainViewModel.userLocation.onEach {
-            mapView.value?.map?.move(
-                CameraPosition(it.toPoint(), 17.0f, 0.0f, 0.0f),
-                Animation(Animation.Type.SMOOTH, 1F),
-                null
-            )
-        }.collect()
+    LaunchedEffect(Unit) {
+        scope.launch {
+            mainViewModel.userLocation.onEach {
+                mapView.value?.map?.move(
+                    CameraPosition(it.toPoint(), 17.0f, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1F),
+                    null
+                )
+            }.collect()
+        }
     }
+
 
     println("TAG_FOR_FOCUS craw $editTextTaps")
 
@@ -175,11 +178,13 @@ fun CreationWithMap() {
         MapBody(mapView, viewModelScreen)
 //
 //        Body(viewModelScreen, siteListItems, viewModelKmm, cameraPositionState) { id ->
-        scope.launch {
-            if (editTextTaps == FocusPosition.None) {
-                scaffoldState.bottomSheetState.collapse()
-            } else {
-                scaffoldState.bottomSheetState.expand()
+        LaunchedEffect(Unit) {
+            scope.launch {
+                if (editTextTaps == FocusPosition.None) {
+                    scaffoldState.bottomSheetState.collapse()
+                } else {
+                    scaffoldState.bottomSheetState.expand()
+                }
             }
         }
 //            viewModelScreen.onEvent(WalkListEvent.NavigateToDetails(id.toString()))
@@ -318,7 +323,10 @@ fun BottomSheetCreate(
                 .nestedScroll(nestedScrollConnection)
                 .fillMaxHeight()
                 .padding(top = 3.dp),
-            contentAlignment = if (locationsSource.isNotEmpty() || locationsEnd.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
+            contentAlignment = if (locationsSource.isNotEmpty() || locationsEnd.isNotEmpty())
+                Alignment.TopCenter
+            else
+                Alignment.CenterEnd
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -340,7 +348,7 @@ fun BottomSheetCreate(
                                 )
                             )
 
-                            viewModel.viewModel.shouldFind = false
+                            viewModel.viewModel.shouldFind.value = false
                             onAnimateTo(it.latLng.toPoint())
                         }
 
@@ -369,6 +377,7 @@ fun BottomSheetCreate(
                     )
                 },
                 modifier = Modifier
+                    .testTag(TestTags.MapCreationButton)
                     .size(55.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .background(blueCircle)

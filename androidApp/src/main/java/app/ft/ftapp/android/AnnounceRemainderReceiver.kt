@@ -23,8 +23,8 @@ class AnnounceRemainderReceiver : BroadcastReceiver() {
         // Create a notification builder
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.become_travel)
-            .setContentTitle("Напоминание о машинеaaaaa")
-            .setContentText("Время начинать поездку!")
+            .setContentTitle("Напоминание о машине")
+            .setContentText("Скоро время начинать поездку!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 

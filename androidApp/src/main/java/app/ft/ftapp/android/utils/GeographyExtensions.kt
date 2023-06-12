@@ -3,6 +3,7 @@ package app.ft.ftapp.android.utils
 import android.content.Context
 import android.location.Geocoder
 import app.ft.ftapp.domain.models.LatLng
+import java.io.IOException
 import java.util.*
 
 
@@ -20,8 +21,8 @@ fun Context.getAddress(coordinates: LatLng): String? {
         } else {
             null
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (e: IOException) {
+        println(e.message)
         null
     }
 }
@@ -39,8 +40,8 @@ fun Context.getCoordinates(address: String): LatLng? {
         } else {
             null
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (e: IOException) {
+        println(e.message)
         null
     }
 }

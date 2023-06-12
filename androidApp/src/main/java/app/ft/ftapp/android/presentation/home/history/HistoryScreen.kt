@@ -24,6 +24,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
+import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
+import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.domain.models.Announce
@@ -38,7 +40,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HistoryScreen() {
 
-    var isChosen = rememberSaveable { mutableStateOf(true) }
+    val chosenAnnounce = remember { mutableStateOf(Announce()) }
+    val isChosen = rememberSaveable { mutableStateOf(true) }
 
     val modalBottomSheetState =
         rememberModalBottomSheetState(
@@ -51,19 +54,10 @@ fun HistoryScreen() {
             if (modalBottomSheetState.isVisible) {
 
                 if (isChosen.value) {
-                    HistoryDetails(isChosen)
+                    HistoryDetails(isChosen, chosenAnnounce)
                 } else {
                     ListOfTravelers(
-                        Announce(
-                            participants = listOf(
-                                Participant(
-                                    username = "asdad",
-                                    email = "adad"
-                                ),
-                                Participant(username = "asdad", email = "adad"),
-                                Participant(username = "asdad", email = "adad")
-                            )
-                        ),
+                        chosenAnnounce,
                         isChosen
                     )
                 }
@@ -83,7 +77,7 @@ fun HistoryScreen() {
         sheetBackgroundColor = appBackground,
         // scrimColor = ,  //Color for the fade background when open/close the drawer
     ) {
-        HistoryList(modalBottomSheetState)
+        HistoryList(modalBottomSheetState, chosenAnnounce)
     }
 }
 
@@ -91,24 +85,29 @@ fun HistoryScreen() {
  * Composable shows list of travelers.
  */
 @Composable
-fun ListOfTravelers(announce: Announce, isChosen: MutableState<Boolean>) {
+fun ListOfTravelers(announce: MutableState<Announce>, isChosen: MutableState<Boolean>) {
     Column(Modifier.fillMaxWidth()) {
         IconButton(onClick = { isChosen.value = true }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         }
-        ListTravelers(announce)
+        ListTravelers(announce.value)
     }
 }
 
 /**
  * Composable to show list of history [Announce].
  */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
-    val viewModelScreen = setupViewModel<HistoryScreenViewModel>()
+fun HistoryList(
+    modalBottomSheetState: ModalBottomSheetState,
+    chosenAnnounce: MutableState<Announce>
+) {
     val viewModel = setupViewModel<HistoryViewModel>()
+    val viewModelScreen =
+        setupViewModel<HistoryScreenViewModel>(ArgsViewModelFactory(FactoryArgs(viewModel)))
     val historyList = viewModelScreen.pagerHistory.collectAsLazyPagingItems()
-    viewModel.setList(historyList.itemSnapshotList.items)
+    viewModel.setList(historyList.itemSnapshotList.items.reversed())
 
     val scope = rememberCoroutineScope()
     var isLoad by remember { mutableStateOf(true) }
@@ -157,8 +156,10 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
 //                        viewModel.showProgress()
                     }
                 }
+
                 items(historyList.itemCount) { item ->
                     HistoryAnnounceItem(historyList[item] ?: Announce()) {
+                        chosenAnnounce.value = it
                         scope.launch {
                             modalBottomSheetState.show()
                         }
@@ -166,7 +167,7 @@ fun HistoryList(modalBottomSheetState: ModalBottomSheetState) {
                 }
             }
 
-            if (!isLoad && isError == null) {
+            if (!isLoad && isError == null && historyList.itemCount <= 0) {
                 NoDataView(text = "История поездок пуста.")
             }
 

@@ -8,57 +8,61 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.work.*
 import app.ft.ftapp.android.presentation.MainComposable
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.presentation.viewmodels.ActivityEvents
 import app.ft.ftapp.presentation.viewmodels.MainActivityViewModel
 import app.ft.ftapp.utils.OnGetUserLocation
+import app.ft.ftapp.android.utils.OnStartTimerNotification
 import app.ft.ftapp.yandex_mapkit
 import com.google.android.gms.location.LocationServices
 import com.hse.auth.AuthHelper
 import com.hse.auth.utils.AuthConstants
 import com.yandex.mapkit.MapKitFactory
 import org.kodein.di.instance
+import java.time.Duration
+import java.time.LocalDateTime
+import java.util.*
 
 
 /**
  * Application main activity.
  */
-class MainActivity : AppCompatActivity(), OnGetUserLocation {
+class MainActivity : AppCompatActivity(), OnGetUserLocation, OnStartTimerNotification {
 
     private val kodein = DIFactory.di
     private val viewModel: MainActivityViewModel by kodein.instance(tag = "mainact_vm")
-    private val REQUEST_LOGIN = 510
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        println("CODES $requestCode, $resultCode")
         when (requestCode) {
             REQUEST_LOGIN -> {
-                val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
-                val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
-                val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
-                val datsToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_EXPIRES_IN_MILLIS)
+                if (resultCode == RESULT_REQUEST_OK) {
+                    val accessToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_TOKEN)
+                    val refreshToken = data?.getStringExtra(AuthConstants.KEY_REFRESH_TOKEN)
+                    val dataToken = data?.getStringExtra(AuthConstants.KEY_ACCESS_EXPIRES_IN_MILLIS)
 
-                Log.d(
-                    "TAG_OF_F",
-                    "onActivityResult: $dataToken refter $refreshToken refter $accessToken"
-                )
-                viewModel.parseJwt(accessToken)
-                viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+                    Log.d(
+                        "TAG_OF_F",
+                        "onActivityResult: $dataToken refter $refreshToken refter $accessToken"
+                    )
+                    viewModel.parseJwt(accessToken)
+                    viewModel.checkIfExpired(System.currentTimeMillis() / 1000)
+
+                    viewModel.isAuthed.value = true
+                }
             }
         }
 
@@ -73,9 +77,15 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
 //        BaseApplication.appComponent.inject(this)
-        MapKitFactory.setApiKey(yandex_mapkit)
+
+        if (!viewModel.isMapInitialized.value) {
+            MapKitFactory.setApiKey(yandex_mapkit)
+            MapKitFactory.initialize(this)
+            viewModel.isMapInitialized.value = true
+        }
         DIFactory.locationListener = this
-        MapKitFactory.initialize(this)
+        DIFactory.baseListener = this
+
         super.onCreate(savedInstanceState)
 
 
@@ -115,9 +125,14 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 
         setContent {
             val isExpired: Boolean by viewModel.isExpired.collectAsState()
-            println("isExpired $isExpired")
+            val isAuthed: Boolean by viewModel.isAuthed.collectAsState()
+            println("isExpired isAuthed $isExpired $isAuthed")
             if (isExpired) {
                 processHseAuth()
+            }
+
+            if (isAuthed) {
+                viewModel.onEvent(ActivityEvents.RegisterUser)
             }
             MainComposable()
         }
@@ -129,14 +144,10 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun getPermissionForLocation() {
         if (ContextCompat.checkSelfPermission(
                 this.applicationContext,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             viewModel.onEvent(ActivityEvents.PermissionEvent.GrantPermission(true))
@@ -148,7 +159,10 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
         AuthHelper.login(this, REQUEST_LOGIN)
     }
 
-    fun onE() {
+    fun onE(date: LocalDateTime) {
+
+//        Duration.between(date, LocalDateTime.now()).toMinutes()
+        //time - current
         val intent = Intent(this, AnnounceRemainderReceiver::class.java)
         val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
@@ -158,10 +172,44 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
 //        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pIntent)
         alarmManager.setAlarmClock(
             AlarmManager.AlarmClockInfo(
-                System.currentTimeMillis() + 10000,
+//                System.currentTimeMillis() + 10000,
+                System.currentTimeMillis() + Duration.between(LocalDateTime.now(), date).toMillis(),
                 pi2
             ), pIntent
         )
+    }
+
+
+    override fun onSetNotification(date: LocalDateTime?) {
+        if (date == null) {
+            return
+        }
+
+        val intent = Intent(this, AnnounceRemainderReceiver::class.java)
+        val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val i2 = Intent(this, MainActivity::class.java)
+        val pi2 =
+            PendingIntent.getActivity(applicationContext, 0, i2, PendingIntent.FLAG_UPDATE_CURRENT)
+//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 15000, pIntent)
+        alarmManager.setAlarmClock(
+            AlarmManager.AlarmClockInfo(
+                System.currentTimeMillis().minus(60000) + Duration.between(
+                    LocalDateTime.now(),
+                    date
+                ).toMillis(),
+                pi2
+            ), pIntent
+        )
+    }
+
+    override fun onCancelNotification() {
+        val intent = Intent(this, AnnounceRemainderReceiver::class.java)
+        val pIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        alarmManager.cancel(pIntent)
+        pIntent.cancel()
     }
 
     /**
@@ -182,35 +230,19 @@ class MainActivity : AppCompatActivity(), OnGetUserLocation {
                                 )
                             )
                         )
-                    } else {
-
                     }
+
                 }.addOnFailureListener {
                     println("TAG_OF_LOCATION ${it.message}")
                 }
-//                currentLocation.addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        val lastKnownLocation = task.result
-//
-//                        println("TAG_OF_LOCATION $lastKnownLocation")
-//                        if (lastKnownLocation != null) {
-//                            viewModel.onEvent(
-//                                ActivityEvents.LocationDetect(
-//                                    LatLng(
-//                                        lastKnownLocation.latitude,
-//                                        lastKnownLocation.longitude
-//                                    )
-//                                )
-//                            )
-//
-//                        } else {
-//                            //now location detected
-//                        }
-//                    }
-//                }
             }
         } catch (e: SecurityException) {
-
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    companion object {
+        private const val REQUEST_LOGIN = 510
+        private const val RESULT_REQUEST_OK = -1
     }
 }

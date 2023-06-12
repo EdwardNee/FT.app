@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 //Color(GColor.parseColor("#aasdasdsad"))
 val cardBody = Color.White
 val textGray = Color(0xFF9B9B9B)
+val grayMore = Color(0xFFDCDCDC)
 val appBackground = Color(0xFFF3F3F3)
 
 val greenColor = Color(0xFF489973)
@@ -41,6 +42,8 @@ val namesColor =
     listOf(Color.Yellow, Color.Magenta, Color.Green, Color.Red)
 
 val waitingStatusColor = Color(0xFFE4A426)
+
+val yandexYellow = Color(0xfff7df4b)
 
 val hseBlue = Color(0xff204fc7)
 

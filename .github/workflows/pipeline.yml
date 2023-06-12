@@ -1,0 +1,40 @@
+name: pileline
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          distribution: 'ubuntu'
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Run Detekt linter
+        run: |
+          chmod +x ./gradlew
+          ./gradlew detekt
+
+  unit-test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        env:
+          KEY_YANDEX: ${{ secrets.KEY_YANDEX }}
+          YANDEX_CLID: ${{ secrets.YANDEX_CLID }}
+          YANDEX_MAPKIT: ${{ secrets.YANDEX_MAPKIT }}
+        run: |
+          docker build --build-arg KEY_YANDEX=$KEY_YANDEX --build-arg YANDEX_CLID=$YANDEX_CLID --build-arg YANDEX_MAPKIT=$YANDEX_MAPKIT --tag ft-app:latest .

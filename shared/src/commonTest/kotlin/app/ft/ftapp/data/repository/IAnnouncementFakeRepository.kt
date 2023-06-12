@@ -1,7 +1,6 @@
 package app.ft.ftapp.data.repository
 
 import app.ft.ftapp.domain.models.*
-import kotlinx.serialization.json.JsonObject
 
 class AnnouncementFakeRepository : IAnnouncementRepository {
 
@@ -60,10 +59,32 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         if (announces.add(announce)) {
             return ServerResult.SuccessfulResult(announce)
         }
-        return ServerResult.UnsuccessfulResult("some error")
+        return ServerResult.UnsuccessfulResult(SOME_ERROR)
     }
 
-    override suspend fun updateAnnounce(announce: Announce): ServerResult<JsonObject> {
+    override suspend fun becomeTraveler(travelerUser: TravelerUser): ServerResult<Announce> {
+        if (announces.size >= travelerUser.travelId) {
+            var announce = announces[(travelerUser.travelId - 1).toInt()]
+            val participant = Participant(username = USERNAME, email = EMAIL)
+            announce = announce.copy(participants = listOf(participant))
+
+            return ServerResult.SuccessfulResult(announce)
+        }
+
+        return ServerResult.UnsuccessfulResult(SOME_ERROR)
+    }
+
+    override suspend fun getAnnounceByEmail(email: String): ServerResult<Announce> {
+        val announce = announces.filter { it.authorEmail == email }
+
+        return if (announce.isEmpty()) {
+            ServerResult.UnsuccessfulResult(SOME_ERROR)
+        } else {
+            ServerResult.SuccessfulResult(announce.first())
+        }
+    }
+
+    override suspend fun updateAnnounce(announce: Announce): ServerResult<Announce> {
         TODO("Not yet implemented")
     }
 
@@ -71,29 +92,26 @@ class AnnouncementFakeRepository : IAnnouncementRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun becomeTraveler(travelerUser: TravelerUser): ServerResult<Announce> {
-        if (announces.size >= travelerUser.travelId) {
-            var announce = announces[(travelerUser.travelId - 1).toInt()]
-            val participant = Participant(username = "testuser", email = "testmail")
-            announce = announce.copy(participants = listOf(participant))
-
-            return ServerResult.SuccessfulResult(announce)
-        }
-
-        return ServerResult.UnsuccessfulResult("some error")
+    override suspend fun startTravel(travelId: Long): ServerResult<Announce> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun getAnnounceByEmail(email: String): ServerResult<Announce> {
-        val announce = announces.filter { it.authorEmail == email }
-
-        return if (announce.isEmpty()) {
-            ServerResult.UnsuccessfulResult("some error")
-        } else {
-            ServerResult.SuccessfulResult(announce.first())
-        }
+    override suspend fun stopTravel(travelId: Long): ServerResult<Announce> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getOutOfTravel(data: TravelerUser): ServerResult<Announce> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun registerUser(user: RegisterUser): ServerResult<RegisterUser> {
+        TODO("Not yet implemented")
+    }
+
+    companion object {
+
+        internal const val SOME_ERROR = "some error"
+        internal const val USERNAME = "testuser"
+        internal const val EMAIL = "testmail"
     }
 }

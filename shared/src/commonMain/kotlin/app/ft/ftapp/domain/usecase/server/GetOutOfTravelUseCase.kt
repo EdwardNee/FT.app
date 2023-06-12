@@ -8,7 +8,7 @@ import app.ft.ftapp.domain.models.TravelerUser
 /**
  * Usecase to remove user from the travel.
  */
-class GetOutOfTravelUseCase (private val announcementRepository: IAnnouncementRepository) {
+class GetOutOfTravelUseCase(private val announcementRepository: IAnnouncementRepository) {
     suspend operator fun invoke(data: TravelerUser): ServerResult<Announce> {
         return announcementRepository.getOutOfTravel(data)
     }

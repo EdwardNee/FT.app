@@ -27,7 +27,7 @@ import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
 import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.home.history.HistoryScreen
-import app.ft.ftapp.android.presentation.home.my_announce.CurrentScreen
+import app.ft.ftapp.android.presentation.home.myannounce.CurrentScreen
 import app.ft.ftapp.android.presentation.home.travelers.ListTravelers
 import app.ft.ftapp.android.presentation.models.BottomNavItems
 import app.ft.ftapp.android.presentation.models.NoRippleInteractionSource
@@ -36,6 +36,7 @@ import app.ft.ftapp.android.ui.ScreenValues
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.appBackground
 import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
 import app.ft.ftapp.presentation.viewmodels.HomeEvent
@@ -43,10 +44,11 @@ import app.ft.ftapp.presentation.viewmodels.HomeViewModel
 import app.ft.ftapp.presentation.viewmodels.ModelsState
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
+import org.kodein.di.instance
 
 
 @Composable
-fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
+fun HomeScreena(isHome: MutableState<Boolean>) {
 
     val items = listOf(
         BottomNavItems(ScreenValues.CURRENT), BottomNavItems(ScreenValues.HISTORY)
@@ -95,7 +97,7 @@ fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                     ))
         }
         if (isChosen) {
-            TabComposable(viewModel, isHome)
+            TabComposable(isHome)
         } else {
             HistoryScreen()
         }
@@ -109,8 +111,10 @@ fun HomeScreena(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
 @Composable
 fun HomeScreen() {
     val isHome = remember { mutableStateOf(true) }
-    val viewModelHome = setupViewModel<HomeViewModel>()
+    //setupViewModel<HomeViewModel>()
+    val viewModelHome by DIFactory.di.instance<HomeViewModel>("home_vm")
     val viewModel = setupViewModel<CreationViewModel>()
+
     val updateResult = viewModel.updateResult.collectAsState()
     AnimatedContent(
         targetState = isHome.value,
@@ -125,7 +129,7 @@ fun HomeScreen() {
         }
     ) { targetValue ->
         if (targetValue) {
-            HomeScreena(isHome, viewModelHome)
+            HomeScreena(isHome)
         } else {
             EditAnnounceScreen(isHome, viewModelHome.assignedAnnounce.value ?: Announce())
         }
@@ -138,12 +142,14 @@ fun HomeScreen() {
  */
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
+fun TabComposable(isHome: MutableState<Boolean>) {
+    val viewModel by DIFactory.di.instance<HomeViewModel>("home_vm")
     val assignedAnnounce by viewModel.assignedAnnounce.collectAsState()
     val scope = rememberCoroutineScope()
 
     var isLoad by remember { mutableStateOf(true) }
     val isLoading by viewModel.isShowProgress.collectAsState()
+
     val stateRefresh =
         rememberPullRefreshState(
             isLoading,
@@ -162,11 +168,11 @@ fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
         BottomNavItems(
             ScreenValues.MY_ANNOUNCES,
             tabName = stringResource(id = R.string.my_announces)
-        ) { CurrentScreen(isHome) },
+        ) { CurrentScreen(isHome, viewModel) },
         BottomNavItems(
             ScreenValues.GROUP_CHAT,
             tabName = stringResource(id = R.string.travelers)
-        ) { ListTravelers(assignedAnnounce) }
+        ) { ListTravelers(assignedAnnounce ?: Announce()) }
     )
     val pagerState = rememberPagerState(pageCount = items.size)
 
@@ -178,20 +184,20 @@ fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
                     .fillMaxWidth()
             ) {
 
+
                 when (uiState.value) {
                     is ModelsState.Error -> {
-                        isLoad = false
+//                        isLoad = false
                         ErrorView {
                             viewModel.onEvent(HomeEvent.GetAnnounceByEmail(EMAIL))
                         }
                     }
                     ModelsState.Loading -> {
-                        isLoad = true
+//                        isLoad = true
                         LoadingView()
                     }
                     is ModelsState.Success<*> -> {
-                        isLoad = false
-//                    NoDataView(viewModel)
+//                        isLoad = false
                         Tabs(tabs = items, pagerState = pagerState)
                         TabsContent(tabs = items, pagerState = pagerState)
                     }
@@ -200,8 +206,8 @@ fun TabComposable(viewModel: HomeViewModel, isHome: MutableState<Boolean>) {
                     }
                 }
             }
-
         }
+
         PullRefreshIndicator(isLoading, stateRefresh, modifier = Modifier.align(TopCenter))
     }
 }

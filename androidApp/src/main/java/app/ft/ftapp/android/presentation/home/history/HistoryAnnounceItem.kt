@@ -25,9 +25,7 @@ import app.ft.ftapp.domain.models.Announce
 @Composable
 fun HistoryAnnounceItem(announce: Announce, onClickInfo: (Announce) -> Unit) {
     Surface(
-        elevation = 8.dp,
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.padding(4.dp)
+        elevation = 8.dp, shape = RoundedCornerShape(15.dp), modifier = Modifier.padding(4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -39,10 +37,14 @@ fun HistoryAnnounceItem(announce: Announce, onClickInfo: (Announce) -> Unit) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp), horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = announce.placeTo,
+                    text = if (announce.placeFrom.lastIndexOf(",") != -1) announce.placeFrom.substring(
+                        0,
+                        announce.placeFrom.lastIndexOf(",")
+                    ) else announce.placeFrom,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     maxLines = 1
@@ -55,15 +57,15 @@ fun HistoryAnnounceItem(announce: Announce, onClickInfo: (Announce) -> Unit) {
                 ) //"сегодня в 12:17"
             }
 
-            AnnounceParams(stringResource(id = R.string.history_price), "560 ₽")
+            AnnounceParams(stringResource(id = R.string.history_price), "X")
             AnnounceParams(
-                stringResource(id = R.string.state_announce), "Завершена"
+                stringResource(id = R.string.state_announce), announce.travelStatus ?: "Завершена"
             )
 
 
             AnnounceButton(
                 Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
                     .align(Alignment.CenterHorizontally),
                 text = stringResource(id = app.ft.ftapp.android.R.string.info),
             ) {

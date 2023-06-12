@@ -2,10 +2,12 @@ package app.ft.ftapp.android.presentation.announcement
 
 import android.os.Handler
 import android.os.Looper
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -13,16 +15,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.EMAIL
-import app.ft.ftapp.R
+import app.ft.ftapp.android.R
 import app.ft.ftapp.android.ui.theme.*
 import app.ft.ftapp.android.utils.TimeUtil
 import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.domain.models.Announce
+import app.ft.ftapp.utils.ConstantValues
 import java.time.ZoneId
 
 
@@ -115,7 +121,7 @@ fun AnnounceCard(
                 maxLines = 1
             )
 
-            AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
+            AnnounceParams(stringResource(id = R.string.car_price), "${announce.price ?: 0} ₽")
             AnnounceParams(
                 stringResource(id = R.string.free_places),
                 (announce.countOfParticipants - (announce.participants?.size
@@ -126,18 +132,29 @@ fun AnnounceCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
+                    .padding(bottom = 8.dp)
                     .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 AnnounceButton(
                     Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),
+                        .height(IntrinsicSize.Min)
+//                        .padding(end = 8.dp)
+                        .weight(1f),
                     text = stringResource(id = app.ft.ftapp.android.R.string.info)
                 ) {
                     onClickInfo(announce)
                 }
-                AnnounceButton(Modifier.weight(1f), text = "Примкнуть", shouldEnable(announce)) {
+
+                Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+
+                AnnounceButton(
+                    Modifier
+                        .height(IntrinsicSize.Min)
+                        .weight(1f),
+                    text = "Примкнуть",
+                    shouldEnable(announce)
+                ) {
                     onClickBecome(announce.id.toLong())
                 }
             }
@@ -168,7 +185,7 @@ fun AnnounceParams(text: String, paramValue: String) {
 @Composable
 fun String.ToStateText() {
     when (this) {
-        "Создана" -> {
+        ConstantValues.TravelStatus.CREATED -> {
             Text(
                 this,
                 fontSize = 18.sp,
@@ -186,7 +203,7 @@ fun String.ToStateText() {
                 fontFamily = Montserrat
             )
         }
-        "В процессе" -> {
+        ConstantValues.TravelStatus.IN_PROGRESS -> {
             Text(
                 this,
                 fontSize = 18.sp,
@@ -195,7 +212,7 @@ fun String.ToStateText() {
                 fontFamily = Montserrat
             )
         }
-        "Завершена" -> {
+        ConstantValues.TravelStatus.CLOSED -> {
             Text(
                 this,
                 fontSize = 18.sp,
@@ -232,10 +249,24 @@ fun AnnounceButton(
                     topEnd = 10.dp
                 )
             )
+            .height(55.dp)
             .then(modifier),
-        enabled = enabled
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(backgroundColor = grayMore),
+        contentPadding = PaddingValues()
     ) {
-//        Image(imageVector = ImageVector.vectorResource(R.drawable), contentDescription = )
-        Text(text = text)
+        if (text == "Примкнуть") {
+            Image(
+                modifier = Modifier,
+                colorFilter = if (enabled) null else ColorFilter.tint(Color.LightGray),
+                imageVector = ImageVector.vectorResource(R.drawable.become_travel),
+                contentDescription = ""
+            )
+        } else {
+            Image(
+                modifier = Modifier,
+                imageVector = ImageVector.vectorResource(R.drawable.info), contentDescription = ""
+            )
+        }
     }
 }

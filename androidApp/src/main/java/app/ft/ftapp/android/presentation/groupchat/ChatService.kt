@@ -23,7 +23,6 @@ class ChatService: Service() {
         timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
-                // TODO: Implement message listening logic here
                 println("TAG_OF_CHAT adasda")
             }
         }, 0, 1000) // listen every second

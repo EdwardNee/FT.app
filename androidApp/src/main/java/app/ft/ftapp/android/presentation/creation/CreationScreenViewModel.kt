@@ -7,6 +7,7 @@ import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.AddressesItems
 import app.ft.ftapp.domain.models.LatLng
 import app.ft.ftapp.presentation.viewmodels.CreationViewModel
+import app.ft.ftapp.presentation.viewmodels.FocusPosition
 import app.ft.ftapp.presentation.viewmodels.ModelsState
 import app.ft.ftapp.utils.YandexMapSearch
 import app.ft.ftapp.utils.toLatLng
@@ -17,9 +18,12 @@ import com.yandex.mapkit.map.CameraUpdateReason
 import com.yandex.mapkit.map.Map
 import com.yandex.mapkit.search.Response
 import com.yandex.mapkit.search.Session
+import com.yandex.mapkit.search.ToponymObjectMetadata
 import com.yandex.runtime.Error
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+
+data class AddressObject(val name: String, val address: String)
 
 /**
  * Viewmodel for creation screen.
@@ -34,16 +38,71 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
 
     private val listener = object : Session.SearchListener {
         override fun onSearchResponse(p0: Response) {
-            val objects = mutableListOf<GeoObject>()
+            val objects = mutableListOf<AddressesItems>()
 
             p0.collection.children.forEach { item ->
-                objects.add(item.obj!!)
-                println(
-                    "TAG_OF_Ya ${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. ${item.obj?.aref}" +
-                            "${item.obj?.attributionMap} ,, ${item.obj?.geometry}"
-                )
+//                objects.add(item.obj!!)
+
+                val city = item?.obj
+                    ?.metadataContainer
+                    ?.getItem(ToponymObjectMetadata::class.java)
+                    ?.address
+
+
+                val c2 = item?.obj
+                    ?.metadataContainer
+                    ?.getItem(ToponymObjectMetadata::class.java)
+                    ?.formerName
+//                println(
+//                    "TAG_OF_Ya $city ${city?.formattedAddress} $c2  ]]]" +
+//                            "${item.obj?.name ?: "null"} .. ${item.obj?.descriptionText}.. " +
+//                            "${item.obj?.aref}" +
+//                            "${item.obj?.attributionMap} ,, ${item.obj?.geometry}"
+//                )
+
+                if (c2 == null) {
+                    if (city == null) {
+                        objects.add(
+                            AddressesItems(
+                                item.obj?.name ?: "",
+                                item.obj?.descriptionText ?: "",
+                                item.obj?.geometry?.get(0)?.point?.toLatLng() ?: LatLng()
+                            )
+                        )
+                        println("TAG_OF_Ya 1 ${item.obj?.name to item.obj?.descriptionText}")
+
+                    } else {
+                        objects.add(
+                            AddressesItems(
+                                item.obj?.name ?: "",
+                                city.formattedAddress,
+                                item.obj?.geometry?.get(0)?.point?.toLatLng() ?: LatLng()
+                            )
+                        )
+                        println("TAG_OF_Ya 2 ${item.obj?.name to city?.formattedAddress}")
+                    }
+                }
             }
 
+            _uiMapState.value = ModelsState.Success(objects)
+            /*
+            * 2 НЕнул - 2
+            * 2 нул   - 5
+            * \\
+            *
+            * (1 и 2) и 3 нулл -> 4 назв, 5 адрес
+            * 3 нул, (1 и 2) НЕнул -> 4 назв, 5 адрес
+            * 3 нул, (1 и 2) НЕнул ->  4 назв, 2 адрес
+            *
+            *
+            * 3 нул -> 1 и 2 нул -> 4 5 иначе
+            * */
+//Россия, Новосибирск, улица Дениса Давыдова null  ]]]улица Дениса Давыдова .. Новосибирск, Россия..
+
+
+            //Если название, то 1 2 3 нул, а в 4 название, 5 адрес
+            //Если улица, то 1 2 НЕ нул, 3 нул 4 название, 5 (2) точный адрес
+            //Если адрес, то 1 2 НЕ нул, 2 и 4 (не всегда) адрес норм, 5 просто НСК РОССИЯ 3 нул
             _uiMapState.value = ModelsState.Success(objects)
         }
 
@@ -99,10 +158,11 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
     )
 
     val sourceDestCombine = viewModel.sourceDestination
-        .debounce(1000L)
+        .debounce(2000L)
         .onEach {
             println("TAG_OF_RES on earch")
-            if (it.isNotEmpty() && viewModel.shouldFind) {
+            //viewModel.shouldFind.value
+            if (it.isNotEmpty() && viewModel.editTextTap.value != FocusPosition.None) {
                 mapSearch.searchByQuery(it)
             }
         }
@@ -112,15 +172,9 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
                     _locations.value
                 }
                 is ModelsState.Success<*> -> {
-                    val res = ui.dataResult as List<GeoObject>
+                    val res = ui.dataResult as List<AddressesItems>
                     println("TAG_OF_RES $res")
-                    res.map {
-                        AddressesItems(
-                            name = it.name ?: "",
-                            address = it.descriptionText ?: "",
-                            latLng = it.geometry[0]?.point?.toLatLng() ?: LatLng()
-                        )
-                    }
+                    res
                 }
             }
         }.stateIn(
@@ -129,10 +183,10 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
         )
 
     val endDestCombine = viewModel.endDestination
-        .debounce(1000L)
+        .debounce(2000L)
         .onEach {
             println("TAG_OF_RES on earch")
-            if (it.isNotEmpty() && viewModel.shouldFind) {
+            if (it.isNotEmpty() && viewModel.editTextTap.value != FocusPosition.None) {
                 mapSearch.searchByQuery(it)
             }
         }
@@ -142,19 +196,16 @@ class CreationScreenViewModel(val viewModel: CreationViewModel) : ViewModel() {
                     _locations.value
                 }
                 is ModelsState.Success<*> -> {
-                    val res = ui.dataResult as List<GeoObject>
+                    val res = ui.dataResult as List<AddressesItems>
                     println("TAG_OF_RES $res")
-                    res.map {
-                        AddressesItems(
-                            name = it.name ?: "",
-                            address = it.descriptionText ?: "",
-                            latLng = it.geometry[0]?.point?.toLatLng() ?: LatLng()
-                        )
-                    }
+                    res
                 }
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _locations.value)
 
     val mapSearch = YandexMapSearch(listener)
 
+    init {
+        viewModel.resetFlows()
+    }
 }

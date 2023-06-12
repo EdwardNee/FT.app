@@ -6,7 +6,7 @@ CREATE TABLE ParticipantSQ (
 );
 
 insertParticipant:
-INSERT INTO ParticipantSQ(
+INSERT OR REPLACE INTO ParticipantSQ(
     announce_id,
     name,
     email

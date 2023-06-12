@@ -1,7 +1,10 @@
 package app.ft.ftapp.android.ui.navigation
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier

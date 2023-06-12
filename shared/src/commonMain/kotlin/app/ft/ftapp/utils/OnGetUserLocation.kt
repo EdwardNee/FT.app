@@ -3,7 +3,7 @@ package app.ft.ftapp.utils
 /**
  * Listener to ask for location permission grant.
  */
-interface OnGetUserLocation {
+interface OnGetUserLocation: BaseListener {
     /**
      * Listener to ask for location permission grant.
      */

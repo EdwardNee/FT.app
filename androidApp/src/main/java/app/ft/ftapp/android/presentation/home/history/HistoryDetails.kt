@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ft.ftapp.R
-import app.ft.ftapp.android.presentation.announce_details.FromToText
+import app.ft.ftapp.android.presentation.announcedetails.FromToText
 import app.ft.ftapp.android.ui.theme.Montserrat
 import app.ft.ftapp.android.ui.theme.infoBottomBackground
 import app.ft.ftapp.android.utils.TimeUtil
@@ -28,8 +28,7 @@ import app.ft.ftapp.domain.models.Announce
  * Composable to show history details.
  */
 @Composable
-fun HistoryDetails(isChosen: MutableState<Boolean>) {
-    val announce = Announce()
+fun HistoryDetails(isChosen: MutableState<Boolean>, chosenAnnounce: MutableState<Announce>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,13 +39,13 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
     ) {
         Text(
             modifier = Modifier.padding(top = 28.dp),
-            text = TimeUtil.toStringDateParser(announce?.startTime),
+            text = TimeUtil.toStringDateParser(chosenAnnounce.value.startTime),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             fontFamily = Montserrat
         )
 
-        FromToText(announce?.placeFrom ?: "", announce?.placeTo ?: "")
+        FromToText(chosenAnnounce.value.placeFrom, chosenAnnounce.value.placeTo)
         Divider(
             modifier = Modifier
                 .padding(start = 40.dp)
@@ -66,7 +65,11 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            Text(text = "560 ₽", fontFamily = Montserrat, fontWeight = FontWeight.Bold)
+            Text(
+                text = "${chosenAnnounce.value.price ?: 0} ₽",
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         Divider(
@@ -81,8 +84,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
                 .clickable {
                     isChosen.value = false
                 }
-                .padding(vertical = 16.dp)
-            ,
+                .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -96,7 +98,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                (announce.participants?.size ?: 1).toString(),
+                (chosenAnnounce.value.participants?.size ?: 1).toString(),
                 fontFamily = Montserrat,
                 modifier = Modifier
                     .padding(end = 8.dp)
@@ -115,8 +117,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>) {
 
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
-            text = announce.comment
-                ?: "",
+            text = chosenAnnounce.value.comment,
             fontFamily = Montserrat,
             fontSize = 16.sp
         )

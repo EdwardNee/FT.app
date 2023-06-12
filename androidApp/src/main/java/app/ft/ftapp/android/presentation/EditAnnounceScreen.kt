@@ -33,7 +33,8 @@ import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.*
-import app.ft.ftapp.android.utils.SingletonHelper
+import app.ft.ftapp.android.utils.OnStartTimerNotification
+import app.ft.ftapp.android.utils.toDate
 import app.ft.ftapp.di.DIFactory
 import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.CreationEvent
@@ -119,6 +120,10 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                             duration = SnackbarDuration.Short
                         )
                         isHome.value = true
+                        (DIFactory.baseListener as OnStartTimerNotification).onCancelNotification()
+
+                        (DIFactory.baseListener as OnStartTimerNotification)
+                            .onSetNotification((it.dataResult as Announce).startTime?.toDate())
                     }
                 }
             }
@@ -187,7 +192,9 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                         Modifier
                                             .height(210.dp)
                                             .padding(top = 3.dp),
-                                        contentAlignment = if (locations.isNotEmpty()) Alignment.TopCenter else Alignment.CenterEnd
+                                        contentAlignment = if (locations.isNotEmpty())
+                                            Alignment.TopCenter
+                                        else Alignment.CenterEnd
                                     ) {
                                         LazyColumn(
                                             modifier = Modifier.fillMaxWidth(),
@@ -236,6 +243,7 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                             TextValues(
                                 price.toString(),
                                 stringResource(R.string.price),
+                                modifier = Modifier,
                                 stringResource(R.string.currency_rub),
                             ) {}
                             TextValues(countOfParticipants, stringResource(R.string.places_count)) {
@@ -275,11 +283,15 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                         .background(color = editTextBackground)
                                 ) {
                                     Text(
-                                        if (selectedTime.value == null) "Время начала" else selectedTime.value.toString(),
+                                        if (selectedTime.value == null) "Время начала"
+                                        else selectedTime.value.toString(),
                                         fontFamily = Montserrat,
                                         color = placeholderColor,
                                         fontSize = (if (selectedTime.value == null) 15 else 20).sp,
-                                        fontWeight = if (selectedTime.value == null) FontWeight.Normal else FontWeight.SemiBold
+                                        fontWeight = if (selectedTime.value == null)
+                                            FontWeight.Normal
+                                        else
+                                            FontWeight.SemiBold
                                     )
                                 }
                             }
@@ -306,7 +318,9 @@ fun EditAnnounceScreen(isHome: MutableState<Boolean>, announce: Announce) {
                                 .fillMaxWidth()
                                 .align(Alignment.End)
                                 .clip(RoundedCornerShape(20.dp)),
-                            onClick = { viewModel.onEvent(CreationEvent.Action.SaveEditResult) },
+                            onClick = {
+                                viewModel.onEvent(CreationEvent.FieldEdit.ChangeFocus(FocusPosition.None))
+                                viewModel.onEvent(CreationEvent.Action.SaveEditResult) },
                             colors = ButtonDefaults.buttonColors(backgroundColor = greenColor),
                             enabled = true
                         ) {

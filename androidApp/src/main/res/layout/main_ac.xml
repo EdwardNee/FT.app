@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <app.ft.ftapp.android.presentation.announce_details.component.SeatsFreeView
+    <app.ft.ftapp.android.presentation.announcedetails.component.SeatsFreeView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

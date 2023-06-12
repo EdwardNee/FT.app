@@ -1,8 +1,6 @@
 package app.ft.ftapp.android.presentation.announcement
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,41 +26,16 @@ import app.ft.ftapp.android.presentation.AlertSnackbar
 import app.ft.ftapp.android.presentation.announcement.shimmer.AnnounceCardShimmer
 import app.ft.ftapp.android.presentation.common.ErrorView
 import app.ft.ftapp.android.presentation.common.HeaderText
+import app.ft.ftapp.android.presentation.common.NoDataView
 import app.ft.ftapp.android.presentation.common.shimmer.ShimmerItem
 import app.ft.ftapp.android.presentation.viewmodels.factory.ArgsViewModelFactory
 import app.ft.ftapp.android.presentation.viewmodels.factory.FactoryArgs
 import app.ft.ftapp.android.presentation.viewmodels.factory.setupViewModel
 import app.ft.ftapp.android.ui.theme.appBackground
-import app.ft.ftapp.android.utils.TimeUtil
-import app.ft.ftapp.domain.models.Announce
 import app.ft.ftapp.presentation.viewmodels.AnnounceListEvent
 import app.ft.ftapp.presentation.viewmodels.AnnouncesViewModel
 import app.ft.ftapp.presentation.viewmodels.BecomingState
 import kotlinx.coroutines.launch
-
-/**
- * Composable timer with [Handler].
- */
-@Composable
-fun counterTimer(items: List<Announce>): List<Announce> {
-    DisposableEffect(Unit) {
-        val handler = Handler(Looper.getMainLooper())
-
-        val runnable = Runnable {
-            for (item in items) {
-                item.timeRemained = TimeUtil.getMinutesLeft(until = item.timeRemained)
-            }
-        }
-
-        handler.postDelayed(runnable, 1000L)
-
-        onDispose {
-            handler.removeCallbacks(runnable)
-        }
-    }
-
-    return items
-}
 
 /**
  * Composable method to show all the created announcements.
@@ -81,8 +54,8 @@ fun AnnounceScreen(onClick: () -> Unit) {
     val announcesList = screenViewModel.pagerAnnounces.collectAsLazyPagingItems()
     viewModel.setList(announcesList.itemSnapshotList.items)
 
-    val isLoading by viewModel.isShowProgress.collectAsState()
-    val announces by viewModel.announcesList.collectAsState()
+//    val isLoading by viewModel.isShowProgress.collectAsState()
+//    val announces by viewModel.announcesList.collectAsState()
 
 
     val becameState by viewModel.becameState.collectAsState()
@@ -161,15 +134,11 @@ fun AnnounceScreen(onClick: () -> Unit) {
                             }
                         }
                         else -> {
-
 //                        viewModel.showProgress()
                         }
                     }
 
                     Box(modifier = Modifier.padding(bottom = if (isLoad) 15.dp else 30.dp)) {
-//                        if(!isLoad && (isError == null || isError == false) ) {
-//                            NoDataView()
-//                        }
                         ShimmerItem(isLoading = isLoad, pattern = { AnnounceCardShimmer() }) {
                             if (announcesList.itemCount > 0) {
                                 val current = announcesList[idx]
@@ -200,17 +169,19 @@ fun AnnounceScreen(onClick: () -> Unit) {
 //                }
 //            }
 
-                item {
-                    if (isError == true) {
+            }
 
-                        ErrorView() {
-                            isLoad = true
-                            announcesList.refresh()
-                        }
-//                        isError = false
-                    }
+            if (!isLoad && isError == null && announcesList.itemCount <= 0) {
+                NoDataView(text = "Нет новых поездок.")
+            }
+
+            if (isError == true) {
+                ErrorView {
+                    isLoad = true
+                    announcesList.refresh()
                 }
             }
+
             PullRefreshIndicator(
                 isLoad,
                 stateRefresh,
@@ -228,6 +199,4 @@ fun AnnounceScreen(onClick: () -> Unit) {
     }
 //    }
 //    val stateRefresh = rememberPullRefreshState(isLoad, ::refresh)
-
-
 }
