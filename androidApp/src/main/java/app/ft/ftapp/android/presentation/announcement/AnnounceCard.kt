@@ -121,7 +121,7 @@ fun AnnounceCard(
                 maxLines = 1
             )
 
-            AnnounceParams(stringResource(id = R.string.car_price), "560 ₽")
+            AnnounceParams(stringResource(id = R.string.car_price), "${announce.price ?: 0} ₽")
             AnnounceParams(
                 stringResource(id = R.string.free_places),
                 (announce.countOfParticipants - (announce.participants?.size

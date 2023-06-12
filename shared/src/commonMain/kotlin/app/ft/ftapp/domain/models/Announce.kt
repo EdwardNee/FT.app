@@ -28,7 +28,8 @@ data class Announce(
     val travelStatus: String? = ConstantValues.TravelStatus.CREATED,
     val participants: List<Participant>? = emptyList(),
     val countOfParticipants: Int = 3,
-    val comment: String = ""
+    val comment: String = "",
+    val price: Int? = 0
 ) : Parcelable
 
 /**

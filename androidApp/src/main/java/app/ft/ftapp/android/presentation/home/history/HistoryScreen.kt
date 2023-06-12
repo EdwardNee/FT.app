@@ -107,7 +107,7 @@ fun HistoryList(
     val viewModelScreen =
         setupViewModel<HistoryScreenViewModel>(ArgsViewModelFactory(FactoryArgs(viewModel)))
     val historyList = viewModelScreen.pagerHistory.collectAsLazyPagingItems()
-    viewModel.setList(historyList.itemSnapshotList.items)
+    viewModel.setList(historyList.itemSnapshotList.items.reversed())
 
     val scope = rememberCoroutineScope()
     var isLoad by remember { mutableStateOf(true) }

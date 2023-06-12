@@ -26,6 +26,7 @@ class AnnounceDbMapper {
                 participants = MutableList(nowParticipants ?: 0) { Participant() },
                 countOfParticipants = countOfParticipants,
                 comment = comment ?: "",
+                price = price
             )
         }
     }
@@ -48,6 +49,7 @@ class AnnounceDbMapper {
 //                participants = participants,
                 countOfParticipants = countOfParticipants,
                 comment = comment,
+                price = price ?: 0
             )
         }
     }

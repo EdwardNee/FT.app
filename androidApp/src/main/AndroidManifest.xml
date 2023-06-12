@@ -41,6 +41,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:name="app.ft.ftapp.android.MainActivity"
+            tools:replace="theme"
             android:exported="true">
 
             <intent-filter>
@@ -62,6 +63,7 @@
 
         <activity
             android:launchMode="singleTask"
+            tools:replace="theme"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:name="app.ft.ftapp.android.TestActivity"

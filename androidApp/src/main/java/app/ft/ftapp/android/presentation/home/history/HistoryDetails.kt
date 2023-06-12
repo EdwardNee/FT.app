@@ -65,7 +65,11 @@ fun HistoryDetails(isChosen: MutableState<Boolean>, chosenAnnounce: MutableState
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            Text(text = "560 ₽", fontFamily = Montserrat, fontWeight = FontWeight.Bold)
+            Text(
+                text = "${chosenAnnounce.value.price ?: 0} ₽",
+                fontFamily = Montserrat,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         Divider(
@@ -80,8 +84,7 @@ fun HistoryDetails(isChosen: MutableState<Boolean>, chosenAnnounce: MutableState
                 .clickable {
                     isChosen.value = false
                 }
-                .padding(vertical = 16.dp)
-            ,
+                .padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

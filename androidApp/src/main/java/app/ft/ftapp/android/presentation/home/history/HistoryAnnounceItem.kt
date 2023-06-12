@@ -41,7 +41,10 @@ fun HistoryAnnounceItem(announce: Announce, onClickInfo: (Announce) -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = announce.placeTo,
+                    text = if (announce.placeFrom.lastIndexOf(",") != -1) announce.placeFrom.substring(
+                        0,
+                        announce.placeFrom.lastIndexOf(",")
+                    ) else announce.placeFrom,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     maxLines = 1

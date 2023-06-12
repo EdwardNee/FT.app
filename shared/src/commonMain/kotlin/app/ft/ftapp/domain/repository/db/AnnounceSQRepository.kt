@@ -23,6 +23,7 @@ class AnnounceSQRepository(databaseDriverFactory: DatabaseDriverFactory) : IAnno
                 createTime = createTime ?: "",
                 countOfParticipants = countOfParticipants,
                 nowParticipants = participants?.size ?: 0,
+                price = price ?: 0,
                 comment = comment,
             )
         }

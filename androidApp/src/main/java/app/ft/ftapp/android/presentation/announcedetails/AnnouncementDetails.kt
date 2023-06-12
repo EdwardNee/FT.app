@@ -83,7 +83,7 @@ fun AnnouncementDetails(modalBottomSheetState: ModalBottomSheetState) {
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            Text(text = "560 ₽", fontFamily = Montserrat, fontWeight = FontWeight.Bold)
+            Text(text = "${announceDb?.price ?: 0} ₽", fontFamily = Montserrat, fontWeight = FontWeight.Bold)
         }
 
         Divider(

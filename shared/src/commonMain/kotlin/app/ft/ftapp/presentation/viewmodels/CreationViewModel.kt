@@ -175,7 +175,8 @@ class CreationViewModel : BaseViewModel() {
                     comment = comment.value,
                     startTime = startTime.value,
                     placeFromCoords = route.first.toStrLL(),
-                    placeToCoords = route.second.toStrLL()
+                    placeToCoords = route.second.toStrLL(),
+                    price = price.value
                 )
                 createAnnounceCall(announce = announce)
             }
@@ -209,7 +210,8 @@ class CreationViewModel : BaseViewModel() {
                     comment = comment.value,
                     startTime = startTime.value,
                     placeFromCoords = route.first.toStrLL(),
-                    placeToCoords = route.second.toStrLL()
+                    placeToCoords = route.second.toStrLL(),
+                    price = price.value
                 )
 
                 println("TAG_OF_DATA_DURATION $announce")
@@ -246,10 +248,10 @@ class CreationViewModel : BaseViewModel() {
             }
         }
 
-        if (route.first.lat != 0.0 && route.second.lat != 0.0) {
+//        if (route.first.lat != 0.0 && route.second.lat != 0.0) {
             getTripInfoCall(route)
-            price.value = 560
-        }
+//            price.value = 560
+//        }
     }
 
 

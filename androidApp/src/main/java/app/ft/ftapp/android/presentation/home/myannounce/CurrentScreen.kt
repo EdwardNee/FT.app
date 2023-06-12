@@ -175,7 +175,7 @@ fun CurrentScreen(isHome: MutableState<Boolean>, viewModel: HomeViewModel) {
                     fontSize = 16.sp
                 )
                 Text(
-                    "560 P",
+                    "${assignedAnnounce?.price ?: 0} P",
                     fontFamily = Montserrat,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
