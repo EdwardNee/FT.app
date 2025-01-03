@@ -23,7 +23,8 @@ internal class AnnounceDbMapperTest {
             createTime = "createTime",
             countOfParticipants = 2,
             nowParticipants = 1,
-            comment = "comment"
+            comment = "comment",
+            price = 560
         )
 
         val announce = announceDbMapper.fromDbToModel(dbAnnounce)
@@ -38,6 +39,7 @@ internal class AnnounceDbMapperTest {
         assertEquals(2, announce.countOfParticipants)
         assertEquals(1, announce.participants?.size)
         assertEquals("comment", announce.comment)
+        assertEquals(560, announce.price)
     }
 
     @Test

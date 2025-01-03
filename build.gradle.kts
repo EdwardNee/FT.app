@@ -12,7 +12,7 @@ buildscript {
         classpath ("com.google.gms:google-services:3.0.0")
         classpath(libs.bundles.plugins)
         classpath(libs.mokoResGenerator)
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:7.0.4")
     }
 }
 

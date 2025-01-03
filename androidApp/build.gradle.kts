@@ -83,9 +83,52 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    flavorDimensions += "version"
+
+    productFlavors {
+        create("paido") {
+            dimension = "version"
+            applicationIdSuffix = ".paid"
+            versionNameSuffix = "-paid"
+        }
+
+        create("pro") {
+            dimension = "version"
+            applicationIdSuffix = ".pro"
+            versionNameSuffix = "-pro"
+            //versionCode = 30000 + (android.defaultConfig.versionCode ?: 0)
+        }
+    }
+
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            //obfuscation, remove unused classes also from libs
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            proguardFile("proguard-rules.pro")
+//            postprocessing {
+//                isRemoveUnusedCode = true
+//                isRemoveUnusedResources = true
+//                isObfuscate = false
+//                isOptimizeCode = true
+//                proguardFile("proguard-rules.pro")
+//            }
+
+            /*
+            * @Keep says to dont obfuscate the class.
+            * But if we have lots of classes to not to obfuscate, we use proguard file
+            *
+            *
+            * Resources
+            * <?xml version="1.0" encoding="utf-8"?>
+                <resources xmlns:tools="http://schemas.android.com/tools"
+                    tools:keep="@layout/l_used*_c,@layout/l_used_a,@layout/l_used_b*"
+                    tools:discard="@layout/unused2" />
+            *
+            * res/raw/keep.xml
+            * */
         }
     }
 
@@ -114,8 +157,8 @@ dependencies {
     implementation("com.google.dagger:dagger:2.42")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     kapt("com.google.dagger:dagger-compiler:2.42")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.google.code.gson:gson:2.9.0")
     implementation("com.yandex.android:maps.mobile:4.3.1-full")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.31.1-alpha")
